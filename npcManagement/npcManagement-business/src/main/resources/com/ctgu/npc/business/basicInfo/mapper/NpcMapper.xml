@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.npc.business.basicInfo.mapper.NpcMapper">
+	<sql id="npc_basic_column">
+    	npc.id,realName,sex,birth,nativePlace,nation,party,education,graduation,major,degree,technicalTitle,address,postalCode,idNumber,qq,WeChat,npc.userId,commitment,structureType,region
+    </sql>
+
+	<sql id="user_basic_column">
+	    u.photo as photo,
+    	login_Name as loginName,
+ 		password,
+    	login_Ip as loginIp,
+		login_date as loginDate,
+		job,
+		mobile,
+		phone,
+		email,
+		login_ip as oldLoginIp,
+		login_date as oldLoginDate
+	</sql>
+	
+	<sql id="specil_basic_column">
+		sp.id as specialId,
+		cardId,
+		companyOrDistrict,
+		mission,
+		missionId,
+		sp.npcId,
+		status,
+		sp.level as specialLevel,
+		sp.npcDuty,
+		sp.reappointment,
+		sp.isChecked,
+		representLevel,
+		period
+	</sql>
+	
+	<sql id="user_level_column">
+		ul.id as userLevelId,
+		ul.login_flag as loginFlag,
+		ul.del_flag as delFlag,
+		ul.level as userLevel
+	</sql>
+	
+
+	<!-- 更新我的个人资料 -->
+	<update id="updatePersonalInfo">
+	update 
+		db_npc_member 
+	set
+		idNumber = #{idNumber},
+		address = #{address},
+		postalCode = #{postalCode},
+		qq = #{qq},
+		WeChat = #{WeChat}
+	where userId = #{userId}
+	</update>
+
+	<!-- 根据用户id和系统级别查询代表基本信息 -->
+	<select id="getBasicInfo" resultType="com.ctgu.npc.business.basicInfo.entity.Npc">
+		SELECT
+			<include refid="npc_basic_column"/>,
+			<include refid="user_basic_column"/>,
+			<include refid="specil_basic_column"/>,
+			<include refid="user_level_column"/>
+		FROM 
+			sys_user u,
+			db_npc_member npc,
+			db_special sp,
+			sys_user_level ul
+		WHERE 
+			u.id=npc.userId
+			and sp.level = ul.level
+			and u.id = ul.userId
+			and npc.id = sp.npcId 
+			and u.userType='0' 
+			and ul.del_flag='0'
+			and u.id=${usrId}
+	</select>
+	
+	<!--根据代表团的id查询代表团的代表信息  -->
+	<select id="getNpcMembsByMissionId" resultType="com.ctgu.npc.business.basicInfo.entity.Npc" parameterType="map">
+		SELECT
+			u.id AS userId,
+			u.login_name as loginName,
+			ul.id AS userLevelId,
+			ul.login_flag as loginFlag,
+			ul.del_flag as delFlag,
+			npc.realName,
+			sp.id AS specialId,
+			sp.mission,
+			npc.id,  u.mobile
+		FROM 
+			db_special sp,
+			db_npc_member npc,
+			sys_user u,
+			sys_user_level ul
+		WHERE 
+			sp.missionId = ${mission_id}
+			and sp.level=${level_code}
+			and npc.id = sp.npcId 
+			and u.id=npc.userId
+			and u.id = ul.userId			
+			and u.userType='0' 
+			and ul.del_flag='0' 
+			
+		GROUP BY u.mobile	
+		ORDER BY npc.realName
+			
+	</select>
+	
+	<!-- 根据代表团的id分页查询代表团的代表信息 getNpcMembsByMissionIdPage and u.userType='0' and ul.del_flag='0' -->
+	<select id="getNpcMembsByMissionIdPage" resultType="com.ctgu.npc.business.basicInfo.entity.Npc" parameterType="map">
+		SELECT
+			u.id AS userId,
+			u.login_name as loginName,
+			ul.id AS userLevelId,
+			ul.login_flag as loginFlag,
+			ul.del_flag as delFlag,
+			npc.realName,
+			npc.id AS npcId,
+			sp.id AS specialId,
+			sp.mission,
+			npc.id, 
+			u.mobile
+		FROM 
+			db_special sp,
+			db_npc_member npc,
+			sys_user u,
+			sys_user_level ul
+		WHERE 
+			u.id = ul.userId 
+			and sp.changeFlag = '0'	
+			and u.id=npc.userId
+			AND sp.npcId = npc.id
+			and sp.level = ul.level
+			and  sp.missionId = ${mission_id}
+			and sp.level=${level_code}
+		GROUP BY u.mobile	
+		ORDER BY npc.realName
+		LIMIT  ${offset},${size}
+	</select>
+	
+	<!-- 根据代表团id及系统级别查询代表列表信息 -->
+	<select id="findList" resultType="npc" parameterType="npc">
+		select
+			<include refid="npc_basic_column"/>,
+			<include refid="user_basic_column"/>,
+			<include refid="specil_basic_column"/>
+		from
+			sys_user u,
+			db_npc_member npc,
+			db_special sp,
+			sys_user_level ul
+		where
+			u.id = npc.userId
+		and 
+			u.id = ul.userId
+		and 
+			npc.id = sp.npcId
+		and
+			ul.del_flag='0'
+		and 
+			ul.level = sp.level
+			<choose>
+				<when test="period != null and period != ''">
+					and sp.period = #{period} and (sp.changeFlag='0' or sp.changeFlag='1')
+				</when>
+				<otherwise>
+					and sp.changeFlag='0'
+				</otherwise>
+			</choose>
+			
+			<if test="userLevel != null and userLevel != ''">
+				and sp.level =#{userLevel}
+			</if>
+			
+			<if test="region != null and region != '' and region !='宜昌市'">
+				and region like "%${region}%"
+			</if>
+			<if test="missionId != null and missionId !=''" >
+				and missionId = #{missionId}
+			</if>
+			<if test="mission != null and mission !=''">
+				and mission like "%${mission}%"
+			</if>
+			<if test="representLevel != null and representLevel !=''">
+				and representLevel like "%${representLevel}%"
+			</if>
+			<if test="realName != null and realName != ''">
+				and realName like "%${realName}%"
+			</if>
+			<if test="status !=  null and status != ''">
+				and status = #{status}
+			</if>
+			<if test="proviceLevel != null and proviceLevel != ''">
+				and (proviceLevel = #{proviceLevel} or nationLevel = #{proviceLevel})
+			</if>
+			<if test="sex != null and sex != ''">
+				and sex = #{sex}
+			</if>
+			<if test="nation != null and nation != ''">
+				and nation = #{nation}
+			</if>
+			<if test="party != null and party != ''">
+				and party like "%${party}%"
+			</if>
+			<if test="reappointment != null and reappointment != ''">
+				and reappointment = #{reappointment}
+			</if>
+			<if test="structureType != null and structureType != ''">
+				and structureType = #{structureType}
+			</if>
+			<if test="education != null and education != ''">
+				and education like "%${education}%"
+			</if>
+			<if test="beginAge != null and beginAge !='' and (endAge== null or endAge == '')">
+				and birth &gt;= #{beginAge}
+			</if>
+			<if test="beginAge != null and beginAge !='' and endAge != null and endAge != ''">
+				and birth &lt;= #{beginAge} and birth &gt; #{endAge}
+			</if>
+			<if test="endAge != null and endAge !='' and (beginAge== null or beginAge == '')">
+				and birth &lt;= #{endAge}
+			</if>
+			order by sp.isChecked desc,sp.sort asc
+	</select>
+	
+	<!-- 根据代表团id及系统级别查询代表列表信息的记录总数 -->
+	<select id="findListRows" resultType="int" parameterType="npc">
+		SELECT
+			count(*)
+		from
+			sys_user u,
+			db_npc_member npc,
+			db_special sp,
+			sys_user_level ul
+		where
+			u.id = npc.userId
+		and 
+			u.id = ul.userId
+		and 
+			npc.id = sp.npcId
+		and
+			ul.del_flag='0'
+		and 
+			ul.level = sp.level
+			<choose>
+				<when test="period != null and period != ''">
+					and sp.period = #{period} and (sp.changeFlag='0' or sp.changeFlag='1')
+				</when>
+				<otherwise>
+					and sp.changeFlag='0'
+				</otherwise>
+			</choose>
+			
+			<if test="userLevel != null and userLevel != ''">
+				and sp.level =#{userLevel}
+			</if>
+			
+			<if test="region != null and region != '' and region !='宜昌市'">
+				and region like "%${region}%"
+			</if>
+			<if test="missionId != null and missionId !=''" >
+				and missionId = #{missionId}
+			</if>
+			<if test="mission != null and mission !=''">
+				and mission like "%${mission}%"
+			</if>
+			<if test="representLevel != null and representLevel !=''">
+				and representLevel like "%${representLevel}%"
+			</if>
+			<if test="realName != null and realName != ''">
+				and realName like "%${realName}%"
+			</if>
+			<if test="status !=  null and status != ''">
+				and status = #{status}
+			</if>
+			<if test="proviceLevel != null and proviceLevel != ''">
+				and (proviceLevel = #{proviceLevel} or nationLevel = #{proviceLevel})
+			</if>
+			<if test="sex != null and sex != ''">
+				and sex = #{sex}
+			</if>
+			<if test="nation != null and nation != ''">
+				and nation = #{nation}
+			</if>
+			<if test="party != null and party != ''">
+				and party like "%${party}%"
+			</if>
+			<if test="reappointment != null and reappointment != ''">
+				and reappointment = #{reappointment}
+			</if>
+			<if test="structureType != null and structureType != ''">
+				and structureType = #{structureType}
+			</if>
+			<if test="education != null and education != ''">
+				and education like "%${education}%"
+			</if>
+			<if test="beginAge != null and beginAge !='' and (endAge== null or endAge == '')">
+				and birth &gt;= #{beginAge}
+			</if>
+			<if test="beginAge != null and beginAge !='' and endAge != null and endAge != ''">
+				and birth &lt;= #{beginAge} and birth &gt; #{endAge}
+			</if>
+			<if test="endAge != null and endAge !='' and (beginAge== null or beginAge == '')">
+				and birth &lt;= #{endAge}
+			</if>
+			order by sp.isChecked desc,sp.sort asc
+	</select>
+
+	<!-- 根据代表的id查询代表详细信息 -->
+	<select id="getNpcMembDetailById" resultType="com.ctgu.npc.business.basicInfo.entity.Npc" parameterType="map">
+		SELECT
+			<include refid="npc_basic_column"/>,
+			<include refid="user_basic_column"/>,
+			<include refid="specil_basic_column"/>,
+			<include refid="user_level_column"/>
+		FROM 
+			sys_user u,
+			db_npc_member npc,
+			db_special sp,
+			sys_user_level ul
+		WHERE 
+			u.id=npc.userId
+			and sp.level = ul.level
+			and u.id = ul.userId
+			and npc.id = sp.npcId 
+			and u.userType='0' 
+			and ul.del_flag='0' 
+			and npc.id= ${npc_id}
+			and sp.level=${level_code}
+	</select>
+	
+	<!-- 根据系统级别与代表团id查询代表总记录数 -->
+	<select id="getRowsByOfficeId" resultType="int" parameterType="map">
+		SELECT
+			count(*)
+		FROM 
+			db_special sp,
+			db_npc_member npc,
+			sys_user u,
+			sys_user_level ul
+		WHERE 
+			u.id = ul.userId 
+			and sp.changeFlag = '0'	
+			and u.id=npc.userId
+			AND sp.npcId = npc.id
+			and sp.level = ul.level
+			and  sp.missionId = ${mission_id}
+			and sp.level=${level_code}
+	</select>
+	
+	<!-- 根据系统级别查询届次 -->
+	<select id="findPeriod" parameterType="string" resultType="period">
+		select * from db_period where level = #{level}
+	</select>
+	
+	<!-- 根据userId及系统级别查询代表信息 -->
+	<select id="getInfo"  resultType="com.ctgu.npc.business.basicInfo.entity.Npc">
+		select
+			<include refid="npc_basic_column"/>,
+			<include refid="user_basic_column"/>,
+			<include refid="specil_basic_column"/>,
+			<include refid="user_level_column"/>
+		from 
+			sys_user u,
+			db_npc_member npc,
+			db_special sp,
+			sys_user_level ul
+		where 
+			u.id=npc.userId
+			and sp.level = ul.level
+			and u.id = ul.userId
+			and npc.id = sp.npcId 
+			and u.userType='0' 
+			and ul.del_flag='0' 
+			and u.id=#{id}
+			and sp.level=#{specialLevel}
+	</select>
+	
+	<!--查询代表信息链表===根据userId及系统级别查询代表信息 -->
+	<select id="getInfoListUseridLevel"  resultType="com.ctgu.npc.business.basicInfo.entity.Npc">
+		select
+			<include refid="npc_basic_column"/>,
+			<include refid="user_basic_column"/>,
+			<include refid="specil_basic_column"/>,
+			<include refid="user_level_column"/>
+		from 
+			sys_user u,
+			db_npc_member npc,
+			db_special sp,
+			sys_user_level ul
+		where 
+			u.id=npc.userId
+			and sp.level = ul.level
+			and u.id = ul.userId
+			and npc.id = sp.npcId 
+			and u.userType='0' 
+			and ul.del_flag='0' 
+			and u.id=#{id}
+			and sp.level=#{specialLevel}
+	</select>
+	
+	<!-- 根据用户id查询该用户的人大信息 -->
+	<select id="getInfoNPCByUserId"  resultType="com.ctgu.npc.business.basicInfo.entity.Npc">
+		select
+			<include refid="npc_basic_column"/>,
+			<include refid="user_basic_column"/>,
+			<include refid="specil_basic_column"/>,
+			<include refid="user_level_column"/>
+		from 
+			sys_user u,
+			db_npc_member npc,
+			db_special sp,
+			sys_user_level ul
+		where 
+			u.id=npc.userId
+			and sp.level = ul.level
+			and u.id = ul.userId
+			and npc.id = sp.npcId 
+			and u.userType='0' 
+			and ul.del_flag='0' 
+			and u.id=#{id}
+	</select>
+
+	<!-- 根据用户id查询该用户的人大信息 -->
+	<select id="test"  resultType="java.lang.Integer">
+		select
+		count(1)
+		from
+		sys_user u
+	</select>
+
+</mapper>
+	
