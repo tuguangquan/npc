@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.npc.business.inqury_meeting.mapper.InquryMapper">
+
+
+	<!-- 根据系统级别查询 我的inquryList总记录数 -->
+	<select id="getRowsByLevelUserIdInqury"  resultType="int" parameterType="map">
+		SELECT count(*)
+		FROM db_inquryinfo inqury 
+		WHERE 1=1 and inqury.npcId = ${user_id} and inqury.level = ${level_code}
+		
+	</select>
+	
+	<!-- 根据系统级别分页查询意见的opinionList -->
+	<select id="getListMyInqury" resultType="com.ctgu.modules.inqury_meeting.entity.Inqury" parameterType="map">
+		SELECT 
+			inqury.* ,
+			u1.name as npcName,
+			u2.name as coorName,
+			u3.name as replyName,
+			o.name as unitName
+		FROM db_inquryinfo inqury 
+		LEFT JOIN sys_user u1 on u1.id = inqury.npcId
+		LEFT JOIN sys_user u2 on u2.id = inqury.coordinateId
+		LEFT JOIN sys_user u3 on u3.id = inqury.replyId
+		LEFT JOIN sys_office o on o.id = inqury.unitId
+		WHERE 1=1  and inqury.npcId = ${user_id} and inqury.level = ${level_code}
+		ORDER BY subTime DESC
+		limit ${offset},${size}
+	</select>
+	
+	<!-- 根据inqury的id查询详细 -->
+	<select id="getDetailByIdInqury" resultType="com.ctgu.modules.inqury_meeting.entity.Inqury">
+		SELECT 
+			inqury.* ,
+			u1.name as npcName,
+			u1.mobile as mobile,
+			u2.name as coorName,
+			u3.name as replyName,
+			o.name as unitName
+		FROM db_inquryinfo inqury 
+		LEFT JOIN sys_user u1 on u1.id = inqury.npcId
+		LEFT JOIN sys_user u2 on u2.id = inqury.coordinateId
+		LEFT JOIN sys_user u3 on u3.id = inqury.replyId
+		LEFT JOIN sys_office o on o.id = inqury.unitId
+		WHERE inqury.id = ${id}
+	</select>
+	
+	
+	<!-- 询问处理列表 -->
+	<select id="getListInquryHandle" resultType="Inqury" parameterType="map">
+		SELECT 
+			inqury.* ,
+			u1.name as npcName,
+			u2.name as coorName,
+			u3.name as replyName,
+			o.name as unitName
+		FROM db_inquryinfo inqury 
+		LEFT JOIN sys_user u1 on u1.id = inqury.npcId
+		LEFT JOIN sys_user u2 on u2.id = inqury.coordinateId
+		LEFT JOIN sys_user u3 on u3.id = inqury.replyId
+		LEFT JOIN sys_office o on o.id = inqury.unitId
+		WHERE 1=1 
+		and inqury.subStatus = '2'
+		and inqury.level=${level}
+		ORDER BY subTime DESC
+		limit ${offset},${size}
+	</select>
+	<!-- 询问处理记录数 -->
+	<select id="getRowsByLevelInqury" resultType="int">
+		SELECT 
+			count(*)
+		FROM db_inquryinfo inqury 
+		LEFT JOIN sys_user u1 on u1.id = inqury.npcId
+		LEFT JOIN sys_user u2 on u2.id = inqury.coordinateId
+		LEFT JOIN sys_user u3 on u3.id = inqury.replyId
+		LEFT JOIN sys_office o on o.id = inqury.unitId
+		WHERE 1=1 
+		and inqury.subStatus = '2'
+		and inqury.level=#{level}
+		
+	</select>
+	
+	
+	<!-- 答复询问列表 -->
+	<select id="getListInquryReply" resultType="Inqury" parameterType="map">
+		SELECT 
+			inqury.* ,
+			u1.name as npcName,
+			u2.name as coorName,
+			u3.name as replyName,
+			o.name as unitName
+		FROM db_inquryinfo inqury 
+		LEFT JOIN sys_user u1 on u1.id = inqury.npcId
+		LEFT JOIN sys_user u2 on u2.id = inqury.coordinateId
+		LEFT JOIN sys_user u3 on u3.id = inqury.replyId
+		LEFT JOIN sys_office o on o.id = inqury.unitId
+		WHERE 1=1 
+		and inqury.level = #{level}
+		and inqury.unitId = #{unitId}
+		ORDER BY subTime DESC
+		limit ${offset},${size}
+	</select>
+	
+	<!-- 答复询问记录数 -->
+	<select id="getRowsByLevelUnitInqury" resultType="int">
+		SELECT 
+			count(*)
+		FROM db_inquryinfo inqury 
+		LEFT JOIN sys_user u1 on u1.id = inqury.npcId
+		LEFT JOIN sys_user u2 on u2.id = inqury.coordinateId
+		LEFT JOIN sys_user u3 on u3.id = inqury.replyId
+		LEFT JOIN sys_office o on o.id = inqury.unitId
+		WHERE 1=1 
+		and inqury.level = #{level}
+		and inqury.unitId = #{unitId}
+		
+	</select>
+	
+	
+	<!-- 我的约见列表 -->
+	<select id="getListMyMeet" resultType="Meet" parameterType="map">
+		SELECT 
+			m.* ,
+			u1.name as npcName,
+			u2.name as coorName,
+			u3.name as operaName,
+			o.name as unitName
+		FROM db_meetinfo m 
+		LEFT JOIN sys_user u1 on u1.id = m.npcId
+		LEFT JOIN sys_user u2 on u2.id = m.coordinateId
+		LEFT JOIN sys_user u3 on u3.id = m.operatorId
+		LEFT JOIN sys_office o on o.id = m.unitId
+		WHERE 1=1  AND m.npcId = #{npcId} AND m.level=#{level}
+		ORDER BY subTime DESC
+		limit ${offset},${size}
+	</select>
+	
+	<!-- 我的约见记录数 -->
+	<select id="getRowsMyMeet" resultType="int">
+		SELECT 
+			count(*)
+		FROM db_meetinfo m 
+		LEFT JOIN sys_user u1 on u1.id = m.npcId
+		LEFT JOIN sys_user u2 on u2.id = m.coordinateId
+		LEFT JOIN sys_user u3 on u3.id = m.operatorId
+		LEFT JOIN sys_office o on o.id = m.unitId
+		WHERE 1=1  AND m.npcId = #{npcId} AND m.level=#{level}
+	</select>
+	
+	
+	<!-- 约见处理列表 -->
+	<select id="getListMeetHandle" resultType="Meet" parameterType="map">
+		SELECT 
+			m.* ,
+			u1.name as npcName,
+			u2.name as coorName,
+			u3.name as operaName,
+			o.name as unitName
+		FROM db_meetinfo m 
+		LEFT JOIN sys_user u1 on u1.id = m.npcId
+		LEFT JOIN sys_user u2 on u2.id = m.coordinateId
+		LEFT JOIN sys_user u3 on u3.id = m.operatorId
+		LEFT JOIN sys_office o on o.id = m.unitId
+		WHERE 1=1 
+		and m.subStatus = '2'
+		and m.level=#{level}
+		ORDER BY subTime DESC
+		limit ${offset},${size}
+	</select>
+	
+	<!-- 约见处理记录数 -->
+	<select id="getRowsMeetHandle" resultType="int">
+		SELECT 
+			count(*)
+		FROM db_meetinfo m 
+		LEFT JOIN sys_user u1 on u1.id = m.npcId
+		LEFT JOIN sys_user u2 on u2.id = m.coordinateId
+		LEFT JOIN sys_user u3 on u3.id = m.operatorId
+		LEFT JOIN sys_office o on o.id = m.unitId
+		WHERE 1=1 
+		and m.subStatus = '2'
+		and m.level=#{level}
+	</select>
+	
+	
+	<!-- 约见详细信息 -->
+	<select id="getDetailByIdMeet" resultType="Meet">
+		SELECT 
+			m.* ,
+			u1.name as npcName,
+			u1.mobile as mobile,
+			u2.name as coorName,
+			u3.name as operaName,
+			o.name as unitName
+		FROM db_meetinfo m 
+		LEFT JOIN sys_user u1 on u1.id = m.npcId
+		LEFT JOIN sys_user u2 on u2.id = m.coordinateId
+		LEFT JOIN sys_user u3 on u3.id = m.operatorId
+		LEFT JOIN sys_office o on o.id = m.unitId
+		WHERE m.id = #{id}
+	</select>
+	
+</mapper>

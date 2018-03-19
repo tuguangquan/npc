@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- namespace 指向定义的接口IUserDao -->
+<mapper namespace="com.ctgu.npc.business.sys.mapper.UserMapper">
+
+	<sql id="userColumns">
+		a.id,
+		a.company_id AS "company.id",
+		a.office_id AS "office.id",
+		a.login_name,
+		a.password,
+		a.name,
+		a.email,
+		a.phone,
+		a.mobile,
+		a.login_ip,
+		a.login_date,
+		a.remarks,
+		a.login_flag,
+		a.photo,
+		a.create_by AS "createBy.id",
+		a.create_date,
+		a.update_by AS "updateBy.id",
+		a.update_date,
+		a.del_flag,
+		a.userType,
+		a.job,
+		a.level,
+		c.name AS "company.name",
+		c.code AS "company.code",
+		c.parent_id AS "company.parent.id",
+		c.parent_ids AS "company.parentIds",
+		o.name AS "office.name",
+		o.parent_id AS "office.parent.id",
+		o.parent_ids AS "office.parentIds",
+		o.code AS "office.code",
+		cu.id AS "company.primaryPerson.id",
+		cu.name AS "company.primaryPerson.name",
+		cu2.id AS "company.deputyPerson.id",
+		cu2.name AS "company.deputyPerson.name",
+		ou.id AS "office.primaryPerson.id",
+		ou.name AS "office.primaryPerson.name",
+		ou2.id AS "office.deputyPerson.id",
+		ou2.name AS "office.deputyPerson.name"
+	</sql>
+	<sql id="userJoins">
+		JOIN sys_office c ON c.id = a.company_id
+		JOIN sys_office o
+		ON o.id = a.office_id
+		LEFT JOIN sys_user cu ON cu.id = c.primary_person
+		LEFT JOIN sys_user cu2 ON cu2.id = c.deputy_person
+		LEFT JOIN sys_user
+		ou ON ou.id = o.primary_person
+		LEFT JOIN sys_user ou2 ON ou2.id =
+		o.deputy_person
+	</sql>
+
+	<sql id="usersColumns">
+		a.id,
+		a.office_id AS "office.id",
+		a.login_name,
+		a.password,
+		a.name,
+		a.email,
+		a.phone,
+		a.mobile,
+		a.login_ip,
+		a.login_date,
+		a.remarks,
+		a.photo,
+		a.create_by AS "createBy.id",
+		a.create_date,
+		a.update_by AS
+		"updateBy.id",
+		a.update_date,
+		a.userType,
+		a.job,
+		o.name AS "office.name",
+		o.parent_id AS "office.parent.id",
+		o.parent_ids AS "office.parentIds",
+		o.code AS "office.code",
+		ou.id AS "office.primaryPerson.id",
+		ou.name AS "office.primaryPerson.name",
+		ou2.id AS "office.deputyPerson.id",
+		ou2.name AS "office.deputyPerson.name"
+	</sql>
+
+
+	<!-- 根据权限查找工作人员 -->
+	<select id="findUserByPermission" resultType="com.ctgu.modules.sys.entity.Users"  useCache="true">
+		SELECT DISTINCT u.id,u.name as userName ,u.mobile
+			from sys_user u 
+			INNER JOIN sys_user_level sl on sl.userId = u.id and sl.level = #{level} and sl.del_flag = 0  and u.msgFlag = 0
+			INNER JOIN sys_user_role ur on ur.user_id = u.id
+			INNER JOIN sys_role r on r.id = ur.role_id and r.level = #{level}
+			INNER JOIN sys_role_menu rm on rm.role_id = r.id and r.level = #{level}
+			INNER JOIN sys_menu m on m.id = rm.menu_id and m.permission = #{permission}  
+	</select>
+
+	<!-- 发送短信根据单位查找工作人员 -->
+	<select id="findUserByPermissionAndOfficeID" resultType="com.ctgu.modules.sys.entity.Users"  useCache="true">
+		SELECT DISTINCT u.id,u.name as userName ,u.mobile
+			from sys_user u 
+			INNER JOIN sys_user_level sl on sl.userId = u.id and u.office_id =#{officeID} and sl.level = #{level} and sl.del_flag = 0 and u.msgFlag = 0
+			INNER JOIN sys_user_role ur on ur.user_id = u.id
+			INNER JOIN sys_role r on r.id = ur.role_id
+			INNER JOIN sys_role_menu rm on rm.role_id = r.id
+			INNER JOIN sys_menu m on m.id = rm.menu_id and m.permission = #{permission} 
+	</select>
+
+	<!-- 修改密码  -->
+	<update id="updatePasswordById">
+		UPDATE sys_user SET 
+			password = #{password} 
+		WHERE id = #{id}
+	</update>
+
+	<!-- 修改我的个人资料 -->
+	<update id="updateUser">
+	update 
+		sys_user
+	set
+		email = #{email},
+		phone = #{phone},
+		mobile = #{mobile}
+	where id = #{id}
+	</update>
+
+	<!-- 获取总的记录数 -->
+	<select id="getRowCount" resultType="int">
+		SELECT count(*) FROM
+		sys_user
+	</select>
+
+	<!-- 传入页面大小和页码进行分页 -->
+	<select id="getListByMap" resultType="com.ctgu.modules.sys.entity.Users"
+		parameterType="map">
+		SELECT * FROM sys_user a
+		ORDER BY a.name
+		limit
+		${offset},${size}
+	</select>
+
+	<!-- 根据用户名查找用户 -->
+	<select id="getUserByLoginName" resultType="com.ctgu.modules.sys.entity.Users">
+		SELECT
+		a.id,
+		a.office_id,
+		a.login_name,
+		a.password,
+		a.name,
+		a.email,
+		a.phone,
+		a.mobile,
+		a.login_ip,
+		a.login_date,
+		a.create_by,
+		a.create_date,
+		a.remarks,
+		a.photo,
+		a.update_by,
+		a.update_date,
+		a.userType,
+		a.job
+		FROM sys_user a
+		WHERE
+		a.login_name = #{loginName} OR
+		a.mobile = #{mobile}
+
+		<!-- SELECT <include refid="userColumns"/> FROM sys_user a <include refid="userJoins"/> 
+			WHERE a.login_name = #{loginName} -->
+	</select>
+	
+	<!-- 根据用户手机号码查找该用户 -->
+	<select id="getUserByMobile" resultType="com.ctgu.modules.sys.entity.Users">
+		SELECT
+		a.id,
+		a.office_id,
+		a.login_name,
+		a.password,
+		a.name,
+		a.email,
+		a.phone,
+		a.mobile,
+		a.login_ip,
+		a.login_date,
+		a.create_by,
+		a.create_date,
+		a.remarks,
+		a.photo,
+		a.update_by,
+		a.update_date,
+		a.userType,
+		a.job
+		FROM sys_user a
+		WHERE
+		a.mobile = #{mobile}
+	</select>
+	
+	
+
+	<!-- 根据userID 查找该user的所有系统级别 -->
+	<select id="getLevelList" resultType="String">
+		SELECT level 
+		FROM sys_user_level 
+		WHERE userId = ${userId} and login_flag = 1 and	del_flag = 0
+
+	</select>
+
+	<!-- 根据userId查询该user的角色 名称-->
+	<select id="getRoleName" resultType="String">
+		SELECT sr.name 
+		FROM sys_user_role sur
+		LEFT JOIN sys_role sr ON sr.id = sur.role_id
+		WHERE sur.user_id = ${userId} 
+	</select>
+	
+	<!-- 根据userId该用户的角色id -->
+	<select id="getRoleId" resultType="String">
+		SELECT sur.role_id 
+		FROM sys_user_role sur
+		WHERE sur.user_id = ${userId} 
+	</select>
+	
+	
+	<!-- 根据Office Code查找name -->
+	<select id="getOfficeNameByCode" resultType="String">
+		SELECT name 
+		FROM sys_office 
+		WHERE code = ${code} 
+		
+	</select>
+	
+	<!-- 根据级别编码查询部门信息列表 -->
+	<select id="getOfficeNameByLevelCode" resultType="com.ctgu.modules.sys.entity.Office" parameterType="map">
+		SELECT id,name
+		FROM sys_office so
+		WHERE so.parent_id = ${office_id} AND so.type = ${office_type}
+		
+		LIMIT ${offset},${size}
+	</select>
+	
+	<!-- 根据级别编码查询部门信息列表的记录数 -->
+	<select id="getRowsByIdTypeOffice" resultType="int" parameterType="map">
+		SELECT count(*)
+		FROM sys_office so
+		WHERE so.parent_id = ${office_id} AND so.type = ${office_type}
+	
+	</select>
+
+	<!-- 根据级别编码查询部门id-->
+	<select id="getOfficeIdByCode" resultType="String">
+		SELECT id
+		FROM sys_office so
+		WHERE so.code = ${level_code} 
+	
+	</select>
+</mapper>

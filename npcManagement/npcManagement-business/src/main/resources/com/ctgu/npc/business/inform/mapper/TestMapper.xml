@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.npc.business.inform.mapper.TestMapper">
+
+	<!-- 根据系统级别分页查询工作测评的List -->
+	<select id="getListDiscussion" resultType="Paper" parameterType="map">
+		SELECT 
+			d.*,u.name as createUserName
+		FROM db_discussion d
+		left join sys_user u on d.createUserId=u.id 
+		where 1=1 and d.level = #{level}
+		<if test="title != null and title !='' ">
+			and d.title like CONCAT('%', #{title },'%') 
+		</if>
+		ORDER BY d.status asc,d.createTime desc 
+		limit ${offset},${size}
+	</select>
+
+
+
+	<!-- 根据系统级别查询 的工作测评List总记录数 -->
+	<select id="getRowsDiscussion"  resultType="int" parameterType="map">
+		SELECT count(*)
+		FROM db_discussion d
+		left join sys_user u on d.createUserId=u.id 
+		where 1=1 and d.level = #{level}
+		<if test="title != null and title !='' ">
+			and d.title like CONCAT('%', #{title },'%') 
+		</if>
+		
+	</select>
+	
+	<!-- 根据id查询详细信息 -->
+	<select id="getDetailDiscussion" resultType="Discussion">
+		SELECT 
+			d.*,u.name as createUserName
+		FROM db_discussion d
+		left join sys_user u on d.createUserId=u.id 
+		WHERE d.id = #{id}
+	</select>
+	
+	<!-- 所有的测评单位 -->
+		<select id="findListDisTest" resultType="DisTest">
+		select * 
+		from 
+		(SELECT d.*, 
+		t.unit,
+		t.id testId,
+		t.a,
+		t.b,
+		t.c,
+		t.remark
+		FROM
+		db_discussion d
+		LEFT JOIN db_testunit t ON d.id = t.disId
+		AND d. LEVEL = t.`level` ) v
+		where 1=1 and v.id = #{id}
+	</select>
+	
+	
+	<!-- 本人本测评的所有选项 -->
+	<select id="findListDisTestChoice" resultType="DisTestChoice">
+		select * 
+		from 
+		(SELECT
+		d.*, t.disId,
+		t.unit,
+		t.a,
+		t.b,
+		t.c,
+		t.remark,
+		c.testId,
+		c.npcId,
+		c.choice,
+		c.remark AS ansRemark,
+		c.subTime
+		FROM
+		db_discussion d
+		LEFT JOIN db_testunit t ON d.id = t.disId
+		LEFT JOIN db_choice c ON c.disId = d.id
+		AND c.testId = t.id ) v
+		where 1=1 and v.id = #{disId} and v.npcId = #{npcId}
+	</select>
+	
+	<!-- 本测评的所有用户id列表 -->
+	<select id="findUserList" resultType="String">
+		select npcId 
+		from db_choice c
+		where 1=1 and c.disId = #{disId} 
+	</select>
+	
+	
+	<!-- 代表本次测评的答题情况 -->
+	<select id="findListDisTestChoiceById" resultType="DisTestChoice">
+		select v.* ,u.name as name
+		from 
+		(SELECT
+		d.*, t.disId,
+		t.unit,
+		t.a,
+		t.b,
+		t.c,
+		t.remark,
+		c.testId,
+		c.npcId,
+		c.choice,
+		c.remark AS ansRemark,
+		c.subTime
+		FROM
+		db_discussion d
+		LEFT JOIN db_testunit t ON d.id = t.disId
+		LEFT JOIN db_choice c ON c.disId = d.id
+		AND c.testId = t.id ) v
+		left join sys_user u on u.id = v.npcId
+		where 1=1 and v.disId = #{disId} and v.npcId = #{npcId}
+	</select>
+	
+	<!-- 获取测试结果 -->
+	<select id="findListDisResult" resultType="DisResult">
+		select * 
+		from 
+		(select disId,testId,choice,count(id) chooseNum
+		from db_choice c
+		group by disId,testId,choice ) v
+		where 1=1 and v.disId = #{id}
+		ORDER BY v.testId  
+	</select>
+	
+	<!-- 获取测评总数 -->
+	<select id="getJoinTotal" resultType="Integer">
+		select joinTotal
+		from 
+		(select disId,count(npcId) joinTotal from 
+		(select disId,npcId
+		from db_choice c
+		group by disId,npcId ) b
+		group by b.disId ) v
+		where v.disId = #{id}
+	</select>
+	
+	<!--  -->
+	<insert id="saveSubmitChoice" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO db_choice(
+			disId, 
+			testId, 
+			npcId,
+			choice,
+			remark,
+			subTime,
+			level
+		) VALUES (
+			#{disId}, 
+			#{testId}, 
+			#{npcId},
+			#{choice}, 
+			#{remark},
+			#{subTime},
+			#{level}
+		)
+	</insert>
+	
+</mapper>

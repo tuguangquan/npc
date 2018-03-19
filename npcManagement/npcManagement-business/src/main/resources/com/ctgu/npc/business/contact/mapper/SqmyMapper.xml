@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.npc.business.contact.mapper.SqmyMapper">
+	<sql id="SqmyColumns">
+		sqmy.id,
+		sqmy.title,
+		sqmy.content,
+		sqmy.firstWriterID,
+		sqmy.year,
+		sqmy.type,
+		sqmy.status,
+		sqmy.createTime
+	</sql>
+	
+	<!-- 社情民意详细 -->
+	<select id="get" resultType="Sqmy">
+		SELECT
+		sqmy.*,
+		o. name as manageUnit,
+		u. name as firstWriter
+		from
+		db_sqmy sqmy
+		LEFT JOIN sys_office o on o.id = sqmy.manageUnitID
+		LEFT JOIN sys_user u on u.id = sqmy.firstWriterID
+		WHERE
+		sqmy.id = #{id}
+	</select>
+	
+	<!-- 社情民意的留言 -->
+	<select id="getLeaveMessage" resultType="LeaveMessage">
+		SELECT
+		*
+		from db_leave_message
+		WHERE
+		id = #{id}
+	</select>
+	
+	<!-- 社情民意的答复列表 -->
+	<select id="getAnswerSqmy" resultType="AnswerSqmy">
+		SELECT
+		a.id,
+		a.status,
+		a.operatorDate,
+		a.backReason,
+		u.name as operatorName,
+		o.name as
+		assignUnit
+		FROM
+		sqmy_AnswerList a
+		LEFT JOIN db_sqmy sqmy on
+		a.sqmyID =sqmy.id
+		LEFT JOIN
+		sys_user u on u.id = a.operatorID
+		LEFT JOIN sys_office
+		o on o.id = a.assignUnitID
+		WHERE a.sqmyID = #{sqmyID}
+	</select>
+	
+	
+	<!-- 获取我的社情民意列表 -->
+	<select id="mySqmyList" resultType="Sqmy">
+		SELECT
+		<include refid="SqmyColumns" />
+		FROM db_sqmy sqmy
+		WHERE 1=1 and sqmy.level =
+		#{level}
+		<if test="firstWriterID != null and firstWriterID !=''">
+			and sqmy.firstWriterID = #{firstWriterID}
+		</if>
+		<if test="title != null and title !='' ">
+			and sqmy.title like CONCAT('%', #{title },'%')
+		</if>
+		<if test="year != null and year != '' ">
+			and sqmy.year = #{year }
+		</if>
+		<if test="type != null and type != '' ">
+			and sqmy.type = #{type }
+		</if>
+		<if test="status != null and status != '' ">
+			and sqmy.status = #{status }
+		</if>
+		ORDER BY sqmy.id ASC
+	</select>
+	
+	<select id="getByTitle" resultType="String">
+		SELECT sqmy.title FROM
+		db_sqmy sqmy WHERE sqmy.title=#{title} and
+		level=#{level}
+	</select>
+	<insert id="insertSqmy" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO db_sqmy(
+		title,
+		content,
+		firstWriterID,
+		year,
+		qzmsgID,
+		manageUnitID,
+		createTime,
+		status,
+		resevaluation,
+		evaluate,
+		level,
+		fileName,
+		type,
+		filePath,
+		picPath,
+		leaderName,
+		tel,
+		leaderZw
+		) VALUES (
+		#{title},
+		#{content},
+		#{firstWriterID},
+		#{year},
+		#{qzmsgID},
+		#{manageUnitID},
+		#{createTime},
+		#{status},
+		#{resevaluation},
+		#{evaluate},
+		#{level},
+		#{fileName},
+		#{type},
+		#{filePath},
+		#{picPath},
+		#{leaderName},
+		#{tel},
+		#{leaderZw}
+		)
+	</insert>
+	<insert id="insertMySqmy" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO db_sqmy(
+		title,
+		content,
+		firstWriterID,
+		year,
+		createTime,
+		status,
+		type,
+		level,
+		fileName
+		) VALUES (
+		#{title},
+		#{content},
+		#{firstWriterID},
+		#{year},
+		#{createTime},
+		#{status},
+		#{type},
+		#{level},
+		#{fileName}
+		)
+	</insert>
+	<update id="editsaveMySqmy">
+		UPDATE db_sqmy SET
+		title=#{title},
+		content=#{content},
+		manageUnitID=#{manageUnitID},
+		createTime=#{createTime},
+		status=#{status},
+		evaluate=#{evaluate},
+		resevaluation=#{resevaluation},
+		fileName=#{fileName}
+		WHERE id = #{id}
+	</update>
+	<delete id="delete">
+		DELETE from db_sqmy
+		WHERE id = #{id}
+	</delete>
+	<insert id="insertAnswerList" useGeneratedKeys="true"
+		keyProperty="id">
+		INSERT INTO sqmy_AnswerList(
+		sqmyID,
+		assignUnitID,
+		operatorID,
+		operatorDate,
+		status,
+		backReason
+		) VALUES (
+		#{sqmy.id},
+		#{sqmy.manageUnitID},
+		#{operatorID},
+		#{operatorDate},
+		#{status},
+		#{backReason}
+		)
+	</insert>
+	
+	<update id="updateStatus">
+		UPDATE sqmy_AnswerList SET
+		status=#{status}
+		WHERE
+		sqmmyID = #{id}
+	</update>
+</mapper>

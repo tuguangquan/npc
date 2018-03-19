@@ -1,0 +1,472 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.npc.business.perform.mapper.PerformMapper">
+
+
+	<!-- 我的代表工作=分页列表 -->
+	<select id="getListmyJobReport" resultType="JobReport" parameterType="map">
+		SELECT 
+			job.*,
+			o.name as mission,
+			u.name as name
+		FROM ser_jobReport job 
+		LEFT JOIN sys_office o on o.id = job.teamID
+		LEFT JOIN sys_user u on u.id = job.userID
+		WHERE 1=1 and job.level = #{level_code} and job.userID = #{userID}
+		<if test="year != null and year !='' ">
+			and job.year = #{year}
+		</if>
+		ORDER BY job.id desc
+		LIMIT  ${offset},${size}
+	</select>
+	<!-- 我的代表工作=总记录数 -->
+	<select id="getRowsMyJobReport" resultType="int" parameterType="map">
+		SELECT 
+			count(*)
+		FROM ser_jobReport job 
+		LEFT JOIN sys_office o on o.id = job.teamID
+		LEFT JOIN sys_user u on u.id = job.userID
+		WHERE 1=1 and job.level = #{level} and job.userID = #{userID}
+	</select>
+	
+
+	<!-- 我的代表活动=分页列表-->
+	<select id="getListMyPerformAct" resultType="PerformReport" parameterType="map">
+		SELECT 
+			per.*,
+			o.name as mission,
+			u.name as name
+		FROM ser_performReport per 
+		LEFT JOIN sys_office o on o.id = per.teamID
+		LEFT JOIN sys_user u on u.id = per.userID
+		WHERE 1=1 and per.level = #{level_code} and per.userID = #{userID}
+		<if test="year != null and year !='' ">
+			and per.year = #{year}
+		</if>
+		ORDER BY per.id desc
+		LIMIT  ${offset},${size}
+	</select>
+	
+	<!--我的代表活动=总记录数 -->
+	<select id="getRowsMyPerformAct" resultType="int" parameterType="map">
+		SELECT 
+			count(*)
+		FROM ser_performReport per 
+		LEFT JOIN sys_office o on o.id = per.teamID
+		LEFT JOIN sys_user u on u.id = per.userID
+		WHERE 1=1 and per.level = #{level_code} and per.userID = #{userID}
+	</select>
+
+	<!-- 代表活动详细=getInfoPerformReport -->
+	<select id="getInfoPerformReport" resultType="PerformReport">
+		SELECT 
+			per.*,
+			o.name as mission,
+			u.name as name
+		FROM ser_performReport per 
+		LEFT JOIN sys_office o on o.id = per.teamID
+		LEFT JOIN sys_user u on u.id = per.userID
+		WHERE  per.id = #{id}
+	</select>
+
+	
+	<!-- 我的述职报告 -->
+	<select id="getListmyWorkReport" resultType="WorkReport" parameterType="map">
+		SELECT 
+			work.*,
+			o.name as mission,
+			u.name as name
+		FROM ser_workReport work 
+		LEFT JOIN sys_office o on o.id = work.teamID
+		LEFT JOIN sys_user u on u.id = work.userID
+		WHERE 1=1 and work.level = ${level_code} and work.userID = ${userID}
+		ORDER BY work.id desc
+		LIMIT  ${offset},${size}
+	</select>
+
+	<!-- 我的述职报告记录数 -->
+	<select id="getRowsmyWorkReport" resultType="int" parameterType="map">
+		SELECT 
+			count(*)
+		FROM ser_workReport work 
+		LEFT JOIN sys_office o on o.id = work.teamID
+		LEFT JOIN sys_user u on u.id = work.userID
+		WHERE 1=1 and work.level = ${level_code} and work.userID = ${userID}
+		ORDER BY work.id desc
+	</select>
+	
+	<!-- 我的履职报告详细 -->
+	<select id="getInfoMyWorkReport" resultType="WorkReport">
+		SELECT 
+			work.*,
+			o.name as mission,
+			u.name as name
+		FROM ser_workReport work 
+		LEFT JOIN sys_office o on o.id = work.teamID
+		LEFT JOIN sys_user u on u.id = work.userID
+		WHERE  work.id = ${id}
+	</select>
+	
+	<!-- 我的履职统计 -->
+	<select id="getListMyReportStatistic" resultType="MyReportEntry" parameterType="map">
+		SELECT '领衔建议数' type , count(1) num from sug_suggestion where type = 1 and firstWriterID = ${userID}
+		UNION 
+		SELECT '领衔议案数' type , count(1) num from sug_suggestion where type = 2 and firstWriterID = ${userID}
+		UNION
+		SELECT '联名建议数' type , count(1) num from sug_suggestion where type = 1 and secondWriterIDS like '%#${userID}#%'
+		UNION
+		SELECT '联名议案数' type , count(1) num from sug_suggestion where type = 2 and secondWriterIDS like '%#${userID}#%'
+		UNION
+		SELECT '审议发言数' type , talkNum num  from ser_jobreport where userID = ${userID}
+		UNION
+		SELECT type, sum(1) num FROM ser_performreport WHERE year = ${year} and userID = ${userID} GROUP BY type
+		UNION	
+		SELECT type , 0 num from ser_type where type not in(select DISTINCT type from ser_performreport where year = ${year} and userID = ${userID} ) and remark is null
+	</select>
+	
+	<!-- 我的履职统计记录数 -->
+	<select id="getRowsMyReportStatistic" resultType="int" parameterType="map">
+		SELECT '领衔建议数' type , count(1) num from sug_suggestion where type = 1 and firstWriterID = ${userID}
+		UNION 
+		SELECT '领衔议案数' type , count(1) num from sug_suggestion where type = 2 and firstWriterID = ${userID}
+		UNION
+		SELECT '联名建议数' type , count(1) num from sug_suggestion where type = 1 and secondWriterIDS like '%#${userID}#%'
+		UNION
+		SELECT '联名议案数' type , count(1) num from sug_suggestion where type = 2 and secondWriterIDS like '%#${userID}#%'
+		UNION
+		SELECT '审议发言数' type , talkNum num  from ser_jobreport where userID = ${userID}
+		UNION
+		SELECT type, sum(1) num FROM ser_performreport WHERE year = ${year} and userID = ${userID} GROUP BY type
+		UNION	
+		SELECT type , 0 num from ser_type where type not in(select DISTINCT type from ser_performreport where year = ${year} and userID = ${userID} ) and remark is null
+	</select>
+	
+	
+	<!-- 代表工作查询列表 -->
+	<select id="myJobReportList" resultType="JobReport">
+		SELECT 
+			job.*,
+			o.name as mission,
+			u.name as name
+		FROM ser_jobReport job 
+		LEFT JOIN sys_office o on o.id = job.teamID
+		LEFT JOIN sys_user u on u.id = job.userID
+		WHERE 1=1 and job.level = #{level} and job.userID = #{userID}
+		<if test="year != null and year !='' ">
+			and job.year = #{year}
+		</if>
+		ORDER BY job.id desc
+	</select>
+	
+	<!-- 代表工作查询 -->
+	<select id="getListjobSearch" resultType="JobReport" parameterType="map">
+		SELECT 
+			job.*,
+			o.name as mission,
+			u.name as name
+		FROM ser_jobReport job 
+		LEFT JOIN sys_office o on o.id = job.teamID
+		LEFT JOIN sys_user u on u.id = job.userID
+		WHERE 1=1 and job.level = #{level_code} 
+		<if test="year != null and year !='' ">
+			and job.year = #{year}
+		</if>
+		ORDER BY job.id desc
+		LIMIT  ${offset},${size}
+	</select>
+	
+		
+	<!-- 代表工作记录数 -->
+	<select id="getRowsjobSearch" resultType="int" parameterType="map">
+		SELECT 
+			count(*)
+		FROM ser_jobReport job 
+		LEFT JOIN sys_office o on o.id = job.teamID
+		LEFT JOIN sys_user u on u.id = job.userID
+		WHERE 1=1 and job.level = #{level_code} 
+		
+	</select>
+	
+	<!-- 代表工作查询详细 -->
+	<select id="getInfojobSearchDetail" resultType="JobReport" >
+		SELECT 
+			job.*,
+			o.name as mission,
+			u.name as name
+		FROM ser_jobReport job 
+		LEFT JOIN sys_office o on o.id = job.teamID
+		LEFT JOIN sys_user u on u.id = job.userID
+		WHERE 1=1 and job.id = #{id} 
+		
+	</select>
+	
+	<!-- 代表活动查询 -->
+	<select id="getListPerformReport" resultType="PerformReport" parameterType="map">
+		SELECT 
+			per.*,
+			o.name as mission,
+			u.name as name
+		FROM ser_performReport per 
+		LEFT JOIN sys_office o on o.id = per.teamID
+		LEFT JOIN sys_user u on u.id = per.userID
+		WHERE 1=1 and per.level = #{level_code}  
+		<if test="year != null and year !='' ">
+			and per.year = #{year}
+		</if>
+		ORDER BY per.id desc
+		LIMIT  ${offset},${size}
+	</select>
+	
+	<!-- 代表活动查询记录数 -->
+	<select id="getRowsPerformReport" resultType="int" parameterType="map">
+		SELECT 
+			count(*)
+		FROM ser_performReport per 
+		LEFT JOIN sys_office o on o.id = per.teamID
+		LEFT JOIN sys_user u on u.id = per.userID
+		WHERE 1=1 and per.level = #{level_code}  
+	</select>
+	
+	<!-- 履职报告查询 -->
+	<select id="getListWorkReport" resultType="WorkReport" parameterType="map">
+		SELECT 
+			work.*,
+			o.name as mission,
+			u.name as name
+		FROM ser_workReport work 
+		LEFT JOIN sys_office o on o.id = work.teamID
+		LEFT JOIN sys_user u on u.id = work.userID
+		WHERE 1=1 and work.level = #{level_code} 
+		<if test="title != null and title !='' ">
+			and work.title like CONCAT('%', #{title },'%') 
+		</if>
+		<if test="year != null and year !='' ">
+			and work.year = #{year}
+		</if>
+		ORDER BY work.id desc
+		LIMIT  ${offset},${size}
+	</select>
+	
+	<!-- 履职报告查询记录数 -->
+	<select id="getRowsWorkReport" resultType="int" parameterType="map">
+		SELECT 
+			count(*)
+		FROM ser_workReport work 
+		LEFT JOIN sys_office o on o.id = work.teamID
+		LEFT JOIN sys_user u on u.id = work.userID
+		WHERE 1=1 and work.level = #{level_code} 
+	</select>
+	
+	<!-- 履职报告详细 -->
+	<select id="getInfoworkSearchDetail" resultType="WorkReport" >
+		SELECT 
+			work.*,
+			o.name as mission,
+			u.name as name
+		FROM ser_workReport work 
+		LEFT JOIN sys_office o on o.id = work.teamID
+		LEFT JOIN sys_user u on u.id = work.userID
+		WHERE 1=1 and work.id = #{id} 
+		
+	</select>
+	
+	<!-- 我的代表工作类型列表 -->
+		<select id="getActTypeList" resultType="ActType">
+		SELECT * from ser_type where level = #{level}
+		
+		<if test="flag == 1 ">
+			and remark is not null
+		</if>
+		<if test="flag == 2 ">
+			and remark is null
+		</if>
+	
+	</select>
+	
+	<!-- 更新我的代表工作 -->
+	<update id="updateJobReport">
+			update 
+				ser_jobReport
+			set
+				headSugNum = #{headSugNum},
+				headProNum = #{headProNum},
+				joinSugNum = #{joinSugNum},
+				joinProNum = #{joinProNum},
+				talkNum = #{talkNum},
+				meetingNum = #{meetingNum},
+				headSugScore = #{headSugScore},
+				headProScore = #{headProScore},
+				joinSugScore = #{joinSugScore},
+				joinProScore = #{joinProScore},
+				talkScore = #{talkScore},
+				meetingScore = #{meetingScore}
+			where id = #{id}
+	
+	
+	</update>
+	
+	
+	<!-- 增加我的代表工作 -->
+	<insert id="insertJobReport" useGeneratedKeys="true" keyProperty="id">
+	INSERT INTO ser_jobReport(
+		year,
+		secondary,
+		sequence,
+		userID,
+		teamID,
+		createUserID,
+		createDate,
+		headSugNum,
+		headProNum,
+		joinSugNum,
+		joinProNum,
+		talkNum,
+		headSugScore,
+		headProScore,
+		joinSugScore,
+		joinProScore,
+		talkScore,
+		level
+	)VALUES(
+		#{year},
+		#{secondary},
+		#{sequence},
+		#{userID},
+		#{teamID},
+		#{createUserID},
+		#{createDate},
+		#{headSugNum},
+		#{headProNum},
+		#{joinSugNum},
+		#{joinProNum},
+		#{talkNum},
+		#{headSugScore},
+		#{headProScore},
+		#{joinSugScore},
+		#{joinProScore},
+		#{talkScore},
+		#{level}
+	)
+	</insert>
+	
+	
+	<!-- 代表活动列表 -->
+	<select id="myPerformReportList" resultType="PerformReport">
+		SELECT 
+			per.*,
+			o.name as mission,
+			u.name as name
+		FROM ser_performReport per 
+		LEFT JOIN sys_office o on o.id = per.teamID
+		LEFT JOIN sys_user u on u.id = per.userID
+		WHERE 1=1 and per.level = #{level} and per.userID = #{userID}
+		<if test="year != null and year !='' ">
+			and per.year = #{year}
+		</if>
+		ORDER BY per.id desc
+	</select>
+	
+	<!-- 更新我的代表活动 -->
+	<update id="updatePerformReport">
+		UPDATE 
+			ser_performReport 
+			<set>
+				<if test="userID != null and userID != '' ">
+					userID = #{userID},
+				</if>
+				<if test="teamID != null and teamID != '' ">
+					teamID = #{teamID},
+				</if>
+				<if test="place != null and place != '' ">
+					place = #{place},
+				</if>
+				<if test="date != null and date != ''">
+					date = #{date},
+				</if>
+				<if test="content != null and content != '' ">
+					content = #{content},
+				</if>
+				<if test="type != null and type != '' ">
+					type = #{type},
+				</if>
+				<if test="score != null and score != 0">
+					score = #{score},
+				</if>
+				<if test="excellentFlag !=null and excellentFlag != '' ">
+					excellentFlag = #{excellentFlag},
+				</if>
+				<if test="privateFlag !=null and privateFlag != '' ">
+					privateFlag = #{privateFlag}
+				</if>
+			</set>			
+			WHERE id = #{id}
+	</update>
+	
+	<!-- 新增我的代表活动 -->
+	<insert id="insertPerformReport" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO ser_performReport(
+			secondary,
+			sequence,
+			year,
+			userID,
+			teamID,
+			createUserID,
+			createDate,
+			place,
+			date,
+			content,
+			type,
+			score,
+			privateFlag,
+			excellentFlag,
+			level
+		)VALUES(
+			#{secondary},
+			#{sequence},
+			#{year},
+			#{userID},
+			#{teamID},
+			#{createUserID},
+			#{createDate},
+			#{place},
+			#{date},
+			#{content},
+			#{type},
+			#{score},
+			#{privateFlag},
+			#{excellentFlag},
+			#{level}
+		)
+	
+	</insert>
+	
+	<!-- 查询登记类型 根据ID-->
+		<select id="getActTypeByID" resultType="ActType">
+		SELECT * from ser_type where id = #{id}
+	
+	</select>
+	
+	<!-- 查询登记类型 根据type-->
+		<select id="getActTypeByType" resultType="ActType">
+		SELECT * from ser_type where type = #{type} AND level = #{level}
+	
+	</select>
+	
+	<!-- 获取登记类型列表 -->
+	<select id="actTypeList" resultType="ActType" >
+		select * from ser_type where level = #{level}
+		<if test="flag == 1 ">
+			and remark is not null
+		</if>
+		<if test="flag == 2 ">
+			and remark is null
+		</if>
+		
+	</select>
+	
+	<!-- 获取代表活动登记类型列表 -->
+	<select id="getListActType" resultType="ActType" >
+		select * from ser_type where level = #{level}
+	</select>
+		
+</mapper>

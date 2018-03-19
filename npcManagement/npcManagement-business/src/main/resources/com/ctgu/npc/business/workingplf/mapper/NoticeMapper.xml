@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.npc.business.workingplf.mapper.NoticeMapper">
+	
+	<!-- 查询发送给我的通知 -->
+	<select id="findMimeMessage" parameterType="receivedMessage" resultType="receivedMessage">
+		SELECT
+		  	mr.id,
+			title,
+			content,
+			u.name,
+			t.typeName,
+			m.typeId,
+			mr.isRead,
+			m.createTime,
+			m.annex
+			
+		FROM
+			db_message m,
+			db_mes_rec mr,
+			sys_user u,
+		  	db_message_type t
+		WHERE
+			m.id = mr.messageId
+		AND 
+			m.createUserId = u.id
+		AND 
+			t.id = m.typeId
+		AND 
+			mr.receiverId = #{receiverId}
+			<if test="typeId != null and typeId !=''">
+				and m.typeId = #{typeId,jdbcType=INTEGER}
+			</if> 
+			<if test="isRead != null and isRead != ''">
+				and mr.isRead = #{isRead,jdbcType=VARCHAR}
+			</if>
+			<if test="title != null and title != ''">
+				and title like "%${title}%"
+			</if>
+		order by mr.isRead 
+	</select>
+	
+	<!-- 根据id查询通知 -->
+	<select id="findMimeMessageById" parameterType="string" resultType="receivedMessage">
+		SELECT
+		  	mr.id,
+			title,
+			content,
+			u.name,
+			t.typeName,
+			m.typeId,
+			m.createTime,
+			mr.isRead
+			
+		FROM
+			db_message m,
+			db_mes_rec mr,
+			sys_user u,
+		  	db_message_type t
+		WHERE
+			m.id = mr.messageId
+		AND 
+			m.createUserId = u.id
+		AND 
+			t.id = m.typeId
+		AND 
+			mr.id = #{id}
+	</select>
+	
+	<!-- 更新通知 -->
+	<update id="updateMsgRecById" parameterType="receivedMessage">
+		update
+			db_mes_rec
+		set
+			isRead = '1'
+			<if test="readTime != null and readTime != ''">
+				,readTime = #{readTime}
+			</if>
+			<if test="isAttend != null and isAttend != ''">
+				,isAttend = #{isAttend}
+			</if>
+			<if test="reason != null and reason != ''">
+				,reason = #{reason}
+			</if>
+		where
+			id=#{id}
+	</update>
+	
+</mapper>

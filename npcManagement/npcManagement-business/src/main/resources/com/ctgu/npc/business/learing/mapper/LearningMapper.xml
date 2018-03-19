@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.npc.business.learning.mapper.LearningMapper">
+
+	<!-- 人大制度规章的分页列表 -->
+	<select id="getListNpcRule" resultType="Rule" parameterType="map">
+		SELECT
+		r.*,
+		u.name as pubName
+		FROM db_rule r
+		left join sys_user u on r.pubId=u.id
+		where 1=1 AND r.level=#{level} and r.column=#{column}
+		ORDER BY pubTime DESC
+		LIMIT ${offset},${size}
+	</select>
+	<!-- 人大规章制度的记录数 -->
+	<select id="getRowsNpcRule" resultType="int">
+		SELECT
+		count(*)
+		FROM db_rule r
+		left join sys_user u on r.pubId=u.id
+		where 1=1 AND r.level=#{level} and r.column=#{column}
+	</select>
+
+	<!-- 人大规章制度的详细信息 -->
+	<select id="getInfoRule" resultType="Rule">
+		SELECT
+		r.*,
+		u.name as pubName
+		FROM db_rule r
+		left join sys_user u on r.pubId=u.id
+		where 1=1 AND r.id=#{id}
+	</select>
+
+	<!-- 履职学习培训资料列表 -->
+	<select id="getListMaterial" resultType="Material"
+		parameterType="map">
+		SELECT
+		m.*,
+		u.name as pubName
+		FROM db_material m
+		left join sys_user u on m.pubId=u.id
+		where 1=1 AND m.level=#{level}
+		ORDER BY pubTime DESC
+		LIMIT ${offset},${size}
+	</select>
+
+	<!-- 履职学习培训资料记录数 -->
+	<select id="getRowsMaterial" resultType="int">
+		SELECT
+		count(*)
+		FROM db_material m
+		left join sys_user u on m.pubId=u.id
+		where 1=1 AND m.level=#{level}
+	</select>
+
+	<!-- 履职学习培训资料详细 -->
+	<select id="getInfoMaterial" resultType="Material">
+		SELECT
+		m.*,
+		u.name as pubName
+		FROM db_material m
+		left join sys_user u on m.pubId=u.id
+		where 1=1 AND m.id=#{id}
+	</select>
+
+
+	<!-- 履职活动培训列表 -->
+	<select id="getListTraining" resultType="Training" parameterType="map">
+		SELECT
+		t.*,
+		u.name as pubName
+		FROM db_training t
+		left join sys_user u on t.pubId=u.id
+		where 1=1 AND t.level=#{level}
+		ORDER BY pubTime DESC
+		LIMIT ${offset},${size}
+	</select>
+	<!-- 履职活动培训记录数 -->
+	<select id="getRowsTraining" resultType="int">
+		SELECT
+			count(*)
+		FROM db_training t
+		left join sys_user u on t.pubId=u.id
+		where 1=1 AND t.level=#{level}
+	</select>
+	<!-- 履职活动培训详细 -->
+	<select id="getInfoTraining" resultType="Training">
+		SELECT
+		t.*,
+		u.name as pubName
+		FROM db_training t
+		left join sys_user u on t.pubId=u.id
+		WHERE id = #{id}
+	</select>
+
+
+	<!-- 优秀建议议案列表 -->
+	<select id="getListExceSuggestion" resultType="ExceSuggestion" parameterType="map">
+		select e.*,
+		u.name as createName
+		from v_excesuggestion e
+		left join sys_user u on u.id = e.createUserId
+		where 1=1 and e.level = #{level}
+		<if test="title != null and title !='' ">
+			and e.title like CONCAT('%', #{title },'%') 
+		</if>
+		order by e.createTime desc
+		LIMIT ${offset},${size}
+	</select>
+	
+	<!-- 优秀建议议案记录数 -->
+		<select id="getRowsExceSuggestion" resultType="int">
+		select
+			count(*)
+		from v_excesuggestion e
+		left join sys_user u on u.id = e.createUserId
+		where 1=1 and e.level = #{level}
+	</select>
+	
+	<!-- 优秀建议议案详细 -->
+	<select id="getInfoExceSuggestion" resultType="ExceSuggestion">
+		SELECT 
+			e.*,
+			u.name as createName
+		FROM v_excesuggestion e 
+		LEFT JOIN sys_user u on u.id = e.createUserId
+		WHERE  e.id = #{id} 
+	</select>
+	
+	
+	<!-- 优秀履职报告列表 -->
+	<select id="getListExceWorkReport" resultType="ExceWorkReport" parameterType="map">
+		select e.*,
+		u.name as createName
+		from v_exceworkreport e
+		left join sys_user u on u.id = e.createUserId
+		where 1=1 and e.level = #{level}
+		<if test="title != null and title !='' ">
+			and e.title like CONCAT('%', #{title },'%') 
+		</if>
+		order by e.createTime desc
+		LIMIT ${offset},${size}
+	</select>
+	
+		<!-- 优秀履职报告记录数 -->
+	<select id="getRowsExceWorkReport" resultType="int">
+		select 
+			count(*)
+		from v_exceworkreport e
+		left join sys_user u on u.id = e.createUserId
+		where 1=1 and e.level = #{level}
+	</select>
+	
+	<!-- 优秀履职报告详细 -->
+	<select id="getInfoExceWorkReport" resultType="ExceWorkReport">
+		SELECT 
+			e.*,
+			u.name as createName
+		FROM v_exceworkreport e 
+		LEFT JOIN sys_user u on u.id = e.createUserId
+		WHERE  e.id = #{id} 
+	</select>
+	
+	
+
+</mapper>

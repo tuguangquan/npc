@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.npc.business.contact.mapper.ContactMapper">
+
+
+	<sql id="leave_word_column">
+		lw.id,
+		lw.name,
+		lw.phone,
+		lw.email,
+		lw.time,
+		lw.title,
+		lw.content,
+		lw.receiverId,
+		lw.isRead,
+		lw.level
+	</sql>
+	
+	<!-- 我的留言分页列表 -->
+	<select id="getListmyLeaveWord" parameterType="map" resultType="leaveWord">
+		SELECT
+			<include refid="leave_word_column"/>
+		FROM
+			db_leave_message lw
+		WHERE
+			lw.receiverId = #{id} AND lw.level = #{level}
+		and
+			lw.type = '0'
+			<if test="title != null and title != ''">
+				and (lw.title like '%${title}%' or lw.content like '%${title}%')
+			</if>
+			<if test="isRead != null and isRead !=''">
+				and lw.isRead = #{isRead}
+			</if>
+		ORDER BY
+			lw.isRead ASC,
+			lw.time DESC
+		LIMIT  ${offset},${size}
+	</select>
+	<!-- 我的留言列记录数 -->
+	<select id="getRowsMyLeaveWord" parameterType="map" resultType="int">
+		SELECT
+			count(*)
+		FROM
+			db_leave_message lw
+		WHERE
+			lw.receiverId = #{id} AND lw.level = #{level}
+		and
+			lw.type = '0'
+			<if test="title != null and title != ''">
+				and (lw.title like '%${title}%' or lw.content like '%${title}%')
+			</if>
+			<if test="isRead != null and isRead !=''">
+				and lw.isRead = #{isRead}
+			</if>
+		
+	</select>
+	
+	<select id="getInfoLeaveWord" resultType="leaveWord">
+		select
+			<include refid="leave_word_column"/>
+		from
+			db_leave_message lw
+		where
+			lw.id = #{id}
+	</select>
+		
+</mapper>

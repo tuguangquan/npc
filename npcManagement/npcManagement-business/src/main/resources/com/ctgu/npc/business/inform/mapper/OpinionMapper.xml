@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.npc.business.inform.mapper.OpinionMapper">
+
+
+	<!-- 插入填写意见 -->
+	<insert id="insertOpinion" useGeneratedKeys="true" keyProperty="id">
+	INSERT INTO db_opinion(
+		reportId, 
+		opinion, 
+		raiseId,
+		raiseTime,
+		checkId,
+		checkTime,
+		level
+	) VALUES (
+		#{reportId}, 
+		#{opinion}, 
+		#{raiseId},
+		#{raiseTime}, 
+		#{checkId},
+		#{checkTime},
+		#{level}
+	)
+	</insert>
+	
+	<!-- 更新填写意见 -->
+	<update id="updateOpinion">
+		UPDATE db_opinion SET 
+			opinion = #{opinion},
+			checkId = #{checkId}, 
+			checkTime = #{checkTime}
+		WHERE id = #{id}
+	</update>
+
+	<!-- 根据系统级别查询 的opinionList总记录数 -->
+	<select id="getRowsByLevelOpinion"  resultType="int" parameterType="map">
+		SELECT count(*)
+		FROM db_opinion o
+		LEFT JOIN db_report r on r.id=o.reportId
+		LEFT JOIN sys_user u on o.raiseId=u.id 
+		LEFT JOIN sys_user u1 on o.checkId=u1.id 
+		WHERE 1=1 and o.level=${level_code}	
+		or o.level like '%${level_code}%'
+		</select>
+	
+	<!-- 根据系统级别分页查询意见的opinionList -->
+	<select id="getListOpinion" resultType="com.ctgu.modules.inform.entity.Opinion" parameterType="map">
+		SELECT	o.*,r.title as title,
+			u.name as raiseName,
+			u1.name as checkName
+		FROM db_opinion o
+		LEFT JOIN db_report r on r.id=o.reportId
+		LEFT JOIN sys_user u on o.raiseId=u.id 
+		LEFT JOIN sys_user u1 on o.checkId=u1.id 
+		WHERE 1=1 and o.level=${level_code}	
+		or o.level like '%${level_code}%'
+		ORDER BY raiseTime DESC
+		limit ${offset},${size}
+	</select>
+	
+	
+	
+	<!-- 根据opinion的id查询详细 -->
+	<select id="getDetailByIdOpinion" resultType="com.ctgu.modules.inform.entity.Opinion">
+		SELECT	o.*,r.title as title,
+			u.name as raiseName,
+			u1.name as checkName
+		FROM db_opinion o
+		LEFT JOIN db_report r on r.id=o.reportId
+		LEFT JOIN sys_user u on o.raiseId=u.id 
+		LEFT JOIN sys_user u1 on o.checkId=u1.id 
+		WHERE 1=1  and o.id = ${opin_id} 	
+	</select>
+	
+	<!-- 根据系统级别查询 的ReportList总记录数 -->
+	<select id="getRowsByLevelReport" resultType="int" parameterType="map">
+		SELECT count(*)
+		FROM db_report r
+		LEFT JOIN sys_user u on r.createUserID=u.id 
+		WHERE 1=1 and r.level=${level_code}	
+		or r.level like '%${level_code}%'
+	</select>
+	
+	<!-- 根据系统级别分页查询ReportList -->
+	<select id="getListReport" resultType="com.ctgu.modules.inform.entity.Report" parameterType="map">
+		SELECT	r.id,r.title,r.type,u.name as createUserName
+		FROM db_report r
+		LEFT JOIN sys_user u on r.createUserID=u.id 
+		WHERE 1=1 and r.level=${level_code}	
+		or r.level like '%${level_code}%'
+		ORDER BY createOrganization asc,r.createTime desc 
+		limit ${offset},${size}
+	</select>
+	
+	<!-- 根据Report的id查询详细 -->
+	<select id="getDetailByIdReport" resultType="com.ctgu.modules.inform.entity.Report">
+		SELECT 
+			r.*,u.name as createUserName
+		FROM db_report r
+		LEFT JOIN sys_user u on r.createUserID=u.id 
+		WHERE 1=1 and r.id = ${repot_id} 
+		ORDER BY createOrganization asc,r.createTime desc 
+	</select>
+	
+	
+</mapper>

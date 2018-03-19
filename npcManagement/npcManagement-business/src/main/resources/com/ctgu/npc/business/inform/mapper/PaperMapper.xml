@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.npc.business.inform.mapper.PaperMpper">
+
+
+	<!-- 问卷参与总个数 -->
+	<select id="getJoinTotal" resultType="Integer">
+		select joinTotal
+		from v_paper_join v
+		where v.paperId = #{id}
+	</select>
+	
+	<!-- 问卷题目列表 -->
+	<select id="findQuestionList" resultType="PaperQues">
+		select * 
+		from v_paper_question v
+		where 1=1 and v.id = #{id}
+		
+	</select>
+	
+	<!-- 问题内容及答案列表 -->
+	<select id="findAnswerList" resultType="PaperQuesAns">
+		select * 
+		from v_paper_ques_ans v
+		where 1=1 and v.id = #{id} 
+	</select>
+	
+	<!-- 问卷选项答题列表 -->
+	<select id="findResultList" resultType="PaperResult">
+		select * 
+		from v_paper_result v
+		where 1=1 and v.paperId = #{id}
+		ORDER BY v.questionId  
+	</select>
+
+
+	<!-- 根据paperID,questionID,userID查询答卷 -->
+	<select id="findAnswerBy3Id" resultType="Answer">
+		select * 
+		from db_answer a 
+		where 1=1 and a.paperId = #{paperId}
+		and a.questionId = #{questionId}
+		and a.userId = #{userId}
+		
+	</select>
+
+
+	<!-- 添加答卷 -->
+	<insert id="addsaveAnswer" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO db_answer(
+			paperId, 
+			questionId, 
+			userId,
+			answer,
+			remark,
+			subTime,
+			level
+		) VALUES (
+			#{paperId}, 
+			#{questionId}, 
+			#{userId},
+			#{answer}, 
+			#{remark},
+			#{subTime},
+			#{level}
+		)
+	</insert>
+	
+	<!-- 更新答卷 -->
+	<update id="updateSaveAnswer">
+		update db_answer
+		 set
+		 	paperId = #{paperId}, 
+			questionId = #{questionId},
+			userId = #{userId},
+			answer = #{answer},
+			remark = #{remark},
+			subTime = #{subTime},
+			level = #{level}
+		where id = #{id}		
+		
+	</update>
+
+	<!-- 添加问卷 -->
+	<insert id="insertPaper" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO db_paper(
+			title, 
+			createUserId,
+			createTime,
+			description,
+			status,
+			level
+		) VALUES (
+			#{title}, 
+			#{createUserId}, 
+			#{createTime},
+			#{description},
+			#{status}, 
+			#{level}
+		)
+	</insert>
+
+	<!-- 根据系统级别分页查询问卷的List -->
+	<select id="getListPaper" resultType="Paper" parameterType="map">
+		SELECT 
+			p.*,u.name as createUserName
+		FROM db_paper p
+		left join sys_user u on p.createUserId=u.id 
+		where 1=1 and p.level = #{level}
+		<if test="title != null and title !='' ">
+			and p.title like CONCAT('%', #{title },'%') 
+		</if>
+		
+		ORDER BY p.status asc,p.createTime desc 
+		limit ${offset},${size}
+	</select>
+
+
+
+	<!-- 根据系统级别查询 的opinionList总记录数 -->
+	<select id="getRowsPaper"  resultType="int" parameterType="map">
+		SELECT count(*)
+		FROM db_paper p
+		left join sys_user u on p.createUserId=u.id 
+		where 1=1 and p.level = #{level}
+		<if test="title != null and title !='' ">
+			and p.title like CONCAT('%', #{title },'%') 
+		</if>
+		
+	</select>
+	
+	<!-- 根据id查询paper -->
+	<select id="getDetailPaper" resultType="Paper">
+		SELECT 
+			* 
+		FROM db_paper 
+		WHERE id = #{id}
+	</select>
+</mapper>
