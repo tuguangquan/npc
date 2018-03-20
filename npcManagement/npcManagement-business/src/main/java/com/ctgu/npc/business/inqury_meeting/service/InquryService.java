@@ -8,6 +8,7 @@ import com.ctgu.npc.business.inqury_meeting.entity.Meet;
 import com.ctgu.npc.business.inqury_meeting.mapper.InquryMapper;
 import com.ctgu.npc.business.sys.entity.Users;
 import com.ctgu.npc.business.sys.mapper.UserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -16,13 +17,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
 public class InquryService {
 
-	@Resource
-	InquryMapper inquryDao;
+	@Autowired
+	private InquryMapper inquryDao;
 
-	@Resource
+	@Autowired
 	private UserMapper userDao;
 
 	/**

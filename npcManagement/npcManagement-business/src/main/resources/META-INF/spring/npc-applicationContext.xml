@@ -2,5 +2,20 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
-   <bean id="npcService" class="com.ctgu.npc.business.basicInfo.service.NpcService" depends-on="mappers"></bean>
+    <bean id="npcService" class="com.ctgu.npc.business.basicInfo.service.NpcService" depends-on="mappers"></bean>
+    <bean id="answerService" class="com.ctgu.npc.business.contact.service.AnswerService" depends-on="mappers"></bean>
+    <bean id="contactService" class="com.ctgu.npc.business.contact.service.ContactService" depends-on="mappers"></bean>
+    <bean id="sqmyService" class="com.ctgu.npc.business.contact.service.SqmyService" depends-on="mappers"></bean>
+    <bean id="opinionService" class="com.ctgu.npc.business.inform.service.OpinionService" depends-on="mappers"></bean>
+    <bean id="paperService" class="com.ctgu.npc.business.inform.service.PaperService" depends-on="mappers"></bean>
+    <bean id="publishService" class="com.ctgu.npc.business.inform.service.PublishService" depends-on="mappers"></bean>
+    <bean id="testService" class="com.ctgu.npc.business.inform.service.TestService" depends-on="mappers"></bean>
+    <bean id="inquryService" class="com.ctgu.npc.business.inqury_meeting.service.InquryService" depends-on="mappers"></bean>
+    <bean id="learningService" class="com.ctgu.npc.business.learning.service.LearningService" depends-on="mappers"></bean>
+    <bean id="performService" class="com.ctgu.npc.business.perform.service.PerformService" depends-on="mappers"></bean>
+    <bean id="sugService" class="com.ctgu.npc.business.sug.service.SugService" depends-on="mappers"></bean>
+    <bean id="sysService" class="com.ctgu.npc.business.sys.service.SysService" depends-on="mappers"></bean>
+    <bean id="userService" class="com.ctgu.npc.business.sys.service.UserService" depends-on="mappers"></bean>
+    <bean id="noticeService" class="com.ctgu.npc.business.workingplf.service.NoticeService" depends-on="mappers"></bean>
+
 </beans>

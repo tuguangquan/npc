@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ctgu.npc.business.inform.mapper.OpinionMapper">
 
 
@@ -45,7 +47,7 @@
 		</select>
 	
 	<!-- 根据系统级别分页查询意见的opinionList -->
-	<select id="getListOpinion" resultType="com.ctgu.modules.inform.entity.Opinion" parameterType="map">
+	<select id="getListOpinion" resultType="com.ctgu.npc.business.inform.entity.Opinion" parameterType="map">
 		SELECT	o.*,r.title as title,
 			u.name as raiseName,
 			u1.name as checkName
@@ -62,7 +64,7 @@
 	
 	
 	<!-- 根据opinion的id查询详细 -->
-	<select id="getDetailByIdOpinion" resultType="com.ctgu.modules.inform.entity.Opinion">
+	<select id="getDetailByIdOpinion" resultType="com.ctgu.npc.business.inform.entity.Opinion">
 		SELECT	o.*,r.title as title,
 			u.name as raiseName,
 			u1.name as checkName
@@ -83,7 +85,7 @@
 	</select>
 	
 	<!-- 根据系统级别分页查询ReportList -->
-	<select id="getListReport" resultType="com.ctgu.modules.inform.entity.Report" parameterType="map">
+	<select id="getListReport" resultType="com.ctgu.npc.business.inform.entity.Report" parameterType="map">
 		SELECT	r.id,r.title,r.type,u.name as createUserName
 		FROM db_report r
 		LEFT JOIN sys_user u on r.createUserID=u.id 
@@ -94,7 +96,7 @@
 	</select>
 	
 	<!-- 根据Report的id查询详细 -->
-	<select id="getDetailByIdReport" resultType="com.ctgu.modules.inform.entity.Report">
+	<select id="getDetailByIdReport" resultType="com.ctgu.npc.business.inform.entity.Report">
 		SELECT 
 			r.*,u.name as createUserName
 		FROM db_report r

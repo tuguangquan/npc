@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ctgu.npc.business.perform.mapper.PerformMapper">
 
 
 	<!-- 我的代表工作=分页列表 -->
-	<select id="getListmyJobReport" resultType="JobReport" parameterType="map">
+	<select id="getListmyJobReport" resultType="com.ctgu.npc.business.perform.entity.JobReport" parameterType="map">
 		SELECT 
 			job.*,
 			o.name as mission,
@@ -31,7 +33,7 @@
 	
 
 	<!-- 我的代表活动=分页列表-->
-	<select id="getListMyPerformAct" resultType="PerformReport" parameterType="map">
+	<select id="getListMyPerformAct" resultType="com.ctgu.npc.business.perform.entity.PerformReport" parameterType="map">
 		SELECT 
 			per.*,
 			o.name as mission,
@@ -58,7 +60,7 @@
 	</select>
 
 	<!-- 代表活动详细=getInfoPerformReport -->
-	<select id="getInfoPerformReport" resultType="PerformReport">
+	<select id="getInfoPerformReport" resultType="com.ctgu.npc.business.perform.entity.PerformReport">
 		SELECT 
 			per.*,
 			o.name as mission,
@@ -71,7 +73,7 @@
 
 	
 	<!-- 我的述职报告 -->
-	<select id="getListmyWorkReport" resultType="WorkReport" parameterType="map">
+	<select id="getListmyWorkReport" resultType="com.ctgu.npc.business.perform.entity.WorkReport" parameterType="map">
 		SELECT 
 			work.*,
 			o.name as mission,
@@ -96,7 +98,7 @@
 	</select>
 	
 	<!-- 我的履职报告详细 -->
-	<select id="getInfoMyWorkReport" resultType="WorkReport">
+	<select id="getInfoMyWorkReport" resultType="com.ctgu.npc.business.perform.entity.WorkReport">
 		SELECT 
 			work.*,
 			o.name as mission,
@@ -108,7 +110,7 @@
 	</select>
 	
 	<!-- 我的履职统计 -->
-	<select id="getListMyReportStatistic" resultType="MyReportEntry" parameterType="map">
+	<select id="getListMyReportStatistic" resultType="com.ctgu.npc.business.perform.entity.MyReportEntry" parameterType="map">
 		SELECT '领衔建议数' type , count(1) num from sug_suggestion where type = 1 and firstWriterID = ${userID}
 		UNION 
 		SELECT '领衔议案数' type , count(1) num from sug_suggestion where type = 2 and firstWriterID = ${userID}
@@ -143,7 +145,7 @@
 	
 	
 	<!-- 代表工作查询列表 -->
-	<select id="myJobReportList" resultType="JobReport">
+	<select id="myJobReportList" resultType="com.ctgu.npc.business.perform.entity.JobReport">
 		SELECT 
 			job.*,
 			o.name as mission,
@@ -159,7 +161,7 @@
 	</select>
 	
 	<!-- 代表工作查询 -->
-	<select id="getListjobSearch" resultType="JobReport" parameterType="map">
+	<select id="getListjobSearch" resultType="com.ctgu.npc.business.perform.entity.JobReport" parameterType="map">
 		SELECT 
 			job.*,
 			o.name as mission,
@@ -188,7 +190,7 @@
 	</select>
 	
 	<!-- 代表工作查询详细 -->
-	<select id="getInfojobSearchDetail" resultType="JobReport" >
+	<select id="getInfojobSearchDetail" resultType="com.ctgu.npc.business.perform.entity.JobReport" >
 		SELECT 
 			job.*,
 			o.name as mission,
@@ -201,7 +203,7 @@
 	</select>
 	
 	<!-- 代表活动查询 -->
-	<select id="getListPerformReport" resultType="PerformReport" parameterType="map">
+	<select id="getListPerformReport" resultType="com.ctgu.npc.business.perform.entity.PerformReport" parameterType="map">
 		SELECT 
 			per.*,
 			o.name as mission,
@@ -228,7 +230,7 @@
 	</select>
 	
 	<!-- 履职报告查询 -->
-	<select id="getListWorkReport" resultType="WorkReport" parameterType="map">
+	<select id="getListWorkReport" resultType="com.ctgu.npc.business.perform.entity.WorkReport" parameterType="map">
 		SELECT 
 			work.*,
 			o.name as mission,
@@ -258,7 +260,7 @@
 	</select>
 	
 	<!-- 履职报告详细 -->
-	<select id="getInfoworkSearchDetail" resultType="WorkReport" >
+	<select id="getInfoworkSearchDetail" resultType="com.ctgu.npc.business.perform.entity.WorkReport" >
 		SELECT 
 			work.*,
 			o.name as mission,
@@ -271,7 +273,7 @@
 	</select>
 	
 	<!-- 我的代表工作类型列表 -->
-		<select id="getActTypeList" resultType="ActType">
+		<select id="getActTypeList" resultType="com.ctgu.npc.business.perform.entity.ActType">
 		SELECT * from ser_type where level = #{level}
 		
 		<if test="flag == 1 ">
@@ -351,7 +353,7 @@
 	
 	
 	<!-- 代表活动列表 -->
-	<select id="myPerformReportList" resultType="PerformReport">
+	<select id="myPerformReportList" resultType="com.ctgu.npc.business.perform.entity.PerformReport">
 		SELECT 
 			per.*,
 			o.name as mission,
@@ -441,19 +443,19 @@
 	</insert>
 	
 	<!-- 查询登记类型 根据ID-->
-		<select id="getActTypeByID" resultType="ActType">
+		<select id="getActTypeByID" resultType="com.ctgu.npc.business.perform.entity.ActType">
 		SELECT * from ser_type where id = #{id}
 	
 	</select>
 	
 	<!-- 查询登记类型 根据type-->
-		<select id="getActTypeByType" resultType="ActType">
+		<select id="getActTypeByType" resultType="com.ctgu.npc.business.perform.entity.ActType">
 		SELECT * from ser_type where type = #{type} AND level = #{level}
 	
 	</select>
 	
 	<!-- 获取登记类型列表 -->
-	<select id="actTypeList" resultType="ActType" >
+	<select id="actTypeList" resultType="com.ctgu.npc.business.perform.entity.ActType" >
 		select * from ser_type where level = #{level}
 		<if test="flag == 1 ">
 			and remark is not null
@@ -465,7 +467,7 @@
 	</select>
 	
 	<!-- 获取代表活动登记类型列表 -->
-	<select id="getListActType" resultType="ActType" >
+	<select id="getListActType" resultType="com.ctgu.npc.business.perform.entity.ActType" >
 		select * from ser_type where level = #{level}
 	</select>
 		

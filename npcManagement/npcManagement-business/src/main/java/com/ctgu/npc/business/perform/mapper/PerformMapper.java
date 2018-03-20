@@ -19,14 +19,14 @@ public interface PerformMapper {
 	 * @param map
 	 * @return
 	 */
-	List<JobReport> getListmyJobReport(Map<String, Object> map);
+	public List<JobReport> getListmyJobReport(Map<String, Object> map);
 
 	/**
 	 * 我的代表工作总记录数
 	 * @param map
 	 * @return
 	 */
-	int getRowsMyJobReport(Map<String, Object> map);
+	public int getRowsMyJobReport(Map<String, Object> map);
 
 
 	
@@ -37,7 +37,7 @@ public interface PerformMapper {
 	 * @param level_code
 	 * @return
 	 */
-	List<PerformReport> getListMyPerformAct(Map<String, Object> map);
+	public List<PerformReport> getListMyPerformAct(Map<String, Object> map);
 
 	/**
 	 * 我的代表活动-总记录数
@@ -46,49 +46,49 @@ public interface PerformMapper {
 	 * @param level_code
 	 * @return
 	 */
-	int getRowsMyPerformAct(Map<String, Object> map);
+	public int getRowsMyPerformAct(Map<String, Object> map);
 
 	/**
 	 * ===我的代表活动--详细信息
 	 * @param id
 	 * @return
 	 */
-	PerformReport getInfoPerformReport(@Param("id") String id);
+	public PerformReport getInfoPerformReport(@Param("id") String id);
 
 	/**
 	 * ===我的履职报告
 	 * @param map
 	 * @return
 	 */
-	List<WorkReport> getListmyWorkReport(Map<String, Object> map);
+	public List<WorkReport> getListmyWorkReport(Map<String, Object> map);
 
 	/**
 	 * ===我的履职报告记录数
 	 * @param map
 	 * @return
 	 */
-	int getRowsmyWorkReport(Map<String, Object> map);
+	public int getRowsmyWorkReport(Map<String, Object> map);
 
 	/**
 	 * ===我的履职报告详细
 	 * @param id
 	 * @return
 	 */
-	WorkReport getInfoMyWorkReport(@Param("id") String id);
+	public WorkReport getInfoMyWorkReport(@Param("id") String id);
 	
 	/**
 	 * === 我的履职统计
 	 * @param map
 	 * @return
 	 */
-	List<MyReportEntry> getListMyReportStatistic(Map<String, Object> map);
+	public List<MyReportEntry> getListMyReportStatistic(Map<String, Object> map);
 
 	/**
 	 * === 我的履职统计记录数
 	 * @param map
 	 * @return
 	 */
-	int getRowsMyReportStatistic(Map<String, Object> map);
+	public int getRowsMyReportStatistic(Map<String, Object> map);
 
 	
 
@@ -97,56 +97,56 @@ public interface PerformMapper {
 	 * @param map
 	 * @return
 	 */
-	List<JobReport> getListjobSearch(Map<String, Object> map);
+	public List<JobReport> getListjobSearch(Map<String, Object> map);
 
 	/**
 	 * ===代表工作查询记录数
 	 * @param map
 	 * @return
 	 */
-	int getRowsjobSearch(Map<String, Object> map);
+	public int getRowsjobSearch(Map<String, Object> map);
 
 	/**
 	 * 代表工作查询详细
 	 * @param id
 	 * @return
 	 */
-	JobReport getInfojobSearchDetail(@Param("id") String id);
+	public JobReport getInfojobSearchDetail(@Param("id") String id);
 
 	/**
 	 * 代表活动查询
 	 * @param map
 	 * @return
 	 */
-	List<PerformReport> getListPerformReport(Map<String, Object> map);
+	public List<PerformReport> getListPerformReport(Map<String, Object> map);
 
 	/**
 	 * 代表活动查询记录数
 	 * @param map
 	 * @return
 	 */
-	int getRowsPerformReport(Map<String, Object> map);
+	public int getRowsPerformReport(Map<String, Object> map);
 
 	/**
 	 * 履职报告查询
 	 * @param map
 	 * @return
 	 */
-	List<WorkReport> getListWorkReport(Map<String, Object> map);
+	public List<WorkReport> getListWorkReport(Map<String, Object> map);
 
 	/**
 	 * 履职报告查询记录数
 	 * @param map
 	 * @return
 	 */
-	int getRowsWorkReport(Map<String, Object> map);
+	public int getRowsWorkReport(Map<String, Object> map);
 
 	/**
 	 * 履职报告查询详细
 	 * @param id
 	 * @return
 	 */
-	WorkReport getInfoworkSearchDetail(@Param("id") String id);
+	public WorkReport getInfoworkSearchDetail(@Param("id") String id);
 
 	/**
 	 * === 我的代表工作类型列表
@@ -154,7 +154,7 @@ public interface PerformMapper {
 	 * @param string
 	 * @return
 	 */
-	List<ActType> getActTypeList(@Param("level") String Level, @Param("flag") String flag);
+	public List<ActType> getActTypeList(@Param("level") String Level, @Param("flag") String flag);
 	
 	/**
 	 * === 获取登记活动类型列表
@@ -172,20 +172,20 @@ public interface PerformMapper {
 	 * @param level_code
 	 * @return
 	 */
-	List<ActType> getListActType(String level_code);
+	public List<ActType> getListActType(String level_code);
 	
 	
 	/**
 	 * === 新增我的代表工作
 	 * @param jobReport
 	 */
-	void insertJobReport(JobReport jobReport);
+	public void insertJobReport(JobReport jobReport);
 
 	/**
 	 * 新增我的代表活动
 	 * @param performReport
 	 */
-	void insertPerformReport(PerformReport performReport);
+	public void insertPerformReport(PerformReport performReport);
 	
 	/**
 	 * === 获取登记类型
@@ -210,7 +210,7 @@ public interface PerformMapper {
 	 * @param jobReport
 	 * @return
 	 */
-	List<JobReport> myJobReportList(JobReport jobReport);
+	public List<JobReport> myJobReportList(JobReport jobReport);
 
 	/**
 	 * 更新代表工作
@@ -220,7 +220,7 @@ public interface PerformMapper {
 	 * @date  2017-8-8 上午10:02:41
 	 * @param jobReport
 	 */
-	void updateJobReport(JobReport jobReport);
+	public void updateJobReport(JobReport jobReport);
 
 	/**
 	 * 我的代表活动列表
@@ -231,7 +231,7 @@ public interface PerformMapper {
 	 * @param performReport
 	 * @return
 	 */
-	List<PerformReport> myPerformReportList(PerformReport performReport);
+	public List<PerformReport> myPerformReportList(PerformReport performReport);
 
 	/**
 	 * 更新我的代表活动
@@ -241,7 +241,7 @@ public interface PerformMapper {
 	 * @date  2017-8-8 上午10:58:07
 	 * @param performReport
 	 */
-	void updatePerformReport(PerformReport performReport);
+	public void updatePerformReport(PerformReport performReport);
 
 
 	

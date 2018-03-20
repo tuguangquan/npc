@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ctgu.npc.business.inform.mapper.PublishMapper">
 
 
-	<!-- 根据系统级别查询人大 的publishList总记录数 -->
-	<select id="getRowsByLevelNpc"  resultType="int" parameterType="map">
-		SELECT count(*)
-		FROM db_publish pub
-		LEFT JOIN sys_user u on pub.publishId=u.id 
-		WHERE 1=1 and 
-		pub.level=${level_code}	and pub.column=${pub_col}	
-		
-	</select>
-	
+	<!--&lt;!&ndash; 根据系统级别查询人大 的publishList总记录数 &ndash;&gt;-->
+	<!--<select id="getRowsByLevelNpc"  resultType="int" parameterType="map">-->
+		<!--SELECT count(*)-->
+		<!--FROM db_publish pub-->
+		<!--LEFT JOIN sys_user u on pub.publishId=u.id -->
+		<!--WHERE 1=1 and -->
+		<!--pub.level=${level_code}	and pub.column=${pub_col}	-->
+		<!---->
+	<!--</select>-->
+	<!---->
 	<!-- 根据系统级别分页查询人大的publishList -->
-	<select id="getPublishListNpc" resultType="com.ctgu.modules.inform.entity.Publish" parameterType="map">
+	<select id="getPublishListNpc" resultType="com.ctgu.npc.business.inform.entity.Publish" parameterType="map">
 		SELECT	pub.id,pub.title,pub.type,
 		u.name as "user.name"
 		FROM db_publish pub
@@ -24,7 +26,7 @@
 		limit ${offset},${size}
 	</select>
 	
-	<select id="getPublishDetailNpc" resultType="com.ctgu.modules.inform.entity.Publish">
+	<select id="getPublishDetailNpc" resultType="com.ctgu.npc.business.inform.entity.Publish">
 		SELECT	pub.*,	u.name as "user.name"
 		FROM db_publish pub
 		LEFT JOIN sys_user u on u.id = pub.publishId

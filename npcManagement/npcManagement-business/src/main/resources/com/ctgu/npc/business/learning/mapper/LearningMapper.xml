@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ctgu.npc.business.learning.mapper.LearningMapper">
 
 	<!-- 人大制度规章的分页列表 -->
-	<select id="getListNpcRule" resultType="Rule" parameterType="map">
+	<select id="getListNpcRule" resultType="com.ctgu.npc.business.learning.entity.Rule" parameterType="map">
 		SELECT
 		r.*,
 		u.name as pubName
@@ -23,7 +25,7 @@
 	</select>
 
 	<!-- 人大规章制度的详细信息 -->
-	<select id="getInfoRule" resultType="Rule">
+	<select id="getInfoRule" resultType="com.ctgu.npc.business.learning.entity.Rule">
 		SELECT
 		r.*,
 		u.name as pubName
@@ -33,7 +35,7 @@
 	</select>
 
 	<!-- 履职学习培训资料列表 -->
-	<select id="getListMaterial" resultType="Material"
+	<select id="getListMaterial" resultType="com.ctgu.npc.business.learning.entity.Material"
 		parameterType="map">
 		SELECT
 		m.*,
@@ -55,7 +57,7 @@
 	</select>
 
 	<!-- 履职学习培训资料详细 -->
-	<select id="getInfoMaterial" resultType="Material">
+	<select id="getInfoMaterial" resultType="com.ctgu.npc.business.learning.entity.Material">
 		SELECT
 		m.*,
 		u.name as pubName
@@ -66,7 +68,7 @@
 
 
 	<!-- 履职活动培训列表 -->
-	<select id="getListTraining" resultType="Training" parameterType="map">
+	<select id="getListTraining" resultType="com.ctgu.npc.business.learning.entity.Training" parameterType="map">
 		SELECT
 		t.*,
 		u.name as pubName
@@ -85,7 +87,7 @@
 		where 1=1 AND t.level=#{level}
 	</select>
 	<!-- 履职活动培训详细 -->
-	<select id="getInfoTraining" resultType="Training">
+	<select id="getInfoTraining" resultType="com.ctgu.npc.business.learning.entity.Training">
 		SELECT
 		t.*,
 		u.name as pubName
@@ -96,7 +98,7 @@
 
 
 	<!-- 优秀建议议案列表 -->
-	<select id="getListExceSuggestion" resultType="ExceSuggestion" parameterType="map">
+	<select id="getListExceSuggestion" resultType="com.ctgu.npc.business.learning.entity.ExceSuggestion" parameterType="map">
 		select e.*,
 		u.name as createName
 		from v_excesuggestion e
@@ -119,7 +121,7 @@
 	</select>
 	
 	<!-- 优秀建议议案详细 -->
-	<select id="getInfoExceSuggestion" resultType="ExceSuggestion">
+	<select id="getInfoExceSuggestion" resultType="com.ctgu.npc.business.learning.entity.ExceSuggestion">
 		SELECT 
 			e.*,
 			u.name as createName
@@ -130,7 +132,7 @@
 	
 	
 	<!-- 优秀履职报告列表 -->
-	<select id="getListExceWorkReport" resultType="ExceWorkReport" parameterType="map">
+	<select id="getListExceWorkReport" resultType="com.ctgu.npc.business.learning.entity.ExceWorkReport" parameterType="map">
 		select e.*,
 		u.name as createName
 		from v_exceworkreport e
@@ -153,7 +155,7 @@
 	</select>
 	
 	<!-- 优秀履职报告详细 -->
-	<select id="getInfoExceWorkReport" resultType="ExceWorkReport">
+	<select id="getInfoExceWorkReport" resultType="com.ctgu.npc.business.learning.entity.ExceWorkReport">
 		SELECT 
 			e.*,
 			u.name as createName

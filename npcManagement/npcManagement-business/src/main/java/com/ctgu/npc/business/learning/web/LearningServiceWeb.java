@@ -6,6 +6,7 @@ import com.ctgu.npc.business.learning.entity.*;
 import com.ctgu.npc.business.learning.service.LearningService;
 import com.ctgu.npc.business.sug.service.SugService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,21 +14,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Path;
 
 /**
  * 学习交流
  * @author 旺旺
  *
  */
-@Controller
+@Component
+@Path("/learning")
 public class LearningServiceWeb {
 	
 	
 	@Autowired
 	private LearningService learningService;
-	
-	@Autowired
-	private SugService sugService;
 	
 	
 	/**

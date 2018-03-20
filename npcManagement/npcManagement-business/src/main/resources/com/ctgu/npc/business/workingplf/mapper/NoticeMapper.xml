@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ctgu.npc.business.workingplf.mapper.NoticeMapper">
 	
 	<!-- 查询发送给我的通知 -->
-	<select id="findMimeMessage" parameterType="receivedMessage" resultType="receivedMessage">
+	<select id="findMimeMessage" parameterType="com.ctgu.npc.business.workingplf.entity.ReceivedMessage" resultType="com.ctgu.npc.business.workingplf.entity.ReceivedMessage">
 		SELECT
 		  	mr.id,
 			title,
@@ -41,7 +43,7 @@
 	</select>
 	
 	<!-- 根据id查询通知 -->
-	<select id="findMimeMessageById" parameterType="string" resultType="receivedMessage">
+	<select id="findMimeMessageById" parameterType="string" resultType="com.ctgu.npc.business.workingplf.entity.ReceivedMessage">
 		SELECT
 		  	mr.id,
 			title,
@@ -68,7 +70,7 @@
 	</select>
 	
 	<!-- 更新通知 -->
-	<update id="updateMsgRecById" parameterType="receivedMessage">
+	<update id="updateMsgRecById" parameterType="com.ctgu.npc.business.workingplf.entity.ReceivedMessage">
 		update
 			db_mes_rec
 		set

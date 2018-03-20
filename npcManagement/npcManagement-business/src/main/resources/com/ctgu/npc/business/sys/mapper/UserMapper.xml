@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!-- namespace 指向定义的接口IUserDao -->
 <mapper namespace="com.ctgu.npc.business.sys.mapper.UserMapper">
 
@@ -88,7 +89,7 @@
 
 
 	<!-- 根据权限查找工作人员 -->
-	<select id="findUserByPermission" resultType="com.ctgu.modules.sys.entity.Users"  useCache="true">
+	<select id="findUserByPermission" resultType="com.ctgu.npc.business.sys.entity.Users"  useCache="true">
 		SELECT DISTINCT u.id,u.name as userName ,u.mobile
 			from sys_user u 
 			INNER JOIN sys_user_level sl on sl.userId = u.id and sl.level = #{level} and sl.del_flag = 0  and u.msgFlag = 0
@@ -99,7 +100,7 @@
 	</select>
 
 	<!-- 发送短信根据单位查找工作人员 -->
-	<select id="findUserByPermissionAndOfficeID" resultType="com.ctgu.modules.sys.entity.Users"  useCache="true">
+	<select id="findUserByPermissionAndOfficeID" resultType="com.ctgu.npc.business.sys.entity.Users"  useCache="true">
 		SELECT DISTINCT u.id,u.name as userName ,u.mobile
 			from sys_user u 
 			INNER JOIN sys_user_level sl on sl.userId = u.id and u.office_id =#{officeID} and sl.level = #{level} and sl.del_flag = 0 and u.msgFlag = 0
@@ -134,7 +135,7 @@
 	</select>
 
 	<!-- 传入页面大小和页码进行分页 -->
-	<select id="getListByMap" resultType="com.ctgu.modules.sys.entity.Users"
+	<select id="getListByMap" resultType="com.ctgu.npc.business.sys.entity.Users"
 		parameterType="map">
 		SELECT * FROM sys_user a
 		ORDER BY a.name
@@ -143,7 +144,7 @@
 	</select>
 
 	<!-- 根据用户名查找用户 -->
-	<select id="getUserByLoginName" resultType="com.ctgu.modules.sys.entity.Users">
+	<select id="getUserByLoginName" resultType="com.ctgu.npc.business.sys.entity.Users">
 		SELECT
 		a.id,
 		a.office_id,
@@ -173,7 +174,7 @@
 	</select>
 	
 	<!-- 根据用户手机号码查找该用户 -->
-	<select id="getUserByMobile" resultType="com.ctgu.modules.sys.entity.Users">
+	<select id="getUserByMobile" resultType="com.ctgu.npc.business.sys.entity.Users">
 		SELECT
 		a.id,
 		a.office_id,
@@ -233,7 +234,7 @@
 	</select>
 	
 	<!-- 根据级别编码查询部门信息列表 -->
-	<select id="getOfficeNameByLevelCode" resultType="com.ctgu.modules.sys.entity.Office" parameterType="map">
+	<select id="getOfficeNameByLevelCode" resultType="com.ctgu.npc.business.sys.entity.Office" parameterType="map">
 		SELECT id,name
 		FROM sys_office so
 		WHERE so.parent_id = ${office_id} AND so.type = ${office_type}

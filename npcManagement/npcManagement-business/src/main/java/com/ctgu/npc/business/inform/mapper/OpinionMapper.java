@@ -15,7 +15,7 @@ public interface OpinionMapper {
 	/**
 	 * 根据系统级别分页查询Opinion意见列表
 	 */
-	List<Opinion> getListOpinion(Map<String, Object> map);
+	 public List<Opinion> getListOpinion(Map<String, Object> map);
 
 	
 	/**
@@ -23,19 +23,19 @@ public interface OpinionMapper {
 	 * @param map
 	 * @return
 	 */
-	int getRowsByLevelOpinion(Map<String, Object> map);
+	public int getRowsByLevelOpinion(Map<String, Object> map);
 
 
 	/**
 	 * 根据opinion的id查询详细
 	 */
-	Opinion getDetailByIdOpinion(@Param("opin_id") String opin_id);
+	public Opinion getDetailByIdOpinion(@Param("opin_id") String opin_id);
 
 
 	/**
 	 * 根据系统级别分页查询Report列表
 	 */
-	List<Report> getListReport(Map<String, Object> map);
+	public List<Report> getListReport(Map<String, Object> map);
 
 
 	/**
@@ -43,13 +43,13 @@ public interface OpinionMapper {
 	 * @param map
 	 * @return
 	 */
-	int getRowsByLevelReport(Map<String, Object> map);
+	public int getRowsByLevelReport(Map<String, Object> map);
 
 
 	/**
 	 * 根据Report的id查询详细
 	 */
-	Report getDetailByIdReport(@Param("repot_id") String repot_id);
+	public Report getDetailByIdReport(@Param("repot_id") String repot_id);
 
 
 	/**
@@ -60,6 +60,6 @@ public interface OpinionMapper {
 	 * @date  2017-8-1 上午9:11:28
 	 * @param opinion
 	 */
-	void insertOpinion(Opinion opinion);
+	public void insertOpinion(Opinion opinion);
 
 }

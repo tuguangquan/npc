@@ -27,12 +27,10 @@ import java.util.List;
  * @author : youngmien
  * @date  2017-7-26 上午8:49:21
  */
-@Service
 @Transactional(readOnly = true)
-@Lazy(false)
 public class SqmyService {
 	@Autowired
-	UserMapper userMapper;
+	private UserMapper userMapper;
 
 	@Autowired
 	private NpcMapper npcMapper;

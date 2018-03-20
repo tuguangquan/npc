@@ -13,12 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
 @Transactional(readOnly = true)
 public class TestService {
 	
 	@Autowired
-	public TestMapper testDao;
+	private TestMapper testDao;
 	
 
 	public PagesUtil<Discussion> getListDiscussion(String level_code,

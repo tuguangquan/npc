@@ -9,6 +9,7 @@ import com.ctgu.npc.business.sug.mapper.SugMapper;
 import com.ctgu.npc.business.sys.entity.Users;
 import com.ctgu.npc.business.sys.mapper.UserMapper;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,17 +21,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
+
 @Transactional(readOnly = false)
 public class SugService {
 
-	@Resource
+	@Autowired
 	private SugMapper sugMapper;
 
-	@Resource
+	@Autowired
 	private UserMapper userMapper;
 
-	@Resource
+	@Autowired
 	private NpcMapper npcMapper;
 
 	private String firstWriterID;

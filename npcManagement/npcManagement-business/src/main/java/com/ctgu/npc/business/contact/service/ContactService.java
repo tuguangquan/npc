@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
 @Transactional(readOnly = true)
 public class ContactService {
 
@@ -25,7 +24,7 @@ public class ContactService {
 	private ContactMapper contactMapper;
 
 	@Autowired
-	UserMapper userMapper;
+	private UserMapper userMapper;
 
 	@Autowired
 	private NpcMapper npcMapper;

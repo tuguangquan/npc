@@ -1,8 +1,9 @@
 package com.ctgu.npc.business.inform.entity;
 
-import com.ctgu.common.persistence.BaseEntity;
 
-public class PaperQues extends BaseEntity<PaperQues>{
+import com.ctgu.npc.business.common.persistence.BaseEntity;
+
+public class PaperQues extends BaseEntity<PaperQues> {
 
 	private Integer id;
 	private String title;

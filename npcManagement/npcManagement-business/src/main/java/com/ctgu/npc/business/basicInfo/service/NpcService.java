@@ -8,7 +8,6 @@ import com.ctgu.npc.business.common.utils.StringUtils;
 import com.ctgu.npc.business.sys.entity.Users;
 import com.ctgu.npc.business.sys.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
@@ -16,15 +15,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
-@Transactional(readOnly = true)
 public class NpcService {
 
 	@Autowired
 	private NpcMapper npcMapper;
 
 
-	@Resource
+	@Autowired
 	private UserMapper userMapper;
 	
 	/**

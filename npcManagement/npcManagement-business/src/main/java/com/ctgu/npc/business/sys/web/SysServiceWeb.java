@@ -23,7 +23,7 @@ import java.util.Map;
  * Created by user on 2018/3/19.
  */
 @Component
-@Path("/basic")
+@Path("/sys")
 public class SysServiceWeb {
     @Autowired
     private UserService userService;

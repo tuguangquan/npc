@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.ctgu.npc.business.inform.mapper.PaperMpper">
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.npc.business.inform.mapper.PaperMapper">
 
 
 	<!-- 问卷参与总个数 -->
@@ -101,7 +103,7 @@
 	</insert>
 
 	<!-- 根据系统级别分页查询问卷的List -->
-	<select id="getListPaper" resultType="Paper" parameterType="map">
+	<select id="getListPaper" resultType="com.ctgu.npc.business.inform.entity.Paper" parameterType="map">
 		SELECT 
 			p.*,u.name as createUserName
 		FROM db_paper p
@@ -130,7 +132,7 @@
 	</select>
 	
 	<!-- 根据id查询paper -->
-	<select id="getDetailPaper" resultType="Paper">
+	<select id="getDetailPaper" resultType="com.ctgu.npc.business.inform.entity.Paper">
 		SELECT 
 			* 
 		FROM db_paper 

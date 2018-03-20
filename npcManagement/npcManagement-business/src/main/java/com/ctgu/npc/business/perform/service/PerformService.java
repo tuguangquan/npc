@@ -24,15 +24,14 @@ import java.util.Map;
  *
  */
 
-@Service
 @Transactional(readOnly = true)
 public class PerformService {
 	
 	@Autowired
-	PerformMapper performDao;
+	private PerformMapper performDao;
 	
 	@Autowired
-	UserMapper userDao;
+	private UserMapper userDao;
 	
 	@Autowired
 	private NpcMapper npcDao;

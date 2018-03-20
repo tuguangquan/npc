@@ -3,6 +3,7 @@ package com.ctgu.npc.business.inform.web;
 import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.inform.entity.Publish;
 import com.ctgu.npc.business.inform.service.PublishService;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,10 +12,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-@Controller
+@Component
+@Path("/publish")
 public class PublishServiceWeb {
 	
 	@Resource

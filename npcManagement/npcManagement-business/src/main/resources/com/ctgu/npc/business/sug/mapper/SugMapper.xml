@@ -1,994 +1,1016 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ctgu.npc.business.sug.mapper.SugMapper">
-
-	<sql id="joinSugColumns">
-		sug.id as 'sug.id',
-		sug.year as 'sug.year',
-		sug.code as
-		'sug.code',
-		sug.title as 'sug.title',
-		sug.secondary as 'sug.secondary',
-		sug.sequence as 'sug.sequence',
-		sug.classify as 'sug.classify',
-		sug.status as 'sug.status'
-
-	</sql>
-
-	<sql id="SugColumns">
-		sug.id,
-		sug.year ,
-		sug.code,
-		sug.title,
-		sug.secondary,
-		sug.sequence,
-		sug.createTime,
-		sug.type,
-		sug.proposalHead,
-		sug.classify,
-		sug.status,
-		sug.excellentFlag,
-		sug.importantFlag,
-		sug.privateFlag,
-		sug.supervisingFlag,
-		sug.putOnFlag,
-		sug.result
-
-	</sql>
 	
-	<!-- 根据年度级别类型查询 -->
-	<select id="selectCurrentYearBigCode"  resultType="Suggestion">
-		SELECT * 
-		FROM sug_suggestion 
-		where year = #{year} and type = #{type} and level = #{level} and code is NOT null 
-		order by code desc LIMIT 1
-	</select>
+	<!--&lt;!&ndash; 根据年度级别类型查询 &ndash;&gt;-->
+	<!--<select id="selectCurrentYearBigCode"  resultType="com.ctgu.npc.business.sug.entity.Suggestion">-->
+		<!--SELECT * -->
+		<!--FROM sug_suggestion -->
+		<!--where year = #{year} and type = #{type} and level = #{level} and code is NOT null -->
+		<!--order by code desc LIMIT 1-->
+	<!--</select>-->
 	
-	<!-- 保存审核 -->
-	<update id="saveCheckForm">
-		UPDATE sug_suggestion SET
-			title = #{title},
-			content = #{content},
-			meeting = #{meeting},
-			type = #{type},
-			keyWord = #{keyWord},
-			classify = #{classify},
-			checkRemark = #{checkRemark},
-			status = #{status},
-			checkUserID = #{checkUserID},
-			checkTime = #{checkTime},
-			checkRemark = #{checkRemark},
-			code = #{code}
-		WHERE 
-			id = #{id}
-	</update>
-	
-	<!-- 插入转交记录 -->
-	<insert id="insertTransferForm" useGeneratedKeys="true" keyProperty="id">
-		INSERT sug_transferList(
-			suggestionID,
-			status,
-			backFlag,
-			unitID,
-			createDate
-		) VALUES (
-			#{sug.id},
-			#{status},
-			#{backFlag},
-			#{unitID},
-			#{createDate}
-		)
-	</insert>
-	
-	<!-- 更新议案建议编号 -->
-	<update id="updateSugCode">
-		UPDATE sug_suggestion SET
-			code = #{code}
-		WHERE id = #{id}
-	</update>
-	
-	<!-- 删除转交历史记录 -->
-	<delete id="delTransferList">
-		delete from sug_transferList where suggestionID = #{sugID} and status = 1
-	</delete>
-
-	<!-- 插入日记 -->
-	<insert id="insertNote">
-			INSERT INTO db_note(
-				senderId,
-				content,
-				sendTime,
-				receiverId,
-				level
-			)VALUES(
-				#{senderID},
-				#{content},
-				#{sendTime},
-				#{receiverId},
-				#{level}
-			)
-		
-	</insert>
-
-	<!-- 保存评价内容 -->
-	<update id="saveEvaluateForm">
-		UPDATE sug_suggestion SET 
-			attevaluation = #{attevaluation},
-			resevaluation = #{resevaluation},
-			status = #{status}
-	WHERE id = #{id}
-	
-	</update>
-
-	<!-- 建议议案的转交信息 -->
-	<select id="getListTransfer" resultType="TransferForm">
-		SELECT
-		t.id,
-		t.status,
-		t.operatorDate,
-		u.name as operatorName,
-		o.name as unitName
-		FROM
-		sug_transferList t
-		LEFT JOIN sug_suggestion sug on
-		t.suggestionID =
-		sug.id
-		LEFT JOIN sys_user u on u.id = t.operatorID
-		LEFT JOIN sys_office
-		o on o.id = t.unitID
-		WHERE sug.id = #{sugID}
-	</select>
-
-	<!-- 交办信息 -->
-	<select id="getListAssign" resultType="AssignForm">
-		SELECT
-		a.id,
-		a.status,
-		a.operatorDate,
-		a.remark ,
-		u.name as operatorName,
-		o.name as unitName
-		FROM sug_assignList a
-		LEFT JOIN sug_suggestion sug on
-		a.suggestionID =
-		sug.id
-		LEFT JOIN sys_user u on u.id = a.operatorID
-		LEFT JOIN sys_office
-		o on o.id = a.unitID
-		WHERE sug.id = #{sugID}
-	</select>
-
-	<!-- 承办信息 -->
-	<select id="getListUnitAnswer" resultType="UnitAnswerForm">
-		SELECT
-		a.id,
-		a.suggestionID as 'sug.id',
-		a.status,
-		a.flag,
-		a.operatorDate,
-		a.createDate,
-		a.remark ,
-		a.leader,
-		a.job,
-		a.tel,
-		a.picPath,
-		a.filePath,
-		a.unitID,
-		a.assignUnitID,
-		a.communicationID,
-		o.name as unitName,
-		o2.name
-		as assignUnitName,
-		u.name as operatorName
-		FROM sug_unitAnswerList a
-		LEFT
-		JOIN sys_office o on o.id = a.unitID
-		LEFT JOIN sys_office o2 on o2.id =
-		a.assignUnitID
-		LEFT JOIN sys_user u on u.id = a.operatorID
-
-		WHERE
-		a.suggestionID = #{sugID}
-
-	</select>
-
-
-	<!-- 沟通信息 -->
-	<select id="getCommunicationForm" resultType="CommunicationForm">
-	
-		SELECT * FROM sug_communication WHERE id = #{id}
-	</select>
-
-	<!--==详细=== 根据suggestion的id及type查找suggerstion -->
-	<select id="getSuggestionByIdType" resultType="com.ctgu.modules.sug.entity.Suggestion">
-		SELECT
-		sug.* ,
-		o.name as mission,
-		u.name as firstWriter,
-		u2.name as checkUserName
-		FROM
-		sug_suggestion sug
-		LEFT JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN
-		sys_user u on u.id =
-		sug.firstWriterID
-		LEFT JOIN sys_user u2 on u2.id =
-		sug.checkUserID
-		WHERE sug.id = ${id} and sug.type=${sug_type}
-	</select>
-
-
-	<!-- 根据suggestion查找user的联名集 -->
-	<select id="getSecondWriter" resultType="com.ctgu.modules.sys.entity.Users">
-		select * from sys_user
-		where id in (${ids})
-	</select>
-
-
-	<!-- 领衔总数==根据firstWriterId和系统级别level_code,类型值type_value查找其领衔的suggestionList的总数 -->
-	<select id="getRowTotalMap" resultType="int" parameterType="map">
-		SELECT count(*)
-		FROM
-		sug_suggestion sug
-		LEFT JOIN sys_office o on o.id =
-		sug.teamID
-		LEFT JOIN sys_user u on u.id = sug.firstWriterID
-		WHERE
-		sug.firstWriterID=${firstWriterID} and
-		sug.level=${level_code} and
-		sug.type = ${type_value}
-	</select>
-
-
-	<!-- 联名总数===根据系统级别联名人id及类型type_value值获取总数 -->
-	<select id="getRowTotal2ndMap" resultType="int" parameterType="map">
-		SELECT count(*)
-		FROM
-		sug_suggestion sug
-		LEFT JOIN sys_office o on o.id =
-		sug.teamID
-		LEFT JOIN sys_user u on u.id = sug.firstWriterID
-		WHERE
-		sug.secondWriterIDS like
-		CONCAT('%#',${secondWriterIDS},'#%') and
-		sug.level=${level_code}
-		and sug.type=${type_value}
-	</select>
-
-
-	<!-- 优秀总数=== 根据系统级别及类型type_value查询优秀议案建议的总记录数 -->
-	<select id="getRowsExcellentMap" resultType="int">
-
-		SELECT
-		count(*)
-		FROM
-		sug_suggestion sug
-		LEFT JOIN sys_office o on o.id =
-		sug.teamID
-		LEFT JOIN
-		sys_user u on u.id =
-		sug.firstWriterID
-		WHERE
-		sug.level=${level_code} and
-		sug.excellentFlag =
-		1 and sug.status=6 and
-		sug.type=${type_value}
-	</select>
-
-
-	<!-- 重点总数 ===根据系统级别及类型type_value查询建议议案-重点的总记录数 -->
-	<select id="getRowsEmphasisMap" resultType="int" parameterType="map">
-		SELECT
-		count(*)
-		FROM sug_suggestion sug
-		LEFT JOIN sys_office o on o.id =
-		sug.teamID
-		LEFT JOIN sys_user u on u.id =
-		sug.firstWriterID
-		WHERE
-		sug.level=${level_code} and sug.type=${type_value}
-		and
-		sug.importantFlag = 1 and sug.status = 6
-	</select>
-
-	<!-- 审核列表记录数== level_code,type_value -->
-	<select id="getRowsCheckList" resultType="int" parameterType="map">
-		SELECT
-		count(*)
-		FROM sug_suggestion sug
-		LEFT JOIN sys_office o on o.id =
-		sug.teamID
-		LEFT JOIN sys_user u on u.id =
-		sug.firstWriterID
-		WHERE
-		(sug.status = -2 or sug.status = 1 or
-		sug.status = 0) and
-		sug.level=${level_code} and sug.type=${type_value}
-	</select>
-
-	<!-- 审核列表==level_code,type_value -->
-	<select id="getListByMapCheck" resultType="Suggestion"
-		parameterType="map">
-		SELECT
-		<include refid="SugColumns" />
-		,
-		o.name as mission,
-		u.name as firstWriter
-		FROM sug_suggestion sug
-		LEFT
-		JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN sys_user u on u.id =
-		sug.firstWriterID
-		WHERE (sug.status = -2 or sug.status = 1 or
-		sug.status = 0) and
-		sug.level = ${level_code} and
-		sug.type=${type_value}
-		ORDER BY sug.status asc ,
-		sug.code desc
-		limit
-		${offset},${size}
-	</select>
-
-
-	<!-- 立案列表记录数== -->
-	<select id="getRowsPutonList" resultType="int" parameterType="map">
-		SELECT
-		count(*)
-		FROM sug_suggestion sug
-		LEFT JOIN sys_office o on o.id =
-		sug.teamID
-		LEFT JOIN sys_user u on u.id =
-		sug.firstWriterID
-		WHERE
-		sug.type = 2 and sug.level=${level_code}
-	</select>
-
-	<!-- 立案列表=== -->
-	<select id="getListByMapPuton" resultType="Suggestion"
-		parameterType="map">
-		SELECT
-		<include refid="SugColumns" />
-		,
-		o.name as mission,
-		u.name as firstWriter
-		FROM sug_suggestion sug
-		LEFT
-		JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN sys_user u on u.id =
-		sug.firstWriterID
-		WHERE sug.type = 2 and sug.level=${level_code}
-		<!-- <if test="title != null and title !='' "> and (sug.title like CONCAT('%', 
-			#{title },'%') or sug.keyWord like CONCAT('%',#{title},'%') ) </if> <if test="secondary 
-			!= null and secondary != '' "> and sug.secondary = #{secondary } </if> <if 
-			test="sequence != null and sequence != '' "> and sug.sequence = #{sequence 
-			} </if> <if test="type != null and type != '' "> and sug.type = #{type } 
-			</if> <if test="classify != null and classify != '' "> and sug.classify = 
-			#{classify } </if> -->
-		ORDER BY sug.code ASC
-		limit ${offset},${size}
-	</select>
-
-	<!-- 立案文件上传列表 -->
-	<select id="getListFilePuton" resultType="FilePuton">
-		SELECT * from
-		sug_putOnFile where suggestionID = #{sugID}
-	</select>
-
-
-	<!-- ==转交的总记录数===建议议案 -->
-	<select id="getRowsTransferList" resultType="int" parameterType="map">
-		SELECT
-		count(*)
-		FROM sug_transferList t
-		LEFT JOIN sug_suggestion sug on
-		t.suggestionID = sug.id
-		LEFT JOIN sys_user u on u.id = sug.firstWriterID
-		WHERE
-		sug.level=${level_code} and t.status = ${status}
-		<if test="type_value == 1"> and sug.type = 1</if>
-		<if test="type_value == 2"> and sug.type = 2 and sug.putOnFlag = 1</if>
-	</select>
-
-	<!-- ===转交列表==建议议案status=1未转交 -->
-	<select id="sugTransferList" resultType="TransferForm"
-		parameterType="map">
-		SELECT
-		t.id,
-		t.status,
-		t.backFlag,
-		t.unitID,
-		t.operatorID,
-		t.operatorDate,
-		t.createDate,
-		t.remark ,
-		u.name as 'sug.firstWriter',
-		<include refid="joinSugColumns" />
-		FROM sug_transferList t
-		LEFT JOIN sug_suggestion sug on t.suggestionID = sug.id
-		LEFT JOIN sys_user u on u.id = sug.firstWriterID
-		WHERE sug.level=${level_code} and t.status = ${status}
-		<if test="type_value == 1"> and sug.type = 1</if>
-		<if test="type_value == 2"> and sug.type = 2 and sug.putOnFlag = 1</if>
-
-		ORDER BY sug.code ASC
-		limit ${offset},${size}
-	</select>
-
-
-	<!-- ==交办任务记录数== -->
-	<select id="getRowsAssignList" resultType="int"	parameterType="map">
-		SELECT
-			count(*)
-		FROM sug_assignList a
-		LEFT JOIN sug_suggestion sug on a.suggestionID =
-		sug.id
-		LEFT JOIN sys_office o on o.id = a.unitID
-		LEFT JOIN sys_user u on
-		u.id = a.operatorID
-		LEFT JOIN sys_user u2 on u2.id = sug.firstWriterID
-		WHERE a.unitID = ${unitID} and	sug.type=${type_value} and sug.level= ${level_code}
-		<if test="status == 1">
-			and a.status=1 and a.backFlag = 0
-		</if>
-		<if test="status == 2">
-			and ( a.status=2 or a.status = -1 )
-		</if>
-		<if test="status == 3">
-			and a.backFlag = 1 
-		</if>
-	</select>
-
-
-	<!-- ===交办任务列表=== -->
-	<select id="sugAssignList" resultType="AssignForm"
-		parameterType="map">
-		SELECT
-		a.id,
-		a.status,
-		a.unitID,
-		a.operatorID,
-		a.operatorDate,
-		a.createDate,
-		a.remark ,
-		o.name as unitName,
-		u.name as operatorName,
-		u2.name as 'sug.firstWriter',
-		<include refid="joinSugColumns" />
-		FROM sug_assignList a
-		LEFT JOIN sug_suggestion sug on a.suggestionID =
-		sug.id
-		LEFT JOIN sys_office o on o.id = a.unitID
-		LEFT JOIN sys_user u on
-		u.id = a.operatorID
-		LEFT JOIN sys_user u2 on u2.id = sug.firstWriterID
-		WHERE a.unitID = ${unitID} and	sug.type=${type_value} and sug.level= ${level_code}
-		<if test="status == 1">
-			and a.status=1 and a.backFlag = 0
-		</if>
-		<if test="status == 2">
-			and ( a.status=2 or a.status = -1 )
-		</if>
-		<if test="status == 3">
-			and  a.backFlag = 1 
-		</if>
-		ORDER BY sug.code ASC
-		limit ${offset},${size}
-	</select>
-
-	<!-- ===交办任务列表=== -->
-	<select id="sugAssignListBackFlag" resultType="AssignForm"
-		parameterType="map">
-		SELECT
-		a.id,
-		a.status,
-		a.unitID,
-		a.operatorID,
-		a.operatorDate,
-		a.createDate,
-		a.remark ,
-		o.name as unitName,
-		u.name as operatorName,
-		u2.name as 'sug.firstWriter',
-		<include refid="joinSugColumns" />
-		FROM sug_assignList a
-		LEFT JOIN sug_suggestion sug on a.suggestionID =
-		sug.id
-		LEFT JOIN sys_office o on o.id = a.unitID
-		LEFT JOIN sys_user u on
-		u.id = a.operatorID
-		LEFT JOIN sys_user u2 on u2.id = sug.firstWriterID
-		WHERE a.unitID =${unitID} and a.status=2 and 
-		sug.type=${type_value}	and sug.backFlag = ${backFlag} and sug.level
-		= ${level_code}
-		a.unitID = ${unitID} and a.status=1 and
-		sug.type=${type_value} and sug.backFlag = ${backFlag} and sug.level
-		= ${level_code}
-
-		ORDER BY sug.code ASC
-		limit ${offset},${size}
-	</select>
-
-	<!-- 代表们建议议案总数=== 根据系统级别和类型查询本级所有议案建议的总记录数===代表们的 -->
-	<select id="getRowsAllMap" resultType="int">
-		SELECT count(*)
-		FROM
-		sug_suggestion sug
-		LEFT JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN
-		sys_user u on u.id =
-		sug.firstWriterID
-		WHERE sug.level=${level_code} and
-		sug.type=${type_value}
-	</select>
-
-
-	<!-- ===代表团的总数===根据代表团id和系统级别及type_value查询建议议案总记录数 -->
-	<select id="getRowsByOfficeIdType" resultType="int"
-		parameterType="map">
-		SELECT count(*)
-		FROM sug_suggestion sug
-		WHERE
-		sug.level=${level_code} AND sug.teamID = ${team_id} AND
-		sug.type=${type_value}
-	</select>
-
-	<!-- === 我领衔的List ======根据firstWriterId 和系统级别level_code 分页查找我领衔的suggestionList -->
-	<select id="getListPageByMap" resultType="com.ctgu.modules.sug.entity.Suggestion"
-		parameterType="map">
-		SELECT
-		sug.id,
-		sug.title,
-		sug.status,
-		o.name as mission,
-		u.name as firstWriter
-		FROM sug_suggestion sug
-		LEFT JOIN sys_office o on
-		o.id = sug.teamID
-		LEFT JOIN sys_user u on u.id =
-		sug.firstWriterID
-		WHERE
-		sug.firstWriterID=${firstWriterID} and
-		sug.level=${level_code} and
-		sug.type=${type_value}
-		ORDER BY sug.id DESC
-		limit ${offset},${size}
-	</select>
-
-	<!-- ===我联名的List==根据联名人id及类型值分页查询我联名的suggestionList -->
-	<select id="getListPageByMap2ndType" resultType="com.ctgu.modules.sug.entity.Suggestion"
-		parameterType="map">
-		SELECT
-		sug.id,
-		sug.title,
-		sug.status,
-		sug.secondWriterIDS,
-		o.name as mission,
-		u.name as firstWriter
-		FROM sug_suggestion sug
-		LEFT
-		JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN sys_user u on u.id =
-		sug.firstWriterID
-		WHERE sug.secondWriterIDS like
-		CONCAT('%#',${secondWriterIDS},'#%') and sug.level=${level_code}
-		and
-		sug.type=${type_value}
-		ORDER BY sug.id DESC
-		limit ${offset},${size}
-	</select>
-
-	<!-- ==优秀的List ===根据系统级别及类型分页查询优秀建议议案 -->
-	<select id="getListByMapExcellentType" resultType="com.ctgu.modules.sug.entity.Suggestion"
-		parameterType="map">
-		SELECT
-		sug.id,
-		sug.title,
-		sug.status
-		FROM sug_suggestion sug
-		LEFT JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN sys_user u on
-		u.id =
-		sug.firstWriterID
-		WHERE 1=1 and sug.level = ${level_code} and
-		sug.excellentFlag = 1 and sug.status = 6 and sug.type=${type_value}
-		ORDER BY sug.id DESC
-		limit
-		${offset},${size}
-
-	</select>
-
-
-	<!-- ===重点的List ===根据系统级别分页查询本级议案建议的suggestionList -->
-	<select id="getListByLevelMapEmphasis" resultType="com.ctgu.modules.sug.entity.Suggestion"
-		parameterType="map">
-		SELECT
-		sug.id,
-		sug.title,
-		sug.status
-		FROM sug_suggestion sug
-		LEFT JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN sys_user u on
-		u.id =
-		sug.firstWriterID
-		WHERE 1=1 and sug.level = ${level_code} and
-		sug.type=${type_value} and
-		sug.importantFlag = 1 and sug.status = 6
-		ORDER BY sug.id DESC
-		limit ${offset},${size}
-
-	</select>
-
-	<!-- ===代表们的List ===根据系统级别分页查询本级所有代表议案建议的suggetionList -->
-	<select id="getListAllMapType" resultType="com.ctgu.modules.sug.entity.Suggestion"
-		parameterType="map">
-		SELECT
-		sug.id,
-		sug.title,
-		sug.status
-		FROM sug_suggestion sug
-		LEFT JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN sys_user u on
-		u.id =
-		sug.firstWriterID
-		WHERE 1=1 and sug.level = ${level_code} and
-		sug.type=${type_value}
-		ORDER BY sug.id DESC
-		limit ${offset},${size}
-	</select>
-
-	<!-- ===代表团 List=== 根据系统级别和代表团id分页查询suggestionList 列表 -->
-	<select id="getListByOfficeId" resultType="com.ctgu.modules.sug.entity.Suggestion"
-		parameterType="map">
-		SELECT
-		sug.id,
-		sug.title,
-		sug.status
-		FROM sug_suggestion sug
-		LEFT JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN sys_user u on
-		u.id =
-		sug.firstWriterID
-		WHERE 1=1 and sug.level
-		= ${level_code} AND
-		sug.teamID = ${team_id} and sug.type=${type_value}
-		ORDER BY sug.id DESC
-		limit ${offset},${size}
-	</select>
-
-
-	<!-- ===新增议案建议== -->
-	<insert id="mySugHeadAdd" useGeneratedKeys="true" keyProperty="id"
-		parameterType="com.ctgu.modules.sug.entity.Suggestion">
-		INSERT INTO sug_suggestion(
-		title,
-		content,
-		firstWriterID,
-		secondWriterIDS,
-		year,
-		meeting,
-		secondary,
-		sequence,
-		type,
-		keyWord,
-		tel,
-		address,
-		teamID,
-		sgmanageUnit,
-		sgsecondUnit,
-		createTime,
-		createUserID,
-		importantFlag,
-		excellentFlag,
-		privateFlag,
-		supervisingFlag,
-		putOnFlag,
-		status,
-		level
-		) VALUES (
-		#{title},
-		#{content},
-		#{firstWriterID},
-		#{secondWriterIDS},
-		#{year},
-		#{meeting},
-		#{secondary},
-		#{sequence},
-		#{type},
-		#{keyWord},
-		#{tel},
-		#{address},
-		#{teamID},
-		#{sgmanageUnit},
-		#{sgsecondUnit},
-		#{createTime},
-		#{createUserID},
-		2,
-		2,
-		#{privateFlag},
-		2,
-		0,
-		#{status},
-		#{level}
-		)
-	</insert>
-
-
-
-
-	<!-- 根据suggestion的领衔者查找其所领衔的suggestion的List -->
-	<select id="myHeadSugList" resultType="Suggestion">
-		SELECT
-		sug.* ,
-		o.name as mission,
-		u.name as firstWriter
-		FROM
-		sug_suggestion sug
-		LEFT JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN
-		sys_user u on u.id =
-		sug.firstWriterID
-		WHERE 1=1
-		<if test="firstWriterID != null ">
-			and sug.firstWriterID = #{firstWriterID }
-		</if>
-		<if test="title != null and title !='' ">
-			and (sug.title like CONCAT('%', #{title },'%')
-			or keyWord
-			like CONCAT('%',#{title},'%') )
-		</if>
-		<if test="secondary != null and secondary != '' ">
-			and sug.secondary = #{secondary }
-		</if>
-		<if test="sequence != null and sequence != '' ">
-			and sug.sequence = #{sequence }
-		</if>
-		<if test="type != null and type != '' ">
-			and sug.type = #{type }
-		</if>
-		<if test="classify != null and classify != '' ">
-			and sug.classify = #{classify }
-		</if>
-		<if test="excellentFlag != null and excellentFlag != '' ">
-			and sug.excellentFlag = #{excellentFlag }
-		</if>
-		<if test="importantFlag != null and importantFlag != '' ">
-			and sug.importantFlag = #{importantFlag }
-		</if>
-		<if test="status != null and status != '' ">
-			and sug.status = #{status }
-		</if>
-		ORDER BY sug.id DESC
-	</select>
-
-
-
-	<!-- 根据suggestion的id查找suggerstion -->
-	<select id="getSugById" resultType="com.ctgu.modules.sug.entity.Suggestion">
-		SELECT
-		sug.* ,
-		o.name as
-		mission,
-		u.name as firstWriter,
-		u2.name as checkUserName
-		FROM
-		sug_suggestion sug
-		LEFT JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN
-		sys_user u on u.id =
-		sug.firstWriterID
-		LEFT JOIN sys_user u2 on u2.id =
-		sug.checkUserID
-		WHERE sug.id = #{id}
-	</select>
-
-
-	<!-- 根据firstWriterId和系统级别level_code查找其领衔的suggestionList的总数 -->
-	<select id="getRowTotal" resultType="int">
-		SELECT count(*)
-		FROM
-		sug_suggestion sug
-		LEFT JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN
-		sys_user u on u.id =
-		sug.firstWriterID
-		WHERE
-		sug.firstWriterID=${firstWriterID} and
-		sug.level=${level_code}
-	</select>
-
-	<!-- 根据和系统级别查找其联名的suggestionList的总数 -->
-	<select id="getRowTotal2nd" resultType="int">
-		SELECT count(*)
-		FROM
-		sug_suggestion sug
-		LEFT JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN
-		sys_user u on u.id =
-		sug.firstWriterID
-		WHERE sug.secondWriterIDS like
-		CONCAT('%#',${secondWriterIDS},'#%') and sug.level=${level_code}
-	</select>
-
-	<!-- 根据firstWriterId查找我领衔的suggestionList -->
-	<select id="myHeadSugListByFirstId" resultType="Suggestion">
-		SELECT
-		sug.* ,
-		o.name as mission,
-		u.name as firstWriter
-		FROM sug_suggestion sug
-		LEFT
-		JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN sys_user u on u.id =
-		sug.firstWriterID
-		WHERE sug.firstWriterID=#{firstWriterID }
-
-		ORDER BY
-		sug.id DESC
-	</select>
-
-
-
-
-	<!-- 根据firstWriterId查找其领衔的suggestionList的个数 -->
-	<select id="getRowCount" resultType="int">
-		SELECT count(*)
-		FROM
-		sug_suggestion sug
-		LEFT JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN
-		sys_user u on u.id =
-		sug.firstWriterID
-		WHERE
-		sug.firstWriterID=#{firstWriterID }
-	</select>
-
-	<!-- 根据系统级别查询优秀议案建议的总记录数 -->
-	<select id="getRowCountByLevelExcellent" resultType="int">
-		SELECT
-		count(*)
-		FROM sug_suggestion sug
-		LEFT JOIN sys_office o on o.id =
-		sug.teamID
-		LEFT JOIN sys_user u on u.id =
-		sug.firstWriterID
-		WHERE
-		sug.level=${level_code} and sug.excellentFlag =
-		1 and sug.status = 6
-	</select>
-
-
-	<!-- 根据系统级别查询重点建议的总记录数 -->
-	<select id="getRowCountByLevelEmphasis" resultType="int">
-		SELECT
-		count(*)
-		FROM sug_suggestion sug
-		LEFT JOIN sys_office o on o.id =
-		sug.teamID
-		LEFT JOIN sys_user u on u.id =
-		sug.firstWriterID
-		WHERE
-		sug.level=${level_code} and sug.importantFlag =
-		1 and sug.status = 6
-	</select>
-
-	<!-- 根据系统级别查询本级所有代表们的议案建议的总记录数 -->
-	<select id="getRowCountByLevelAll" resultType="int">
-		SELECT count(*)
-		FROM sug_suggestion sug
-		LEFT JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN sys_user u on u.id =
-		sug.firstWriterID
-		WHERE
-		sug.level=${level_code}
-	</select>
-
-	<!-- 根据代表团id和系统级别查询suggestion的记录数 -->
-	<select id="getRowsByOfficeId" resultType="int" parameterType="map">
-		SELECT count(*)
-		FROM sug_suggestion sug
-		WHERE sug.level=${level_code}
-		AND sug.teamID = ${team_id}
-	</select>
-
-	<!-- 根据status code及议案类型查找对应的中文状态 -->
-	<select id="getStates" resultType="String">
-		SELECT dict.label
-		FROM sys_dict
-		dict
-		WHERE dict.type=${sug_type} and dict.value=${status}
-	</select>
-
-	<!-- 根据status code查找对应的状态 -->
-	<select id="getStatus" resultType="String">
-		SELECT dict.label
-		FROM sys_dict
-		dict
-		WHERE dict.type=${type} and dict.value=#{status}
-	</select>
-
-
-
-	<!-- 传入页面大小和页码进行分页查询我领衔的议案List -->
-	<select id="getListByIdMap" resultType="com.ctgu.modules.sug.entity.Suggestion"
-		parameterType="map">
-		SELECT
-		sug.* ,
-		o.name as mission,
-		u.name as firstWriter
-		FROM sug_suggestion sug
-		LEFT JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN sys_user u on u.id =
-		sug.firstWriterID
-		WHERE
-		sug.firstWriterID= ${firstWriterID}
-		ORDER BY
-		sug.id DESC
-		limit
-		${offset},${size}
-
-	</select>
-
-
-
-	<!-- 根据和系统分页查询我联名的suggestionList -->
-	<select id="getListPageByMap2nd" resultType="com.ctgu.modules.sug.entity.Suggestion"
-		parameterType="map">
-		SELECT
-		sug.id,
-		sug.title,
-		sug.status,
-		sug.secondWriterIDS,
-		o.name as mission,
-		u.name as firstWriter
-		FROM sug_suggestion sug
-		LEFT
-		JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN sys_user u on u.id =
-		sug.firstWriterID
-		WHERE sug.secondWriterIDS like
-		CONCAT('%#',${secondWriterIDS},'#%') and sug.level=${level_code}
-		ORDER
-		BY sug.id DESC
-		limit ${offset},${size}
-	</select>
-
-
-	<!-- 根据系统级别分页查询本级优秀议案建议的suggestionList -->
-	<select id="getListByLevelMapExcellent" resultType="com.ctgu.modules.sug.entity.Suggestion"
-		parameterType="map">
-		SELECT
-		sug.id,
-		sug.title,
-		sug.status
-		FROM sug_suggestion sug
-		LEFT JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN sys_user u on
-		u.id =
-		sug.firstWriterID
-		WHERE 1=1 and sug.level = ${level_code} and
-		sug.excellentFlag = 1 and sug.status = 6
-		ORDER BY sug.id DESC
-		limit
-		${offset},${size}
-
-	</select>
-
-	<!-- 根据系统级别分页查询本级所有代表议案建议的suggetionList -->
-	<select id="getListByLevelMapAll" resultType="com.ctgu.modules.sug.entity.Suggestion"
-		parameterType="map">
-		SELECT
-		sug.id,
-		sug.title,
-		sug.status
-		FROM sug_suggestion sug
-		LEFT JOIN sys_office o on o.id = sug.teamID
-		LEFT JOIN sys_user u on
-		u.id =
-		sug.firstWriterID
-		WHERE 1=1 and sug.level = ${level_code}
-		ORDER BY
-		sug.id DESC
-		limit ${offset},${size}
-	</select>
+	<!--&lt;!&ndash; 保存审核 &ndash;&gt;-->
+	<!--<update id="saveCheckForm">-->
+		<!--UPDATE sug_suggestion SET-->
+			<!--title = #{title},-->
+			<!--content = #{content},-->
+			<!--meeting = #{meeting},-->
+			<!--type = #{type},-->
+			<!--keyWord = #{keyWord},-->
+			<!--classify = #{classify},-->
+			<!--checkRemark = #{checkRemark},-->
+			<!--status = #{status},-->
+			<!--checkUserID = #{checkUserID},-->
+			<!--checkTime = #{checkTime},-->
+			<!--checkRemark = #{checkRemark},-->
+			<!--code = #{code}-->
+		<!--WHERE -->
+			<!--id = #{id}-->
+	<!--</update>-->
+	<!---->
+	<!--&lt;!&ndash; 插入转交记录 &ndash;&gt;-->
+	<!--<insert id="insertTransferForm" useGeneratedKeys="true" keyProperty="id">-->
+		<!--INSERT sug_transferList(-->
+			<!--suggestionID,-->
+			<!--status,-->
+			<!--backFlag,-->
+			<!--unitID,-->
+			<!--createDate-->
+		<!--) VALUES (-->
+			<!--#{sug.id},-->
+			<!--#{status},-->
+			<!--#{backFlag},-->
+			<!--#{unitID},-->
+			<!--#{createDate}-->
+		<!--)-->
+	<!--</insert>-->
+	<!---->
+	<!--&lt;!&ndash; 更新议案建议编号 &ndash;&gt;-->
+	<!--<update id="updateSugCode">-->
+		<!--UPDATE sug_suggestion SET-->
+			<!--code = #{code}-->
+		<!--WHERE id = #{id}-->
+	<!--</update>-->
+	<!---->
+	<!--&lt;!&ndash; 删除转交历史记录 &ndash;&gt;-->
+	<!--<delete id="delTransferList">-->
+		<!--delete from sug_transferList where suggestionID = #{sugID} and status = 1-->
+	<!--</delete>-->
+
+	<!--&lt;!&ndash; 插入日记 &ndash;&gt;-->
+	<!--<insert id="insertNote">-->
+			<!--INSERT INTO db_note(-->
+				<!--senderId,-->
+				<!--content,-->
+				<!--sendTime,-->
+				<!--receiverId,-->
+				<!--level-->
+			<!--)VALUES(-->
+				<!--#{senderID},-->
+				<!--#{content},-->
+				<!--#{sendTime},-->
+				<!--#{receiverId},-->
+				<!--#{level}-->
+			<!--)-->
+		<!---->
+	<!--</insert>-->
+
+	<!--&lt;!&ndash; 保存评价内容 &ndash;&gt;-->
+	<!--<update id="saveEvaluateForm">-->
+		<!--UPDATE sug_suggestion SET -->
+			<!--attevaluation = #{attevaluation},-->
+			<!--resevaluation = #{resevaluation},-->
+			<!--status = #{status}-->
+	<!--WHERE id = #{id}-->
+	<!---->
+	<!--</update>-->
+
+	<!--&lt;!&ndash; 建议议案的转交信息 &ndash;&gt;-->
+	<!--<select id="getListTransfer" resultType="com.ctgu.npc.business.sug.entity.TransferForm">-->
+		<!--SELECT-->
+		<!--t.id,-->
+		<!--t.status,-->
+		<!--t.operatorDate,-->
+		<!--u.name as operatorName,-->
+		<!--o.name as unitName-->
+		<!--FROM-->
+		<!--sug_transferList t-->
+		<!--LEFT JOIN sug_suggestion sug on-->
+		<!--t.suggestionID =-->
+		<!--sug.id-->
+		<!--LEFT JOIN sys_user u on u.id = t.operatorID-->
+		<!--LEFT JOIN sys_office-->
+		<!--o on o.id = t.unitID-->
+		<!--WHERE sug.id = #{sugID}-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; 交办信息 &ndash;&gt;-->
+	<!--<select id="getListAssign" resultType="com.ctgu.npc.business.sug.entity.AssignForm">-->
+		<!--SELECT-->
+		<!--a.id,-->
+		<!--a.status,-->
+		<!--a.operatorDate,-->
+		<!--a.remark ,-->
+		<!--u.name as operatorName,-->
+		<!--o.name as unitName-->
+		<!--FROM sug_assignList a-->
+		<!--LEFT JOIN sug_suggestion sug on-->
+		<!--a.suggestionID =-->
+		<!--sug.id-->
+		<!--LEFT JOIN sys_user u on u.id = a.operatorID-->
+		<!--LEFT JOIN sys_office-->
+		<!--o on o.id = a.unitID-->
+		<!--WHERE sug.id = #{sugID}-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; 承办信息 &ndash;&gt;-->
+	<!--<select id="getListUnitAnswer" resultType="com.ctgu.npc.business.sug.entity.UnitAnswerForm">-->
+		<!--SELECT-->
+		<!--a.id,-->
+		<!--a.suggestionID as 'sug.id',-->
+		<!--a.status,-->
+		<!--a.flag,-->
+		<!--a.operatorDate,-->
+		<!--a.createDate,-->
+		<!--a.remark ,-->
+		<!--a.leader,-->
+		<!--a.job,-->
+		<!--a.tel,-->
+		<!--a.picPath,-->
+		<!--a.filePath,-->
+		<!--a.unitID,-->
+		<!--a.assignUnitID,-->
+		<!--a.communicationID,-->
+		<!--o.name as unitName,-->
+		<!--o2.name-->
+		<!--as assignUnitName,-->
+		<!--u.name as operatorName-->
+		<!--FROM sug_unitAnswerList a-->
+		<!--LEFT-->
+		<!--JOIN sys_office o on o.id = a.unitID-->
+		<!--LEFT JOIN sys_office o2 on o2.id =-->
+		<!--a.assignUnitID-->
+		<!--LEFT JOIN sys_user u on u.id = a.operatorID-->
+
+		<!--WHERE-->
+		<!--a.suggestionID = #{sugID}-->
+
+	<!--</select>-->
+
+
+	<!--&lt;!&ndash; 沟通信息 &ndash;&gt;-->
+	<!--<select id="getCommunicationForm" resultType="com.ctgu.npc.business.sug.entity.CommunicationForm">-->
+	<!---->
+		<!--SELECT * FROM sug_communication WHERE id = #{id}-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash;==详细=== 根据suggestion的id及type查找suggerstion &ndash;&gt;-->
+	<!--<select id="getSuggestionByIdType" resultType="com.ctgu.npc.business.sug.entity.Suggestion">-->
+		<!--SELECT-->
+		<!--sug.* ,-->
+		<!--o.name as mission,-->
+		<!--u.name as firstWriter,-->
+		<!--u2.name as checkUserName-->
+		<!--FROM-->
+		<!--sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN-->
+		<!--sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--LEFT JOIN sys_user u2 on u2.id =-->
+		<!--sug.checkUserID-->
+		<!--WHERE sug.id = ${id} and sug.type=${sug_type}-->
+	<!--</select>-->
+
+
+	<!--&lt;!&ndash; 根据suggestion查找user的联名集 &ndash;&gt;-->
+	<!--<select id="getSecondWriter" resultType="com.ctgu.npc.business.sys.entity.Users">-->
+		<!--select * from sys_user-->
+		<!--where id in (${ids})-->
+	<!--</select>-->
+
+
+	<!--&lt;!&ndash; 领衔总数==根据firstWriterId和系统级别level_code,类型值type_value查找其领衔的suggestionList的总数 &ndash;&gt;-->
+	<!--<select id="getRowTotalMap" resultType="int" parameterType="map">-->
+		<!--SELECT count(*)-->
+		<!--FROM-->
+		<!--sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id =-->
+		<!--sug.teamID-->
+		<!--LEFT JOIN sys_user u on u.id = sug.firstWriterID-->
+		<!--WHERE-->
+		<!--sug.firstWriterID=${firstWriterID} and-->
+		<!--sug.level=${level_code} and-->
+		<!--sug.type = ${type_value}-->
+	<!--</select>-->
+
+
+	<!--&lt;!&ndash; 联名总数===根据系统级别联名人id及类型type_value值获取总数 &ndash;&gt;-->
+	<!--<select id="getRowTotal2ndMap" resultType="int" parameterType="map">-->
+		<!--SELECT count(*)-->
+		<!--FROM-->
+		<!--sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id =-->
+		<!--sug.teamID-->
+		<!--LEFT JOIN sys_user u on u.id = sug.firstWriterID-->
+		<!--WHERE-->
+		<!--sug.secondWriterIDS like-->
+		<!--CONCAT('%#',${secondWriterIDS},'#%') and-->
+		<!--sug.level=${level_code}-->
+		<!--and sug.type=${type_value}-->
+	<!--</select>-->
+
+
+	<!--&lt;!&ndash; 优秀总数=== 根据系统级别及类型type_value查询优秀议案建议的总记录数 &ndash;&gt;-->
+	<!--<select id="getRowsExcellentMap" resultType="int">-->
+
+		<!--SELECT-->
+		<!--count(*)-->
+		<!--FROM-->
+		<!--sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id =-->
+		<!--sug.teamID-->
+		<!--LEFT JOIN-->
+		<!--sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE-->
+		<!--sug.level=${level_code} and-->
+		<!--sug.excellentFlag =-->
+		<!--1 and sug.status=6 and-->
+		<!--sug.type=${type_value}-->
+	<!--</select>-->
+
+
+	<!--&lt;!&ndash; 重点总数 ===根据系统级别及类型type_value查询建议议案-重点的总记录数 &ndash;&gt;-->
+	<!--<select id="getRowsEmphasisMap" resultType="int" parameterType="map">-->
+		<!--SELECT-->
+		<!--count(*)-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id =-->
+		<!--sug.teamID-->
+		<!--LEFT JOIN sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE-->
+		<!--sug.level=${level_code} and sug.type=${type_value}-->
+		<!--and-->
+		<!--sug.importantFlag = 1 and sug.status = 6-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; 审核列表记录数== level_code,type_value &ndash;&gt;-->
+	<!--<select id="getRowsCheckList" resultType="int" parameterType="map">-->
+		<!--SELECT-->
+		<!--count(*)-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id =-->
+		<!--sug.teamID-->
+		<!--LEFT JOIN sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE-->
+		<!--(sug.status = -2 or sug.status = 1 or-->
+		<!--sug.status = 0) and-->
+		<!--sug.level=${level_code} and sug.type=${type_value}-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; 审核列表==level_code,type_value &ndash;&gt;-->
+	<!--<select id="getListByMapCheck" resultType="Suggestion"-->
+		<!--parameterType="map">-->
+		<!--SELECT-->
+		<!--sug.id,-->
+		<!--sug.year ,-->
+		<!--sug.code,-->
+		<!--sug.title,-->
+		<!--sug.secondary,-->
+		<!--sug.sequence,-->
+		<!--sug.createTime,-->
+		<!--sug.type,-->
+		<!--sug.proposalHead,-->
+		<!--sug.classify,-->
+		<!--sug.status,-->
+		<!--sug.excellentFlag,-->
+		<!--sug.importantFlag,-->
+		<!--sug.privateFlag,-->
+		<!--sug.supervisingFlag,-->
+		<!--sug.putOnFlag,-->
+		<!--sug.result,-->
+		<!--o.name as mission,-->
+		<!--u.name as firstWriter-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT-->
+		<!--JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE (sug.status = -2 or sug.status = 1 or-->
+		<!--sug.status = 0) and-->
+		<!--sug.level = ${level_code} and-->
+		<!--sug.type=${type_value}-->
+		<!--ORDER BY sug.status asc ,-->
+		<!--sug.code desc-->
+		<!--limit-->
+		<!--${offset},${size}-->
+	<!--</select>-->
+
+
+	<!--&lt;!&ndash; 立案列表记录数== &ndash;&gt;-->
+	<!--<select id="getRowsPutonList" resultType="int" parameterType="map">-->
+		<!--SELECT-->
+		<!--count(*)-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id =-->
+		<!--sug.teamID-->
+		<!--LEFT JOIN sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE-->
+		<!--sug.type = 2 and sug.level=${level_code}-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; 立案列表=== &ndash;&gt;-->
+	<!--<select id="getListByMapPuton" resultType="Suggestion"-->
+		<!--parameterType="map">-->
+		<!--SELECT-->
+		<!--sug.id,-->
+		<!--sug.year ,-->
+		<!--sug.code,-->
+		<!--sug.title,-->
+		<!--sug.secondary,-->
+		<!--sug.sequence,-->
+		<!--sug.createTime,-->
+		<!--sug.type,-->
+		<!--sug.proposalHead,-->
+		<!--sug.classify,-->
+		<!--sug.status,-->
+		<!--sug.excellentFlag,-->
+		<!--sug.importantFlag,-->
+		<!--sug.privateFlag,-->
+		<!--sug.supervisingFlag,-->
+		<!--sug.putOnFlag,-->
+		<!--sug.result,-->
+		<!--o.name as mission,-->
+		<!--u.name as firstWriter-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT-->
+		<!--JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE sug.type = 2 and sug.level=${level_code}-->
+		<!--&lt;!&ndash; <if test="title != null and title !='' "> and (sug.title like CONCAT('%', -->
+			<!--#{title },'%') or sug.keyWord like CONCAT('%',#{title},'%') ) </if> <if test="secondary -->
+			<!--!= null and secondary != '' "> and sug.secondary = #{secondary } </if> <if -->
+			<!--test="sequence != null and sequence != '' "> and sug.sequence = #{sequence -->
+			<!--} </if> <if test="type != null and type != '' "> and sug.type = #{type } -->
+			<!--</if> <if test="classify != null and classify != '' "> and sug.classify = -->
+			<!--#{classify } </if> &ndash;&gt;-->
+		<!--ORDER BY sug.code ASC-->
+		<!--limit ${offset},${size}-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; 立案文件上传列表 &ndash;&gt;-->
+	<!--<select id="getListFilePuton" resultType="FilePuton">-->
+		<!--SELECT * from-->
+		<!--sug_putOnFile where suggestionID = #{sugID}-->
+	<!--</select>-->
+
+
+	<!--&lt;!&ndash; ==转交的总记录数===建议议案 &ndash;&gt;-->
+	<!--<select id="getRowsTransferList" resultType="int" parameterType="map">-->
+		<!--SELECT-->
+		<!--count(*)-->
+		<!--FROM sug_transferList t-->
+		<!--LEFT JOIN sug_suggestion sug on-->
+		<!--t.suggestionID = sug.id-->
+		<!--LEFT JOIN sys_user u on u.id = sug.firstWriterID-->
+		<!--WHERE-->
+		<!--sug.level=${level_code} and t.status = ${status}-->
+		<!--<if test="type_value == 1"> and sug.type = 1</if>-->
+		<!--<if test="type_value == 2"> and sug.type = 2 and sug.putOnFlag = 1</if>-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; ===转交列表==建议议案status=1未转交 &ndash;&gt;-->
+	<!--<select id="sugTransferList" resultType="TransferForm"-->
+		<!--parameterType="map">-->
+		<!--SELECT-->
+		<!--t.id,-->
+		<!--t.status,-->
+		<!--t.backFlag,-->
+		<!--t.unitID,-->
+		<!--t.operatorID,-->
+		<!--t.operatorDate,-->
+		<!--t.createDate,-->
+		<!--t.remark ,-->
+		<!--u.name as 'sug.firstWriter',-->
+		<!--sug.id as 'sug.id',-->
+		<!--sug.year as 'sug.year',-->
+		<!--sug.code as-->
+		<!--'sug.code',-->
+		<!--sug.title as 'sug.title',-->
+		<!--sug.secondary as 'sug.secondary',-->
+		<!--sug.sequence as 'sug.sequence',-->
+		<!--sug.classify as 'sug.classify',-->
+		<!--sug.status as 'sug.status'-->
+		<!--FROM sug_transferList t-->
+		<!--LEFT JOIN sug_suggestion sug on t.suggestionID = sug.id-->
+		<!--LEFT JOIN sys_user u on u.id = sug.firstWriterID-->
+		<!--WHERE sug.level=${level_code} and t.status = ${status}-->
+		<!--<if test="type_value == 1"> and sug.type = 1</if>-->
+		<!--<if test="type_value == 2"> and sug.type = 2 and sug.putOnFlag = 1</if>-->
+
+		<!--ORDER BY sug.code ASC-->
+		<!--limit ${offset},${size}-->
+	<!--</select>-->
+
+
+	<!--&lt;!&ndash; ==交办任务记录数== &ndash;&gt;-->
+	<!--<select id="getRowsAssignList" resultType="int"	parameterType="map">-->
+		<!--SELECT-->
+			<!--count(*)-->
+		<!--FROM sug_assignList a-->
+		<!--LEFT JOIN sug_suggestion sug on a.suggestionID =-->
+		<!--sug.id-->
+		<!--LEFT JOIN sys_office o on o.id = a.unitID-->
+		<!--LEFT JOIN sys_user u on-->
+		<!--u.id = a.operatorID-->
+		<!--LEFT JOIN sys_user u2 on u2.id = sug.firstWriterID-->
+		<!--WHERE a.unitID = ${unitID} and	sug.type=${type_value} and sug.level= ${level_code}-->
+		<!--<if test="status == 1">-->
+			<!--and a.status=1 and a.backFlag = 0-->
+		<!--</if>-->
+		<!--<if test="status == 2">-->
+			<!--and ( a.status=2 or a.status = -1 )-->
+		<!--</if>-->
+		<!--<if test="status == 3">-->
+			<!--and a.backFlag = 1 -->
+		<!--</if>-->
+	<!--</select>-->
+
+
+	<!--&lt;!&ndash; ===交办任务列表=== &ndash;&gt;-->
+	<!--<select id="sugAssignList" resultType="AssignForm"-->
+		<!--parameterType="map">-->
+		<!--SELECT-->
+		<!--a.id,-->
+		<!--a.status,-->
+		<!--a.unitID,-->
+		<!--a.operatorID,-->
+		<!--a.operatorDate,-->
+		<!--a.createDate,-->
+		<!--a.remark ,-->
+		<!--o.name as unitName,-->
+		<!--u.name as operatorName,-->
+		<!--u2.name as 'sug.firstWriter',-->
+		<!--sug.id as 'sug.id',-->
+		<!--sug.year as 'sug.year',-->
+		<!--sug.code as-->
+		<!--'sug.code',-->
+		<!--sug.title as 'sug.title',-->
+		<!--sug.secondary as 'sug.secondary',-->
+		<!--sug.sequence as 'sug.sequence',-->
+		<!--sug.classify as 'sug.classify',-->
+		<!--sug.status as 'sug.status'-->
+		<!--FROM sug_assignList a-->
+		<!--LEFT JOIN sug_suggestion sug on a.suggestionID =-->
+		<!--sug.id-->
+		<!--LEFT JOIN sys_office o on o.id = a.unitID-->
+		<!--LEFT JOIN sys_user u on-->
+		<!--u.id = a.operatorID-->
+		<!--LEFT JOIN sys_user u2 on u2.id = sug.firstWriterID-->
+		<!--WHERE a.unitID = ${unitID} and	sug.type=${type_value} and sug.level= ${level_code}-->
+		<!--<if test="status == 1">-->
+			<!--and a.status=1 and a.backFlag = 0-->
+		<!--</if>-->
+		<!--<if test="status == 2">-->
+			<!--and ( a.status=2 or a.status = -1 )-->
+		<!--</if>-->
+		<!--<if test="status == 3">-->
+			<!--and  a.backFlag = 1 -->
+		<!--</if>-->
+		<!--ORDER BY sug.code ASC-->
+		<!--limit ${offset},${size}-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; ===交办任务列表=== &ndash;&gt;-->
+	<!--<select id="sugAssignListBackFlag" resultType="AssignForm"-->
+		<!--parameterType="map">-->
+		<!--SELECT-->
+		<!--a.id,-->
+		<!--a.status,-->
+		<!--a.unitID,-->
+		<!--a.operatorID,-->
+		<!--a.operatorDate,-->
+		<!--a.createDate,-->
+		<!--a.remark ,-->
+		<!--o.name as unitName,-->
+		<!--u.name as operatorName,-->
+		<!--u2.name as 'sug.firstWriter',-->
+		<!--sug.id as 'sug.id',-->
+		<!--sug.year as 'sug.year',-->
+		<!--sug.code as-->
+		<!--'sug.code',-->
+		<!--sug.title as 'sug.title',-->
+		<!--sug.secondary as 'sug.secondary',-->
+		<!--sug.sequence as 'sug.sequence',-->
+		<!--sug.classify as 'sug.classify',-->
+		<!--sug.status as 'sug.status'-->
+		<!--FROM sug_assignList a-->
+		<!--LEFT JOIN sug_suggestion sug on a.suggestionID =-->
+		<!--sug.id-->
+		<!--LEFT JOIN sys_office o on o.id = a.unitID-->
+		<!--LEFT JOIN sys_user u on-->
+		<!--u.id = a.operatorID-->
+		<!--LEFT JOIN sys_user u2 on u2.id = sug.firstWriterID-->
+		<!--WHERE a.unitID =${unitID} and a.status=2 and -->
+		<!--sug.type=${type_value}	and sug.backFlag = ${backFlag} and sug.level-->
+		<!--= ${level_code}-->
+		<!--a.unitID = ${unitID} and a.status=1 and-->
+		<!--sug.type=${type_value} and sug.backFlag = ${backFlag} and sug.level-->
+		<!--= ${level_code}-->
+
+		<!--ORDER BY sug.code ASC-->
+		<!--limit ${offset},${size}-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; 代表们建议议案总数=== 根据系统级别和类型查询本级所有议案建议的总记录数===代表们的 &ndash;&gt;-->
+	<!--<select id="getRowsAllMap" resultType="int">-->
+		<!--SELECT count(*)-->
+		<!--FROM-->
+		<!--sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN-->
+		<!--sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE sug.level=${level_code} and-->
+		<!--sug.type=${type_value}-->
+	<!--</select>-->
+
+
+	<!--&lt;!&ndash; ===代表团的总数===根据代表团id和系统级别及type_value查询建议议案总记录数 &ndash;&gt;-->
+	<!--<select id="getRowsByOfficeIdType" resultType="int"-->
+		<!--parameterType="map">-->
+		<!--SELECT count(*)-->
+		<!--FROM sug_suggestion sug-->
+		<!--WHERE-->
+		<!--sug.level=${level_code} AND sug.teamID = ${team_id} AND-->
+		<!--sug.type=${type_value}-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; === 我领衔的List ======根据firstWriterId 和系统级别level_code 分页查找我领衔的suggestionList &ndash;&gt;-->
+	<!--<select id="getListPageByMap" resultType="com.ctgu.modules.sug.entity.Suggestion"-->
+		<!--parameterType="map">-->
+		<!--SELECT-->
+		<!--sug.id,-->
+		<!--sug.title,-->
+		<!--sug.status,-->
+		<!--o.name as mission,-->
+		<!--u.name as firstWriter-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on-->
+		<!--o.id = sug.teamID-->
+		<!--LEFT JOIN sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE-->
+		<!--sug.firstWriterID=${firstWriterID} and-->
+		<!--sug.level=${level_code} and-->
+		<!--sug.type=${type_value}-->
+		<!--ORDER BY sug.id DESC-->
+		<!--limit ${offset},${size}-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; ===我联名的List==根据联名人id及类型值分页查询我联名的suggestionList &ndash;&gt;-->
+	<!--<select id="getListPageByMap2ndType" resultType="com.ctgu.modules.sug.entity.Suggestion"-->
+		<!--parameterType="map">-->
+		<!--SELECT-->
+		<!--sug.id,-->
+		<!--sug.title,-->
+		<!--sug.status,-->
+		<!--sug.secondWriterIDS,-->
+		<!--o.name as mission,-->
+		<!--u.name as firstWriter-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT-->
+		<!--JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE sug.secondWriterIDS like-->
+		<!--CONCAT('%#',${secondWriterIDS},'#%') and sug.level=${level_code}-->
+		<!--and-->
+		<!--sug.type=${type_value}-->
+		<!--ORDER BY sug.id DESC-->
+		<!--limit ${offset},${size}-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; ==优秀的List ===根据系统级别及类型分页查询优秀建议议案 &ndash;&gt;-->
+	<!--<select id="getListByMapExcellentType" resultType="com.ctgu.modules.sug.entity.Suggestion"-->
+		<!--parameterType="map">-->
+		<!--SELECT-->
+		<!--sug.id,-->
+		<!--sug.title,-->
+		<!--sug.status-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN sys_user u on-->
+		<!--u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE 1=1 and sug.level = ${level_code} and-->
+		<!--sug.excellentFlag = 1 and sug.status = 6 and sug.type=${type_value}-->
+		<!--ORDER BY sug.id DESC-->
+		<!--limit-->
+		<!--${offset},${size}-->
+
+	<!--</select>-->
+
+
+	<!--&lt;!&ndash; ===重点的List ===根据系统级别分页查询本级议案建议的suggestionList &ndash;&gt;-->
+	<!--<select id="getListByLevelMapEmphasis" resultType="com.ctgu.modules.sug.entity.Suggestion"-->
+		<!--parameterType="map">-->
+		<!--SELECT-->
+		<!--sug.id,-->
+		<!--sug.title,-->
+		<!--sug.status-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN sys_user u on-->
+		<!--u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE 1=1 and sug.level = ${level_code} and-->
+		<!--sug.type=${type_value} and-->
+		<!--sug.importantFlag = 1 and sug.status = 6-->
+		<!--ORDER BY sug.id DESC-->
+		<!--limit ${offset},${size}-->
+
+	<!--</select>-->
+
+	<!--&lt;!&ndash; ===代表们的List ===根据系统级别分页查询本级所有代表议案建议的suggetionList &ndash;&gt;-->
+	<!--<select id="getListAllMapType" resultType="com.ctgu.modules.sug.entity.Suggestion"-->
+		<!--parameterType="map">-->
+		<!--SELECT-->
+		<!--sug.id,-->
+		<!--sug.title,-->
+		<!--sug.status-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN sys_user u on-->
+		<!--u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE 1=1 and sug.level = ${level_code} and-->
+		<!--sug.type=${type_value}-->
+		<!--ORDER BY sug.id DESC-->
+		<!--limit ${offset},${size}-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; ===代表团 List=== 根据系统级别和代表团id分页查询suggestionList 列表 &ndash;&gt;-->
+	<!--<select id="getListByOfficeId" resultType="com.ctgu.modules.sug.entity.Suggestion"-->
+		<!--parameterType="map">-->
+		<!--SELECT-->
+		<!--sug.id,-->
+		<!--sug.title,-->
+		<!--sug.status-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN sys_user u on-->
+		<!--u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE 1=1 and sug.level-->
+		<!--= ${level_code} AND-->
+		<!--sug.teamID = ${team_id} and sug.type=${type_value}-->
+		<!--ORDER BY sug.id DESC-->
+		<!--limit ${offset},${size}-->
+	<!--</select>-->
+
+
+	<!--&lt;!&ndash; ===新增议案建议== &ndash;&gt;-->
+	<!--<insert id="mySugHeadAdd" useGeneratedKeys="true" keyProperty="id"-->
+		<!--parameterType="com.ctgu.modules.sug.entity.Suggestion">-->
+		<!--INSERT INTO sug_suggestion(-->
+		<!--title,-->
+		<!--content,-->
+		<!--firstWriterID,-->
+		<!--secondWriterIDS,-->
+		<!--year,-->
+		<!--meeting,-->
+		<!--secondary,-->
+		<!--sequence,-->
+		<!--type,-->
+		<!--keyWord,-->
+		<!--tel,-->
+		<!--address,-->
+		<!--teamID,-->
+		<!--sgmanageUnit,-->
+		<!--sgsecondUnit,-->
+		<!--createTime,-->
+		<!--createUserID,-->
+		<!--importantFlag,-->
+		<!--excellentFlag,-->
+		<!--privateFlag,-->
+		<!--supervisingFlag,-->
+		<!--putOnFlag,-->
+		<!--status,-->
+		<!--level-->
+		<!--) VALUES (-->
+		<!--#{title},-->
+		<!--#{content},-->
+		<!--#{firstWriterID},-->
+		<!--#{secondWriterIDS},-->
+		<!--#{year},-->
+		<!--#{meeting},-->
+		<!--#{secondary},-->
+		<!--#{sequence},-->
+		<!--#{type},-->
+		<!--#{keyWord},-->
+		<!--#{tel},-->
+		<!--#{address},-->
+		<!--#{teamID},-->
+		<!--#{sgmanageUnit},-->
+		<!--#{sgsecondUnit},-->
+		<!--#{createTime},-->
+		<!--#{createUserID},-->
+		<!--2,-->
+		<!--2,-->
+		<!--#{privateFlag},-->
+		<!--2,-->
+		<!--0,-->
+		<!--#{status},-->
+		<!--#{level}-->
+		<!--)-->
+	<!--</insert>-->
+
+
+
+
+	<!--&lt;!&ndash; 根据suggestion的领衔者查找其所领衔的suggestion的List &ndash;&gt;-->
+	<!--<select id="myHeadSugList" resultType="Suggestion">-->
+		<!--SELECT-->
+		<!--sug.* ,-->
+		<!--o.name as mission,-->
+		<!--u.name as firstWriter-->
+		<!--FROM-->
+		<!--sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN-->
+		<!--sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE 1=1-->
+		<!--<if test="firstWriterID != null ">-->
+			<!--and sug.firstWriterID = #{firstWriterID }-->
+		<!--</if>-->
+		<!--<if test="title != null and title !='' ">-->
+			<!--and (sug.title like CONCAT('%', #{title },'%')-->
+			<!--or keyWord-->
+			<!--like CONCAT('%',#{title},'%') )-->
+		<!--</if>-->
+		<!--<if test="secondary != null and secondary != '' ">-->
+			<!--and sug.secondary = #{secondary }-->
+		<!--</if>-->
+		<!--<if test="sequence != null and sequence != '' ">-->
+			<!--and sug.sequence = #{sequence }-->
+		<!--</if>-->
+		<!--<if test="type != null and type != '' ">-->
+			<!--and sug.type = #{type }-->
+		<!--</if>-->
+		<!--<if test="classify != null and classify != '' ">-->
+			<!--and sug.classify = #{classify }-->
+		<!--</if>-->
+		<!--<if test="excellentFlag != null and excellentFlag != '' ">-->
+			<!--and sug.excellentFlag = #{excellentFlag }-->
+		<!--</if>-->
+		<!--<if test="importantFlag != null and importantFlag != '' ">-->
+			<!--and sug.importantFlag = #{importantFlag }-->
+		<!--</if>-->
+		<!--<if test="status != null and status != '' ">-->
+			<!--and sug.status = #{status }-->
+		<!--</if>-->
+		<!--ORDER BY sug.id DESC-->
+	<!--</select>-->
+
+
+
+	<!--&lt;!&ndash; 根据suggestion的id查找suggerstion &ndash;&gt;-->
+	<!--<select id="getSugById" resultType="com.ctgu.modules.sug.entity.Suggestion">-->
+		<!--SELECT-->
+		<!--sug.* ,-->
+		<!--o.name as-->
+		<!--mission,-->
+		<!--u.name as firstWriter,-->
+		<!--u2.name as checkUserName-->
+		<!--FROM-->
+		<!--sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN-->
+		<!--sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--LEFT JOIN sys_user u2 on u2.id =-->
+		<!--sug.checkUserID-->
+		<!--WHERE sug.id = #{id}-->
+	<!--</select>-->
+
+
+	<!--&lt;!&ndash; 根据firstWriterId和系统级别level_code查找其领衔的suggestionList的总数 &ndash;&gt;-->
+	<!--<select id="getRowTotal" resultType="int">-->
+		<!--SELECT count(*)-->
+		<!--FROM-->
+		<!--sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN-->
+		<!--sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE-->
+		<!--sug.firstWriterID=${firstWriterID} and-->
+		<!--sug.level=${level_code}-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; 根据和系统级别查找其联名的suggestionList的总数 &ndash;&gt;-->
+	<!--<select id="getRowTotal2nd" resultType="int">-->
+		<!--SELECT count(*)-->
+		<!--FROM-->
+		<!--sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN-->
+		<!--sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE sug.secondWriterIDS like-->
+		<!--CONCAT('%#',${secondWriterIDS},'#%') and sug.level=${level_code}-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; 根据firstWriterId查找我领衔的suggestionList &ndash;&gt;-->
+	<!--<select id="myHeadSugListByFirstId" resultType="Suggestion">-->
+		<!--SELECT-->
+		<!--sug.* ,-->
+		<!--o.name as mission,-->
+		<!--u.name as firstWriter-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT-->
+		<!--JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE sug.firstWriterID=#{firstWriterID }-->
+
+		<!--ORDER BY-->
+		<!--sug.id DESC-->
+	<!--</select>-->
+
+
+
+
+	<!--&lt;!&ndash; 根据firstWriterId查找其领衔的suggestionList的个数 &ndash;&gt;-->
+	<!--<select id="getRowCount" resultType="int">-->
+		<!--SELECT count(*)-->
+		<!--FROM-->
+		<!--sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN-->
+		<!--sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE-->
+		<!--sug.firstWriterID=#{firstWriterID }-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; 根据系统级别查询优秀议案建议的总记录数 &ndash;&gt;-->
+	<!--<select id="getRowCountByLevelExcellent" resultType="int">-->
+		<!--SELECT-->
+		<!--count(*)-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id =-->
+		<!--sug.teamID-->
+		<!--LEFT JOIN sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE-->
+		<!--sug.level=${level_code} and sug.excellentFlag =-->
+		<!--1 and sug.status = 6-->
+	<!--</select>-->
+
+
+	<!--&lt;!&ndash; 根据系统级别查询重点建议的总记录数 &ndash;&gt;-->
+	<!--<select id="getRowCountByLevelEmphasis" resultType="int">-->
+		<!--SELECT-->
+		<!--count(*)-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id =-->
+		<!--sug.teamID-->
+		<!--LEFT JOIN sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE-->
+		<!--sug.level=${level_code} and sug.importantFlag =-->
+		<!--1 and sug.status = 6-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; 根据系统级别查询本级所有代表们的议案建议的总记录数 &ndash;&gt;-->
+	<!--<select id="getRowCountByLevelAll" resultType="int">-->
+		<!--SELECT count(*)-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE-->
+		<!--sug.level=${level_code}-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; 根据代表团id和系统级别查询suggestion的记录数 &ndash;&gt;-->
+	<!--<select id="getRowsByOfficeId" resultType="int" parameterType="map">-->
+		<!--SELECT count(*)-->
+		<!--FROM sug_suggestion sug-->
+		<!--WHERE sug.level=${level_code}-->
+		<!--AND sug.teamID = ${team_id}-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; 根据status code及议案类型查找对应的中文状态 &ndash;&gt;-->
+	<!--<select id="getStates" resultType="String">-->
+		<!--SELECT dict.label-->
+		<!--FROM sys_dict-->
+		<!--dict-->
+		<!--WHERE dict.type=${sug_type} and dict.value=${status}-->
+	<!--</select>-->
+
+	<!--&lt;!&ndash; 根据status code查找对应的状态 &ndash;&gt;-->
+	<!--<select id="getStatus" resultType="String">-->
+		<!--SELECT dict.label-->
+		<!--FROM sys_dict-->
+		<!--dict-->
+		<!--WHERE dict.type=${type} and dict.value=#{status}-->
+	<!--</select>-->
+
+
+
+	<!--&lt;!&ndash; 传入页面大小和页码进行分页查询我领衔的议案List &ndash;&gt;-->
+	<!--<select id="getListByIdMap" resultType="com.ctgu.modules.sug.entity.Suggestion"-->
+		<!--parameterType="map">-->
+		<!--SELECT-->
+		<!--sug.* ,-->
+		<!--o.name as mission,-->
+		<!--u.name as firstWriter-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE-->
+		<!--sug.firstWriterID= ${firstWriterID}-->
+		<!--ORDER BY-->
+		<!--sug.id DESC-->
+		<!--limit-->
+		<!--${offset},${size}-->
+
+	<!--</select>-->
+
+
+
+	<!--&lt;!&ndash; 根据和系统分页查询我联名的suggestionList &ndash;&gt;-->
+	<!--<select id="getListPageByMap2nd" resultType="com.ctgu.modules.sug.entity.Suggestion"-->
+		<!--parameterType="map">-->
+		<!--SELECT-->
+		<!--sug.id,-->
+		<!--sug.title,-->
+		<!--sug.status,-->
+		<!--sug.secondWriterIDS,-->
+		<!--o.name as mission,-->
+		<!--u.name as firstWriter-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT-->
+		<!--JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN sys_user u on u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE sug.secondWriterIDS like-->
+		<!--CONCAT('%#',${secondWriterIDS},'#%') and sug.level=${level_code}-->
+		<!--ORDER-->
+		<!--BY sug.id DESC-->
+		<!--limit ${offset},${size}-->
+	<!--</select>-->
+
+
+	<!--&lt;!&ndash; 根据系统级别分页查询本级优秀议案建议的suggestionList &ndash;&gt;-->
+	<!--<select id="getListByLevelMapExcellent" resultType="com.ctgu.modules.sug.entity.Suggestion"-->
+		<!--parameterType="map">-->
+		<!--SELECT-->
+		<!--sug.id,-->
+		<!--sug.title,-->
+		<!--sug.status-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN sys_user u on-->
+		<!--u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE 1=1 and sug.level = ${level_code} and-->
+		<!--sug.excellentFlag = 1 and sug.status = 6-->
+		<!--ORDER BY sug.id DESC-->
+		<!--limit-->
+		<!--${offset},${size}-->
+
+	<!--</select>-->
+
+	<!--&lt;!&ndash; 根据系统级别分页查询本级所有代表议案建议的suggetionList &ndash;&gt;-->
+	<!--<select id="getListByLevelMapAll" resultType="com.ctgu.modules.sug.entity.Suggestion"-->
+		<!--parameterType="map">-->
+		<!--SELECT-->
+		<!--sug.id,-->
+		<!--sug.title,-->
+		<!--sug.status-->
+		<!--FROM sug_suggestion sug-->
+		<!--LEFT JOIN sys_office o on o.id = sug.teamID-->
+		<!--LEFT JOIN sys_user u on-->
+		<!--u.id =-->
+		<!--sug.firstWriterID-->
+		<!--WHERE 1=1 and sug.level = ${level_code}-->
+		<!--ORDER BY-->
+		<!--sug.id DESC-->
+		<!--limit ${offset},${size}-->
+	<!--</select>-->
 
 </mapper>

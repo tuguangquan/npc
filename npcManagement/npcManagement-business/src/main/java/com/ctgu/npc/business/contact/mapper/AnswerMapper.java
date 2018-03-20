@@ -1,5 +1,6 @@
 package com.ctgu.npc.business.contact.mapper;
 
+
 /**
  * 社情民意回复接口
  * Title:AnswerListDao 

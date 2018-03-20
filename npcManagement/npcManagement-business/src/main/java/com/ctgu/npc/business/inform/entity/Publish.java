@@ -1,6 +1,7 @@
 package com.ctgu.npc.business.inform.entity;
 
-import com.ctgu.modules.sys.entity.Users;
+
+import com.ctgu.npc.business.sys.entity.Users;
 
 public class Publish {
 	

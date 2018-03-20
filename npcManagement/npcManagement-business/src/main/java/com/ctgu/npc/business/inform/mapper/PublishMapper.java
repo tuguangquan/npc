@@ -14,7 +14,7 @@ public interface PublishMapper {
 	 * @param map
 	 * @return
 	 */
-	List<Publish> getPublishListNpc(Map<String, Object> map);
+	public List<Publish> getPublishListNpc(Map<String, Object> map);
 
 	/**
 	 * 根据系统级别获取publish总记录数-人大
@@ -22,13 +22,13 @@ public interface PublishMapper {
 	 * @param pub_col 
 	 * @return
 	 */
-	int getRowsByLevelNpc(Map<String, Object> map);
+	public int getRowsByLevelNpc(Map<String, Object> map);
 
 	/**
 	 * 根据publishId查询详细
 	 * @param pub_id
 	 * @return
 	 */
-	Publish getPublishDetailNpc(@Param("pub_id") String pub_id);
+	public Publish getPublishDetailNpc(@Param("pub_id") String pub_id);
 
 }

@@ -5,6 +5,7 @@ import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.inform.entity.Opinion;
 import com.ctgu.npc.business.inform.entity.Report;
 import com.ctgu.npc.business.inform.mapper.OpinionMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,12 +15,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
 @Transactional(readOnly = true)
 public class OpinionService {
 
-	@Resource
-	OpinionMapper opinionMapper;
+	@Autowired
+	private OpinionMapper opinionMapper;
 
 	/**
 	 * 根据系统级别分页查询意见列表

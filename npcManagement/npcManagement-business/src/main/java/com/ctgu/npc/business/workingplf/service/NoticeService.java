@@ -12,15 +12,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Service
 @Transactional(readOnly=true)
 public class NoticeService {
 	
 	@Autowired
-	UserMapper userDao;
+	private UserMapper userMapper;
 	
 	@Autowired
-	private NoticeMapper noticeDao;
+	private NoticeMapper noticeMapper;
 
 	/**
 	 * 发送给我的通知
@@ -40,7 +39,7 @@ public class NoticeService {
 		ReceivedMessage aObj = new ReceivedMessage();
 		
 		Users auser = new Users(loginName);
-		auser = userDao.getUserByLoginName(auser);
+		auser = userMapper.getUserByLoginName(auser);
 		String userID = auser.getId();
 		
 		aObj.setReceiverId(Integer.parseInt(userID));
@@ -50,7 +49,7 @@ public class NoticeService {
        
 		// 执行分页查询
         //page.setList(noticeDao.findMimeMessage(aObj));
-		List<ReceivedMessage> theList = noticeDao.findMimeMessage(aObj);
+		List<ReceivedMessage> theList = noticeMapper.findMimeMessage(aObj);
 		
 		return theList;
 	}
@@ -66,13 +65,13 @@ public class NoticeService {
 	 */
 	public ReceivedMessage findMimeMessageById(String id) {
 		// TODO Auto-generated method stub
-		return noticeDao.findMimeMessageById(id);
+		return noticeMapper.findMimeMessageById(id);
 	}
 
 	@Transactional(readOnly=false)
 	public boolean updateMsgRecById(ReceivedMessage receivedMessage) {
 		try{
-            noticeDao.updateMsgRecById(receivedMessage);
+            noticeMapper.updateMsgRecById(receivedMessage);
             return true;
         }catch(Exception e){
             return false;

@@ -19,7 +19,6 @@ import java.util.Map;
  * @author 旺旺
  *
  */
-@Service
 @Transactional(readOnly = true)
 public class LearningService {
 	
@@ -27,7 +26,7 @@ public class LearningService {
 	private LearningMapper learningDao;
 	
 	@Autowired
-	UserMapper userDao;
+	private UserMapper userDao;
 	
 	@Autowired
 	private NpcMapper npcDao;

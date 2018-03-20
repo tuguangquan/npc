@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ctgu.npc.business.inqury_meeting.mapper.InquryMapper">
 
 
-	<!-- 根据系统级别查询 我的inquryList总记录数 -->
-	<select id="getRowsByLevelUserIdInqury"  resultType="int" parameterType="map">
-		SELECT count(*)
-		FROM db_inquryinfo inqury 
-		WHERE 1=1 and inqury.npcId = ${user_id} and inqury.level = ${level_code}
-		
-	</select>
-	
+	<!--&lt;!&ndash; 根据系统级别查询 我的inquryList总记录数 &ndash;&gt;-->
+	<!--<select id="getRowsByLevelUserIdInqury"  resultType="int" parameterType="map">-->
+		<!--SELECT count(*)-->
+		<!--FROM db_inquryinfo inqury -->
+		<!--WHERE 1=1 and inqury.npcId = ${user_id} and inqury.level = ${level_code}-->
+		<!---->
+	<!--</select>-->
+	<!---->
 	<!-- 根据系统级别分页查询意见的opinionList -->
-	<select id="getListMyInqury" resultType="com.ctgu.modules.inqury_meeting.entity.Inqury" parameterType="map">
+	<select id="getListMyInqury" resultType="com.ctgu.npc.business.inqury_meeting.entity.Inqury" parameterType="map">
 		SELECT 
 			inqury.* ,
 			u1.name as npcName,
@@ -30,7 +32,7 @@
 	</select>
 	
 	<!-- 根据inqury的id查询详细 -->
-	<select id="getDetailByIdInqury" resultType="com.ctgu.modules.inqury_meeting.entity.Inqury">
+	<select id="getDetailByIdInqury" resultType="com.ctgu.npc.business.inqury_meeting.entity.Inqury">
 		SELECT 
 			inqury.* ,
 			u1.name as npcName,
@@ -48,7 +50,7 @@
 	
 	
 	<!-- 询问处理列表 -->
-	<select id="getListInquryHandle" resultType="Inqury" parameterType="map">
+	<select id="getListInquryHandle" resultType="com.ctgu.npc.business.inqury_meeting.entity.Inqury" parameterType="map">
 		SELECT 
 			inqury.* ,
 			u1.name as npcName,
@@ -83,7 +85,7 @@
 	
 	
 	<!-- 答复询问列表 -->
-	<select id="getListInquryReply" resultType="Inqury" parameterType="map">
+	<select id="getListInquryReply" resultType="com.ctgu.npc.business.inqury_meeting.entity.Inqury" parameterType="map">
 		SELECT 
 			inqury.* ,
 			u1.name as npcName,
@@ -119,7 +121,7 @@
 	
 	
 	<!-- 我的约见列表 -->
-	<select id="getListMyMeet" resultType="Meet" parameterType="map">
+	<select id="getListMyMeet" resultType="com.ctgu.npc.business.inqury_meeting.entity.Meet" parameterType="map">
 		SELECT 
 			m.* ,
 			u1.name as npcName,
@@ -150,7 +152,7 @@
 	
 	
 	<!-- 约见处理列表 -->
-	<select id="getListMeetHandle" resultType="Meet" parameterType="map">
+	<select id="getListMeetHandle" resultType="com.ctgu.npc.business.inqury_meeting.entity.Meet" parameterType="map">
 		SELECT 
 			m.* ,
 			u1.name as npcName,
@@ -185,7 +187,7 @@
 	
 	
 	<!-- 约见详细信息 -->
-	<select id="getDetailByIdMeet" resultType="Meet">
+	<select id="getDetailByIdMeet" resultType="com.ctgu.npc.business.inqury_meeting.entity.Meet">
 		SELECT 
 			m.* ,
 			u1.name as npcName,

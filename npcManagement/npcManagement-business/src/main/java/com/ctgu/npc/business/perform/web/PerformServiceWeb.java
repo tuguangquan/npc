@@ -8,6 +8,7 @@ import com.ctgu.npc.business.perform.service.PerformService;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.Path;
 import java.util.List;
 
 /**
@@ -24,7 +26,8 @@ import java.util.List;
  * 
  */
 
-@Controller
+@Component
+@Path("/perform")
 public class PerformServiceWeb {
 	
 	private final String TAG = "PerformController";

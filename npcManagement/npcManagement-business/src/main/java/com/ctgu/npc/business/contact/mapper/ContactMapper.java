@@ -1,13 +1,14 @@
 package com.ctgu.npc.business.contact.mapper;
 
 import com.ctgu.npc.business.contact.entity.LeaveWord;
+import com.ctgu.npc.fundamental.orm.mapper.AbstractMapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
 
 
-public interface ContactMapper {
+public interface ContactMapper{
 
 	/**
 	 *  ===我的留言分页列表

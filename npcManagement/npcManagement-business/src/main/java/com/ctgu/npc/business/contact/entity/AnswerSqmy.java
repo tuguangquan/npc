@@ -1,6 +1,6 @@
 package com.ctgu.npc.business.contact.entity;
 
-import com.ctgu.common.persistence.BaseEntity;
+import com.ctgu.npc.business.common.persistence.BaseEntity;
 
 import java.io.Serializable;
 

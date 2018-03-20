@@ -13,42 +13,42 @@ public interface LearningMapper {
 	 * @param map
 	 * @return
 	 */
-	List<Rule> getListNpcRule(Map<String, Object> map);
+	public List<Rule> getListNpcRule(Map<String, Object> map);
 
 	/**
 	 * === 获取人大规章制度的记录数
 	 * @param rule
 	 * @return
 	 */
-	int getRowsNpcRule(Rule rule);
+	public int getRowsNpcRule(Rule rule);
 
 	/**
 	 * 制度详细
 	 * @param id
 	 * @return
 	 */
-	Rule getInfoRule(@Param("id") String id);
+	public Rule getInfoRule(@Param("id") String id);
 
 	/**
 	 * 履职学习培训资料列表
 	 * @param map
 	 * @return
 	 */
-	List<Material> getListMaterial(Map<String, Object> map);
+	public List<Material> getListMaterial(Map<String, Object> map);
 
 	/**
 	 * 履职学习培训资料记录数
 	 * @param theObj
 	 * @return
 	 */
-	int getRowsMaterial(Material theObj);
+	public int getRowsMaterial(Material theObj);
 
 	/**
 	 * 履职学习培训资料详细
 	 * @param id
 	 * @return
 	 */
-	Material getInfoMaterial(@Param("id") String id);
+	public Material getInfoMaterial(@Param("id") String id);
 
 	
 	/**
@@ -56,19 +56,19 @@ public interface LearningMapper {
 	 * @param map
 	 * @return
 	 */
-	List<Training> getListTraining(Map<String, Object> map);
+	public List<Training> getListTraining(Map<String, Object> map);
 	/**
 	 * 履职活动培训记录数
 	 * @param theObj
 	 * @return
 	 */
-	int getRowsTraining(Training theObj);
+	public int getRowsTraining(Training theObj);
 	/**
 	 * 履职活动培训详细
 	 * @param id
 	 * @return
 	 */
-	Training getInfoTraining(@Param("id") String id);
+	public Training getInfoTraining(@Param("id") String id);
 
 	
 	/**
@@ -76,21 +76,21 @@ public interface LearningMapper {
 	 * @param map
 	 * @return
 	 */
-	List<ExceSuggestion> getListExceSuggestion(Map<String, Object> map);
+	public List<ExceSuggestion> getListExceSuggestion(Map<String, Object> map);
 
 	/**
 	 * 优秀议案建议记录 
 	 * @param theObj
 	 * @return
 	 */
-	int getRowsExceSuggestion(ExceSuggestion theObj);
+	public int getRowsExceSuggestion(ExceSuggestion theObj);
 	
 	/**
 	 * 优秀议案建议详细
 	 * @param id
 	 * @return
 	 */
-	ExceSuggestion getInfoExceSuggestion(@Param("id") String id);
+	public ExceSuggestion getInfoExceSuggestion(@Param("id") String id);
 
 	
 	/**
@@ -98,21 +98,21 @@ public interface LearningMapper {
 	 * @param map
 	 * @return
 	 */
-	List<ExceWorkReport> getListExceWorkReport(Map<String, Object> map);
+	public List<ExceWorkReport> getListExceWorkReport(Map<String, Object> map);
 
 	/**
 	 * 优秀履职报告记录数
 	 * @param theObj
 	 * @return
 	 */
-	int getRowsExceWorkReport(ExceWorkReport theObj);
+	public int getRowsExceWorkReport(ExceWorkReport theObj);
 
 	/**
 	 * 优秀履职报告详细
 	 * @param id
 	 * @return
 	 */
-	ExceWorkReport getInfoExceWorkReport(@Param("id") String id);
+	public ExceWorkReport getInfoExceWorkReport(@Param("id") String id);
 
 	
 	/**

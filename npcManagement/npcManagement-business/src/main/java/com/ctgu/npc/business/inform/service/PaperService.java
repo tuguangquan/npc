@@ -4,11 +4,10 @@ import com.ctgu.npc.business.basicInfo.mapper.NpcMapper;
 import com.ctgu.npc.business.common.utils.DateUtils;
 import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.inform.entity.*;
-import com.ctgu.npc.business.inform.mapper.PaperMpper;
+import com.ctgu.npc.business.inform.mapper.PaperMapper;
 import com.ctgu.npc.business.sys.entity.Users;
 import com.ctgu.npc.business.sys.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -22,16 +21,15 @@ import java.util.Map;
  *
  */
 
-@Service
 @Transactional(readOnly = true)
 public class PaperService {
 	
 	@Autowired
-	public PaperMpper paperDao;
+	private PaperMapper paperDao;
 
 
 	@Autowired
-	UserMapper userDao;
+	private UserMapper userDao;
 	
 	@Autowired
 	private NpcMapper npcDao;
