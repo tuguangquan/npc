@@ -13,7 +13,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,26 +42,17 @@ public class SysServiceWeb {
      * @param model
      * @return
      */
-
-    @RequestMapping(value = "updatePwd")
-    @ResponseBody
-    public String updatePwd(HttpServletRequest request,
-                            HttpServletResponse response, Model model) {
-
+    @Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    @Path("/updatePwd")
+    @POST
+    public String updatePwd(@FormParam("oldPassword") String oldPassword,
+                            @FormParam("loginName") String loginName,
+                            @FormParam("newPassword") String newPassword) {
         String result = null;
-
-        String loginName = request.getParameter("loginName");
-        String oldPassword = request.getParameter("pswd_old");
-        String newPassword = request.getParameter("pswd_new");
-
-
         Users theUser = null;
         theUser = userService.getUser(loginName);
-
         if(theUser != null){
-
             if (StringUtils.isNotBlank(oldPassword) && StringUtils.isNotBlank(newPassword)){
-
                 if (SysService.validatePassword(oldPassword, theUser.getPassword())){
                     systemService.updatePasswordById(theUser.getId(),  newPassword);
                     result = "1";

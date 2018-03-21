@@ -4,6 +4,7 @@ import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.inqury_meeting.entity.Inqury;
 import com.ctgu.npc.business.inqury_meeting.entity.Meet;
 import com.ctgu.npc.business.inqury_meeting.service.InquryService;
+import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
@@ -14,7 +15,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,24 +44,18 @@ public class InquryServiceWeb {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = {"getListMyInquryPage"})
-	@ResponseBody
-	public PagesUtil<Inqury> getListMyInquryPage(HttpServletRequest request, HttpServletResponse response, Model model) {
-		PagesUtil<Inqury> lists = new PagesUtil<Inqury>();
-		
-		String loginName = request.getParameter("loginName");
-		String pageNum = request.getParameter("curPage");
-		String level_code = request.getParameter("level_code");
-		
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getListMyInquryPage")
+	@POST
+	public String getListMyInquryPage(@FormParam("level_code") String level_code,
+												 @FormParam("loginName") String loginName,
+												 @FormParam("pageNum") String pageNum) {
 		int curPage = 1;
 		if(pageNum != null){
 			curPage = Integer.valueOf(pageNum);
 		}
-		
-		lists = inquryService.getListMyInquryPage(loginName,curPage,level_code);
-		
-		return lists;
-		
+		PagesUtil<Inqury> lists = inquryService.getListMyInquryPage(loginName,curPage,level_code);
+		return JsonResultUtils.getObjectResultByStringAsDefault(lists, JsonResultUtils.Code.SUCCESS);
 	}
 	
 	

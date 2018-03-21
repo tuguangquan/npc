@@ -3,6 +3,7 @@ package com.ctgu.npc.business.sys.web;
 import com.ctgu.npc.business.sys.service.UserService;
 import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.sys.entity.Office;
+import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
@@ -11,7 +12,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,15 +38,13 @@ public class UserServiceWeb {
      * @param model
      * @return
      */
-    @RequestMapping(value="getOfficeNameByLevelCodePages")
-    @ResponseBody
-    public PagesUtil<Office> getOfficeNameByLevelCodePages(HttpServletRequest request,
-                                                           HttpServletResponse response, Model model)
-    {
-        PagesUtil<Office> pagesUtil = new PagesUtil<Office>();
+    @Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    @Path("/getOfficeNameByLevelCodePages")
+    @POST
+    public String getOfficeNameByLevelCodePages(@FormParam("curPageStr") String curPageStr,
+                                                @FormParam("level_code") String level_code,
+                                                @FormParam("office_type") String office_type) {
         List<Office> lists = new ArrayList<Office>();
-
-        String curPageStr = request.getParameter("curPage");
         int curPage = 1;
         if (curPageStr != null) {
             try {
@@ -51,13 +54,9 @@ public class UserServiceWeb {
                 // TODO: handle exception
             }
         }
-
-        String level_code = request.getParameter("level_code");
-        String office_type = request.getParameter("office_type");
-        pagesUtil= userService.getOfficeNameByLevelCodePages(level_code,office_type,curPage);
-
-        return pagesUtil;
-    }//------getOfficeNameByLevelCode END --------------
+        PagesUtil<Office>  pagesUtil= userService.getOfficeNameByLevelCodePages(level_code,office_type,curPage);
+        return JsonResultUtils.getObjectResultByStringAsDefault(pagesUtil, JsonResultUtils.Code.SUCCESS);
+    }
 
     /**
      * 根据系统级别编码查询部门信息列表(如代表团)

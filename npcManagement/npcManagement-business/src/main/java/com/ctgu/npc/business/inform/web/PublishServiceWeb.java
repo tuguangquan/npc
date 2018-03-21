@@ -3,6 +3,7 @@ package com.ctgu.npc.business.inform.web;
 import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.inform.entity.Publish;
 import com.ctgu.npc.business.inform.service.PublishService;
+import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,7 +13,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,17 +35,12 @@ public class PublishServiceWeb {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value="getPublishDetailNpc")
-	@ResponseBody
-	public Publish getPublishDetailNpc(HttpServletRequest request, HttpServletResponse response, Model model){
-		Publish pub = new Publish();
-		
-		String pub_id = request.getParameter("pub_id");
-		
-		pub = pubService.getPublishDetailNpc(pub_id);
-		
-		return pub;
-		
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getPublishDetailNpc")
+	@POST
+	public String getPublishDetailNpc(@FormParam("pub_id") String pub_id){
+		Publish	pub = pubService.getPublishDetailNpc(pub_id);
+		return JsonResultUtils.getObjectResultByStringAsDefault(pub, JsonResultUtils.Code.SUCCESS);
 	}
 	
 	

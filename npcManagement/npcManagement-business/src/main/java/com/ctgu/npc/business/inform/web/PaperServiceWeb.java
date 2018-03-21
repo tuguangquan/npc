@@ -7,6 +7,7 @@ import com.ctgu.npc.business.common.utils.StringUtils;
 import com.ctgu.npc.business.inform.entity.*;
 import com.ctgu.npc.business.inform.service.PaperService;
 import com.ctgu.npc.business.sys.service.UserService;
+import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 /**
@@ -50,28 +55,20 @@ public class PaperServiceWeb {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "staticPaper")
-	@ResponseBody
-	public PaperStatis staticPaper( Model model,HttpServletRequest request) {
-		String level = request.getParameter("level_code");
-		String id = request.getParameter("theObjId");
-		String loginName = request.getParameter("loginName");
-		String userId = userService.getUser(loginName).getId();
-		
-		Paper paper = paperService.get(id);
-		//model.addAttribute("paper",paper);
-		List<PaperQues> qlist = paperService.findQuestionList(id);
-		List<PaperResult> rlist = paperService.findResultList(id);
-		Integer joinTotal = paperService.getJoinTotal(id);
-		
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/staticPaper")
+	@POST
+	public String staticPaper(@FormParam("theObjId") String theObjId) {
+		Paper paper = paperService.get(theObjId);
+		List<PaperQues> qlist = paperService.findQuestionList(theObjId);
+		List<PaperResult> rlist = paperService.findResultList(theObjId);
+		Integer joinTotal = paperService.getJoinTotal(theObjId);
 		PaperStatis theObj = new PaperStatis();
 		theObj.setPaper(paper);
 		theObj.setJoinTotal(joinTotal);
 		theObj.setQlist(qlist);
 		theObj.setRlist(rlist);
-		
-		return theObj;
-		
+		return JsonResultUtils.getObjectResultByStringAsDefault(theObj, JsonResultUtils.Code.SUCCESS);
 		}
 	
 	

@@ -18,7 +18,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,35 +41,22 @@ public class OpinionServiceWeb {
 	
 	@Autowired
 	private UserService userService;
-	
-	
-	@RequestMapping(value = {"addsaveOpinion"})
-	@ResponseBody
-	public String addsaveOpinion( HttpServletRequest request, HttpServletResponse response, Model model)  {
-		String level = request.getParameter("level_code");
-		String disid = request.getParameter("theObjId");
-		String loginName = request.getParameter("loginName");
+
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/addsaveOpinion")
+	@POST
+	public String addsaveOpinion(@FormParam("level_code") String level_code,@FormParam("theObjId") String theObjId
+	,@FormParam("loginName") String loginName,@FormParam("json_str") String json_str)  {
 		String userId = userService.getUser(loginName).getId();
-		
-		String json_str = request.getParameter("json_str");
 		if (json_str != null) {
 			Gson gson = new Gson();
 			java.lang.reflect.Type type = new TypeToken<OpinionReport>() {}.getType();
 			OpinionReport theObj = (OpinionReport) gson.fromJson(json_str, type);
-			
-			/* Gson gson = new Gson(); 
-			 List<Choice> theList = (List<Choice>) gson .fromJson(
-					  json_str, 
-					  new TypeToken<List<Choice>>(){}.getType()
-					  );*/
-			 
-			
 			Opinion opinion = theObj.getOpinion();
 			Report report = theObj.getReport();
-			opinionService.addsaveOpinion(opinion,report,userId,level);
+			opinionService.addsaveOpinion(opinion,report,userId,level_code);
 			return "true";
 		}
-		//addMessage(redirectAttributes, "保存'" + "'成功");
 		return "false";
 	}
 	

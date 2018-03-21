@@ -7,6 +7,7 @@ import com.ctgu.npc.business.common.utils.StringUtils;
 import com.ctgu.npc.business.inform.entity.*;
 import com.ctgu.npc.business.inform.service.TestService;
 import com.ctgu.npc.business.sys.service.UserService;
+import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,23 +57,18 @@ public class TestServiceWeb {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value="getListDiscussion")
-	@ResponseBody
-	public PagesUtil<Discussion> getListDiscussion(HttpServletRequest request, HttpServletResponse response, Model model){
-		PagesUtil<Discussion> pages = new PagesUtil<Discussion>();
-		
-		String level_code = request.getParameter("level_code");
-		String pageNum = request.getParameter("curPage");
-		String loginName = request.getParameter("loginName");
-		
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getListDiscussion")
+	@POST
+	public String getListDiscussion(@FormParam("level_code") String level_code,
+												   @FormParam("pageNum") String pageNum,
+												   @FormParam("loginName") String loginName){
 		int curPage = 1;
 		if(pageNum != null){
 			curPage = Integer.valueOf(pageNum);
 		}
-		
-		pages = testService.getListDiscussion(level_code,curPage);
-		return pages;
-		
+		PagesUtil<Discussion> pages  = testService.getListDiscussion(level_code,curPage);
+		return JsonResultUtils.getObjectResultByStringAsDefault(pages, JsonResultUtils.Code.SUCCESS);
 	}
 	
 	/**

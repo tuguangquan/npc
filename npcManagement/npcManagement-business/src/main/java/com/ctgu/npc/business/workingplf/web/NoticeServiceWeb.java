@@ -15,7 +15,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 /**
@@ -41,33 +45,18 @@ public class NoticeServiceWeb {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = "receive")
-	@ResponseBody
-	public List<ReceivedMessage> receivedNotice(HttpServletRequest request, HttpServletResponse response,
-			Model model) {
-		String loginName = request.getParameter("loginName");
-		//String pageNum = request.getParameter("curPage");
-		String level_code = request.getParameter("level_code");
-		
-		int curPage = 1;
-		/*if (pageNum != null) {
-			try {
-				curPage = (int) StringUtils.toInteger(pageNum);
-
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-		}*/
-
-		List<ReceivedMessage> pages = noticeService.findMimeMessage(new Page<ReceivedMessage>(request, response),
-				loginName,level_code,curPage);
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/receive")
+	@POST
+	public List<ReceivedMessage> receivedNotice(@FormParam("loginName") String loginName) {
+		List<ReceivedMessage> pages = noticeService.findMimeMessage(loginName);
 		return pages;
 	}
 	
 	
 	/**
 	 * 我收到的通知详细信息
-	 * Description: 
+	 * Description: `
 	 * Company: ctgu  
 	 * @author : youngmien
 	 * @date  2017-7-4 下午5:26:36

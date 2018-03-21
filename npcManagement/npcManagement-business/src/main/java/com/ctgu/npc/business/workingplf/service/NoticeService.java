@@ -1,13 +1,11 @@
 package com.ctgu.npc.business.workingplf.service;
 
-
 import com.ctgu.npc.business.common.persistence.Page;
 import com.ctgu.npc.business.sys.entity.Users;
 import com.ctgu.npc.business.sys.mapper.UserMapper;
 import com.ctgu.npc.business.workingplf.entity.ReceivedMessage;
 import com.ctgu.npc.business.workingplf.mapper.NoticeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -33,22 +31,14 @@ public class NoticeService {
 	 * @param curPage
 	 * @return
 	 */
-	public List<ReceivedMessage> findMimeMessage(Page<ReceivedMessage> page, String loginName,
-			String level_code, int curPage) {
+	public List<ReceivedMessage> findMimeMessage(String loginName
+			) {
 
 		ReceivedMessage aObj = new ReceivedMessage();
-		
 		Users auser = new Users(loginName);
 		auser = userMapper.getUserByLoginName(auser);
 		String userID = auser.getId();
-		
 		aObj.setReceiverId(Integer.parseInt(userID));
-		
-		// 设置分页参数
-		//aObj.setPage(page);
-       
-		// 执行分页查询
-        //page.setList(noticeDao.findMimeMessage(aObj));
 		List<ReceivedMessage> theList = noticeMapper.findMimeMessage(aObj);
 		
 		return theList;

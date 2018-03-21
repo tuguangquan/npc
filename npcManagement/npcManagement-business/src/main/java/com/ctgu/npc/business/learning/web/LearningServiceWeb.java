@@ -5,6 +5,7 @@ import com.ctgu.npc.business.common.utils.StringUtils;
 import com.ctgu.npc.business.learning.entity.*;
 import com.ctgu.npc.business.learning.service.LearningService;
 import com.ctgu.npc.business.sug.service.SugService;
+import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
@@ -14,7 +15,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
 /**
  * 学习交流
@@ -37,20 +42,14 @@ public class LearningServiceWeb {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = { "listPageNpcRule" })
-	@ResponseBody
-	public PagesUtil<Rule> listPageNpcRule(
-			HttpServletRequest request, HttpServletResponse response,
-			Model model) {
-
-		String loginName = request.getParameter("loginName");
-
-		String curPageStr = request.getParameter("curPage");
-
-		String level_code = request.getParameter("level_code");
-		
-		String typeValue = request.getParameter("typeValue");
-
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/listPageNpcRule")
+	@POST
+	public String listPageNpcRule(
+			@FormParam("level_code") String level_code,
+			@FormParam("loginName") String loginName,
+			@FormParam("curPageStr") String curPageStr,
+			@FormParam("typeValue") String typeValue) {
 		int curPage = 1;
 		if (curPageStr != null) {
 			try {
@@ -63,7 +62,7 @@ public class LearningServiceWeb {
 
 		PagesUtil<Rule> pages = learningService.listPageNpcRule(
 				loginName, curPage, level_code,typeValue);
-		return pages;
+		return JsonResultUtils.getObjectResultByStringAsDefault(pages, JsonResultUtils.Code.SUCCESS);
 	}
 	/**
 	 * 规章制度详细

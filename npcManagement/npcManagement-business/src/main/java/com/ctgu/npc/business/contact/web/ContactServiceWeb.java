@@ -6,6 +6,7 @@ import com.ctgu.npc.business.common.utils.StringUtils;
 import com.ctgu.npc.business.contact.entity.*;
 import com.ctgu.npc.business.contact.service.ContactService;
 import com.ctgu.npc.business.contact.service.SqmyService;
+import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 /**
@@ -30,13 +35,10 @@ import java.util.List;
 @Path("/contact")
 public class ContactServiceWeb {
 
-	private Integer everyPageNumber = 29;
 	@Autowired
 	private ContactService contactService;
-	
 	@Autowired
 	private SqmyService sqmyService;
-	
 	
 	/**
 	 * 我的社情民意列表
@@ -48,17 +50,12 @@ public class ContactServiceWeb {
 	 * @param response
 	 * @return
 	 */
-	@RequestMapping(value = { "mySqmyList" })
-	@ResponseBody
-	public List<Sqmy> mySqmyList(HttpServletRequest request,
-			HttpServletResponse response){
-		String loginName = request.getParameter("loginName");
-
-		String level_code = request.getParameter("level_code");
-		
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/savePersonalInfo")
+	@POST
+	public String mySqmyList(@FormParam("loginName") String loginName,@FormParam("level_code") String level_code) {
 		List<Sqmy>  aList = sqmyService.getMySqmyList(loginName,level_code);
-		
-		return aList;
+		return JsonResultUtils.getObjectResultByStringAsDefault(aList, JsonResultUtils.Code.SUCCESS);
 	}
 	
 	/**

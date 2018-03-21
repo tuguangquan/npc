@@ -5,6 +5,7 @@ import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.common.utils.StringUtils;
 import com.ctgu.npc.business.perform.entity.*;
 import com.ctgu.npc.business.perform.service.PerformService;
+import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 /**
@@ -42,18 +47,12 @@ public class PerformServiceWeb {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value = { "myJobReportPage" })
-	@ResponseBody
-	public PagesUtil<JobReport> myJobReportPage(
-			HttpServletRequest request, HttpServletResponse response,
-			Model model) {
-
-		String loginName = request.getParameter("loginName");
-
-		String curPageStr = request.getParameter("curPage");
-
-		String level_code = request.getParameter("level_code");
-
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/myJobReportPage")
+	@POST
+	public String myJobReportPage(@FormParam("loginName") String loginName,
+								  @FormParam("curPageStr") String curPageStr,
+								  @FormParam("level_code") String level_code) {
 		int curPage = 1;
 		if (curPageStr != null) {
 			try {
@@ -63,10 +62,9 @@ public class PerformServiceWeb {
 				// TODO: handle exception
 			}
 		}
-
 		PagesUtil<JobReport> pages = performService.myJobReportPage(
 				loginName, curPage, level_code);
-		return pages;
+		return JsonResultUtils.getObjectResultByStringAsDefault(pages, JsonResultUtils.Code.SUCCESS);
 	}
 
 
