@@ -83,6 +83,7 @@ public class SysServiceWeb {
     @POST
     public String login(@FormParam("uname") String uname,
                         @FormParam("pswd") String pswd,
+                        @FormParam("openId") String openId,
                         @FormParam("key") String key){
         String keyWord = MD5Util.md5Encode(uname+pswd+ MD5Util.getDateStr() + secretKey);
         if (!keyWord.equals(key)){

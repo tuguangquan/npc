@@ -79,13 +79,11 @@ public class NpcService {
 			}
 			
 		}
-		
 		if(theObj == null)
 		{
 			theObj = new Npc();
 			theObj.setNpcData(auser);
 		}
-		
 		return theObj;
 	}
 

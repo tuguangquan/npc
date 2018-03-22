@@ -167,7 +167,7 @@ public class NpcServiceWeb {
 
     @Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
     @Path("/test")
-    @GET
+    @POST
     public String test(@FormParam("key") String key) {
         String keyWord = MD5Util.md5Encode(MD5Util.getDateStr() + secretKey);
         if (!keyWord.equals(key)) {

@@ -17,5 +17,6 @@
     <bean id="sysService" class="com.ctgu.npc.business.sys.service.SysService" depends-on="mappers"></bean>
     <bean id="userService" class="com.ctgu.npc.business.sys.service.UserService" depends-on="mappers"></bean>
     <bean id="noticeService" class="com.ctgu.npc.business.workingplf.service.NoticeService" depends-on="mappers"></bean>
+    <bean id="weChatService" class="com.ctgu.npc.business.wechat.service.WeChatService" depends-on="mappers"></bean>
 
 </beans>
