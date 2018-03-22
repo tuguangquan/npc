@@ -1,20 +1,16 @@
 package com.ctgu.npc.business.workingplf.web;
 
-import com.ctgu.npc.business.common.persistence.Page;
 import com.ctgu.npc.business.common.utils.BisUtils;
+import com.ctgu.npc.business.common.utils.MD5Util;
 import com.ctgu.npc.business.workingplf.entity.ReceivedMessage;
 import com.ctgu.npc.business.workingplf.service.NoticeService;
+import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
+import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -31,6 +27,7 @@ import java.util.List;
 @Component
 @Path("/notice")
 public class NoticeServiceWeb {
+	private static String secretKey = FundamentalConfigProvider.get("npc.key");
 	@Autowired
 	private NoticeService noticeService;
 
@@ -40,17 +37,19 @@ public class NoticeServiceWeb {
 	 * Company: ctgu  
 	 * @author : youngmien
 	 * @date  2017-7-4 下午5:21:20
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param loginName
 	 * @return
 	 */
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/receive")
 	@POST
-	public List<ReceivedMessage> receivedNotice(@FormParam("loginName") String loginName) {
+	public String receivedNotice(@FormParam("loginName") String loginName,@FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(loginName + MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		List<ReceivedMessage> pages = noticeService.findMimeMessage(loginName);
-		return pages;
+		return JsonResultUtils.getObjectResultByStringAsDefault(pages, JsonResultUtils.Code.SUCCESS);
 	}
 	
 	
@@ -60,21 +59,19 @@ public class NoticeServiceWeb {
 	 * Company: ctgu  
 	 * @author : youngmien
 	 * @date  2017-7-4 下午5:26:36
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param theObjId
 	 * @return
 	 */
-	@RequestMapping(value = { "findMimeMessageById" })
-	@ResponseBody
-	public ReceivedMessage getInfoReceivedMessage(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-
-		String id = request.getParameter("theObjId");
-
-		ReceivedMessage theObj = noticeService.findMimeMessageById(id);
-
-		return theObj;
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/findMimeMessageById")
+	@POST
+	public String getInfoReceivedMessage(@FormParam("theObjId") String theObjId,@FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(theObjId + MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
+		ReceivedMessage theObj = noticeService.findMimeMessageById(theObjId);
+		return JsonResultUtils.getObjectResultByStringAsDefault(theObj, JsonResultUtils.Code.SUCCESS);
 
 	}
 	
@@ -85,22 +82,21 @@ public class NoticeServiceWeb {
 	 * Company: ctgu  
 	 * @author : youngmien
 	 * @date  2017-7-5 上午8:23:02
-	 * @param receivedMessage
-	 * @param model
+	 * @param loginName
+	 * @param level_code
+	 * @param json_str
 	 * @return
 	 */
-    @RequestMapping(value="feedback")
-    @ResponseBody
-    public String feedback(HttpServletRequest request,
-			HttpServletResponse response, Model model){
-    	
-    	String loginName = request.getParameter("loginName");
-		//String pageNum = request.getParameter("curPage");
-		String level_code = request.getParameter("level_code");
-		
-		String json_str = request.getParameter("json_str");
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/feedback")
+	@POST
+    public String feedback(@FormParam("loginName") String loginName,@FormParam("level_code") String level_code,
+						   @FormParam("json_str") String json_str,@FormParam("key") String key){
+		String keyWord = MD5Util.md5Encode(loginName+ level_code+json_str+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		//System.out.println(" ->" + json_str);
-
 		ReceivedMessage theObj = null;
 		  boolean bool = false;
 		if (json_str != null) {
@@ -112,10 +108,7 @@ public class NoticeServiceWeb {
 				 //更新阅读时间和阅读标志
 		        String readTime = BisUtils.getCurrentTime("yyyy-MM-dd HH:mm:ss");
 		        theObj.setReadTime(readTime);
-		        
 		      bool = noticeService.updateMsgRecById(theObj);
-		       // theObj = noticeService.findMimeMessageById(theObj.getId());		        
-		      
 			} 
 		}
 	    if (bool){
@@ -123,6 +116,6 @@ public class NoticeServiceWeb {
         }else{
         	return "false";
         }
-	}//--- feedback ending-------------------
+	}
 
 }

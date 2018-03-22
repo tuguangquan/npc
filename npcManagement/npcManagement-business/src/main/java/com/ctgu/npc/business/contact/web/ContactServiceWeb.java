@@ -1,23 +1,18 @@
 package com.ctgu.npc.business.contact.web;
 
 
+import com.ctgu.npc.business.common.utils.MD5Util;
 import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.common.utils.StringUtils;
 import com.ctgu.npc.business.contact.entity.*;
 import com.ctgu.npc.business.contact.service.ContactService;
 import com.ctgu.npc.business.contact.service.SqmyService;
+import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -27,151 +22,148 @@ import java.util.List;
 
 /**
  * 联系互动 == 模块
- * 
+ *
  * @author 旺旺
- * 
  */
 @Component
 @Path("/contact")
 public class ContactServiceWeb {
 
-	@Autowired
-	private ContactService contactService;
-	@Autowired
-	private SqmyService sqmyService;
-	
-	/**
-	 * 我的社情民意列表
-	 * Description: 
-	 * Company: ctgu  
-	 * @author : youngmien
-	 * @date  2017-7-26 上午10:15:47
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
-	@Path("/savePersonalInfo")
-	@POST
-	public String mySqmyList(@FormParam("loginName") String loginName,@FormParam("level_code") String level_code) {
-		List<Sqmy>  aList = sqmyService.getMySqmyList(loginName,level_code);
-		return JsonResultUtils.getObjectResultByStringAsDefault(aList, JsonResultUtils.Code.SUCCESS);
-	}
-	
-	/**
-	 * 社情民意详细
-	 * Description: 
-	 * Company: ctgu  
-	 * @author : youngmien
-	 * @date  2017-7-26 上午10:26:54
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	@RequestMapping(value = { "SqmyDetail" })
-	@ResponseBody
-	public SqmyDetail getSqmyDetail(HttpServletRequest request,
-			HttpServletResponse response){
-		
-		String id = request.getParameter("theObjId");
-		
-		SqmyDetail theObj = new SqmyDetail();
-		
-		Sqmy sqmy = sqmyService.get(id);
-		theObj.setSqmy(sqmy);
+    @Autowired
+    private ContactService contactService;
+    @Autowired
+    private SqmyService sqmyService;
 
-		LeaveMessage leaveMessage = sqmyService.getLeaveMessage(sqmy.getQzmsgID());
-		theObj.setLeaveMessage(leaveMessage);
+    private static String secretKey = FundamentalConfigProvider.get("npc.key");
 
-		List<AnswerSqmy> alist = sqmyService.getAnswerSqmy(sqmy.getId());
-		theObj.setaList(alist);
-		
-		return theObj;
-	}
+    /**
+     * 我的社情民意列表
+     * Description:
+     * Company: ctgu
+     *
+     * @param loginName
+     * @param level_code
+     * @return
+     * @author : youngmien
+     * @date 2017-7-26 上午10:15:47
+     */
+    @Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    @Path("/savePersonalInfo")
+    @POST
+    public String mySqmyList(@FormParam("loginName") String loginName, @FormParam("level_code") String level_code, @FormParam("key") String key) {
+        String keyWord = MD5Util.md5Encode(loginName + level_code + MD5Util.getDateStr() + secretKey);
+        if (!keyWord.equals(key)) {
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+        }
+        List<Sqmy> aList = sqmyService.getMySqmyList(loginName, level_code);
+        return JsonResultUtils.getObjectResultByStringAsDefault(aList, JsonResultUtils.Code.SUCCESS);
+    }
 
-	/**
-	 * ===我的留言分页列表
-	 * @param request
-	 * @param response
-	 * @param model
-	 * @return
-	 */
-	@RequestMapping(value = { "myLeaveWordPage" })
-	@ResponseBody
-	public PagesUtil<LeaveWord> myLeaveWordPage(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
+    /**
+     * 社情民意详细
+     * Description:
+     * Company: ctgu
+     *
+     * @param theObjId
+     * @param key
+     * @return
+     * @author : youngmien
+     * @date 2017-7-26 上午10:26:54
+     */
+    @Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    @Path("/SqmyDetail")
+    @POST
+    public String getSqmyDetail(@FormParam("theObjId") String theObjId, @FormParam("key") String key) {
+        String keyWord = MD5Util.md5Encode(theObjId + MD5Util.getDateStr() + secretKey);
+        if (!keyWord.equals(key)) {
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+        }
+        SqmyDetail theObj = new SqmyDetail();
+        Sqmy sqmy = sqmyService.get(theObjId);
+        theObj.setSqmy(sqmy);
+        LeaveMessage leaveMessage = sqmyService.getLeaveMessage(sqmy.getQzmsgID());
+        theObj.setLeaveMessage(leaveMessage);
+        List<AnswerSqmy> alist = sqmyService.getAnswerSqmy(sqmy.getId());
+        theObj.setaList(alist);
+        return JsonResultUtils.getObjectResultByStringAsDefault(theObj, JsonResultUtils.Code.SUCCESS);
+    }
 
-		String loginName = request.getParameter("loginName");
+    /**
+     * ===我的留言分页列表
+     *
+     * @param loginName
+     * @param curPageStr
+     * @param level_code
+     * @return
+     */
+    @Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    @Path("/myLeaveWordPage")
+    @POST
+    public String myLeaveWordPage(@FormParam("loginName") String loginName, @FormParam("curPageStr") String curPageStr,
+                                  @FormParam("level_code") String level_code, @FormParam("key") String key) {
+        String keyWord = MD5Util.md5Encode(loginName + curPageStr + level_code + MD5Util.getDateStr() + secretKey);
+        if (!keyWord.equals(key)) {
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+        }
+        int curPage = 1;
+        if (curPageStr != null) {
+            try {
+                curPage = (int) StringUtils.toInteger(curPageStr);
+            } catch (Exception e) {
+                // TODO: handle exception
+            }
+        }
+        PagesUtil<LeaveWord> pages = contactService.myLeaveWordPage(loginName,
+                curPage, level_code);
+        return JsonResultUtils.getObjectResultByStringAsDefault(pages, JsonResultUtils.Code.SUCCESS);
+    }
 
-		String curPageStr = request.getParameter("curPage");
+    /**
+     * === 留言详细
+     *
+     * @param theObjId
+     * @return
+     */
+    @Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    @Path("/getInfoLeaveWord")
+    @POST
+    public String getInfoLeaveWord(@FormParam("theObjId") String theObjId, @FormParam("key") String key) {
+        String keyWord = MD5Util.md5Encode(theObjId + MD5Util.getDateStr() + secretKey);
+        if (!keyWord.equals(key)) {
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+        }
+        LeaveWord theObj = contactService.getInfoLeaveWord(theObjId);
+        return JsonResultUtils.getObjectResultByStringAsDefault(theObj, JsonResultUtils.Code.SUCCESS);
+    }
 
-		String level_code = request.getParameter("level_code");
-
-		int curPage = 1;
-		if (curPageStr != null) {
-			try {
-				curPage = (int) StringUtils.toInteger(curPageStr);
-
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-		}
-
-		PagesUtil<LeaveWord> pages = contactService.myLeaveWordPage(loginName,
-				curPage, level_code);
-		return pages;
-	}
-	
-	/**
-	 * === 留言详细
-	 * @param request
-	 * @param response
-	 * @param model
-	 * @return
-	 */
-	@RequestMapping(value = { "getInfoLeaveWord" })
-	@ResponseBody
-	public LeaveWord getInfoLeaveWord(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-
-		String id = request.getParameter("theObjId");
-
-		LeaveWord theObj = contactService.getInfoLeaveWord(id);
-
-		return theObj;
-
-	}
-	
-	/**
-	 * 回复留言
-	 * @param request
-	 * @param response
-	 * @param model
-	 * @return
-	 */
-	@RequestMapping(value = { "replyLeaveWord" })
-	@ResponseBody
-	public String replyLeaveWord(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-		String result = "false";
-		String loginName = request.getParameter("loginName");
-
-		String json_str = request.getParameter("json_str");
-		
-		String level_code = request.getParameter("level_code");
-
-		LeaveWord theObj = new LeaveWord();
-		if (json_str != null) {
-			Gson gson = new Gson();
-			java.lang.reflect.Type type = new TypeToken<LeaveWord>() {
-			}.getType();
-			theObj = (LeaveWord) gson.fromJson(json_str, type);
-			 
-			result = contactService.replyLeaveWord(theObj, loginName, level_code);
-			
-		} 
-		System.out.println("return result->" + result);
-		return result;
-	}
+    /**
+     * 回复留言
+     *
+     * @param loginName
+     * @param json_str
+     * @param level_code
+     * @return
+     */
+    @Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    @Path("/replyLeaveWord")
+    @POST
+    public String replyLeaveWord(@FormParam("loginName") String loginName, @FormParam("json_str") String json_str,
+                                 @FormParam("level_code") String level_code, @FormParam("key") String key) {
+        String keyWord = MD5Util.md5Encode(loginName + json_str + level_code + MD5Util.getDateStr() + secretKey);
+        if (!keyWord.equals(key)) {
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+        }
+        String result = "false";
+        LeaveWord theObj;
+        if (json_str != null) {
+            Gson gson = new Gson();
+            java.lang.reflect.Type type = new TypeToken<LeaveWord>() {
+            }.getType();
+            theObj = (LeaveWord) gson.fromJson(json_str, type);
+            result = contactService.replyLeaveWord(theObj, loginName, level_code);
+        }
+        System.out.println("return result->" + result);
+        return JsonResultUtils.getObjectResultByStringAsDefault(result, JsonResultUtils.Code.SUCCESS);
+    }
 
 }

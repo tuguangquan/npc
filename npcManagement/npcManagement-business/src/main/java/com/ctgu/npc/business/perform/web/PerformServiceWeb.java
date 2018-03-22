@@ -1,22 +1,17 @@
 package com.ctgu.npc.business.perform.web;
 
 
+import com.ctgu.npc.business.common.utils.MD5Util;
 import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.common.utils.StringUtils;
 import com.ctgu.npc.business.perform.entity.*;
 import com.ctgu.npc.business.perform.service.PerformService;
+import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -36,27 +31,32 @@ import java.util.List;
 public class PerformServiceWeb {
 	
 	private final String TAG = "PerformController";
-
+	private static String secretKey = FundamentalConfigProvider.get("npc.key");
 	@Autowired
 	private PerformService performService;
 	
 	/**
 	 * === 我的代表工作
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param loginName
+	 * @param pageNum
+	 * @param level_code
 	 * @return
 	 */
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/myJobReportPage")
 	@POST
 	public String myJobReportPage(@FormParam("loginName") String loginName,
-								  @FormParam("curPageStr") String curPageStr,
-								  @FormParam("level_code") String level_code) {
+								  @FormParam("pageNum") String pageNum,
+								  @FormParam("level_code") String level_code,
+								  @FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(loginName+pageNum+level_code+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = (int) StringUtils.toInteger(curPageStr);
+				curPage = (int) StringUtils.toInteger(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -70,23 +70,22 @@ public class PerformServiceWeb {
 
 	/**
 	 * === 提交我的代表工作
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param loginName
+	 * @param json_str
+	 * @param level_code
 	 * @return
 	 */
-	
-	@RequestMapping(value = { "saveMyPerformJob" })
-	@ResponseBody
-	public String addMyPerformJob(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-		String loginName = request.getParameter("loginName");
-
-		String json_str = request.getParameter("json_str");
-		//System.out.println(TAG + " ->" + json_str);
-		
-		String level_code = request.getParameter("level_code");
-
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/saveMyPerformJob")
+	@POST
+	public String addMyPerformJob(@FormParam("loginName") String loginName,
+								  @FormParam("json_str") String json_str,
+								  @FormParam("level_code") String level_code,
+								  @FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(loginName+json_str+level_code+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		JobReport theObj = new JobReport();
 		if (json_str != null) {
 			Gson gson = new Gson();
@@ -109,23 +108,22 @@ public class PerformServiceWeb {
 	
 	/**
 	 * === 提交我的代表活动
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param loginName
+	 * @param json_str
+	 * @param level_code
 	 * @return
 	 */
-	
-	@RequestMapping(value = { "saveMyPerformAct" })
-	@ResponseBody
-	public String saveMyPerformAct(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-		String loginName = request.getParameter("loginName");
-
-		String json_str = request.getParameter("json_str");
-		//System.out.println(loginName + "->" + json_str);
-		
-		String level_code = request.getParameter("level_code");
-
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/saveMyPerformAct")
+	@POST
+	public String saveMyPerformAct(@FormParam("loginName") String loginName,
+								   @FormParam("json_str") String json_str,
+								   @FormParam("level_code") String level_code,
+								   @FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(loginName+json_str+level_code+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		PerformReport theObj = new PerformReport();
 		if (json_str != null) {
 			Gson gson = new Gson();
@@ -139,8 +137,6 @@ public class PerformServiceWeb {
 			}else{
 				return "save fail!";
 			}
-			
-			
 		} else {
 			return "save fail!";
 		}
@@ -151,82 +147,78 @@ public class PerformServiceWeb {
 	/**
 	 * ===我的代表活动-- 分页列表
 	 * 
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param loginName
+	 * @param pageNum
+	 * @param level_code
 	 * @return
 	 */
-	@RequestMapping(value = { "myPerformActPage" })
-	@ResponseBody
-	public PagesUtil<PerformReport> myPerformActPage(
-			HttpServletRequest request, HttpServletResponse response,
-			Model model) {
-
-		String loginName = request.getParameter("loginName");
-
-		String curPageStr = request.getParameter("curPage");
-
-		String level_code = request.getParameter("level_code");
-
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/myPerformActPage")
+	@POST
+	public String myPerformActPage(@FormParam("loginName") String loginName,
+								   @FormParam("pageNum") String pageNum,
+								   @FormParam("level_code") String level_code,
+								   @FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(loginName+pageNum+level_code+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = (int) StringUtils.toInteger(curPageStr);
+				curPage = (int) StringUtils.toInteger(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
 		}
-
 		PagesUtil<PerformReport> pages = performService.myPerformActPage(
 				loginName, curPage, level_code);
-		return pages;
+		return JsonResultUtils.getObjectResultByStringAsDefault(pages, JsonResultUtils.Code.SUCCESS);
 	}
 
 	/**
 	 * ===我的代表活动--详细信息
 	 * 
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param theObjId
 	 * @return
 	 */
-	@RequestMapping(value = { "getInfoMyPerformAct" })
-	@ResponseBody
-	public PerformReport getInfoMyPerformAct(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-
-		String id = request.getParameter("theObjId");
-
-		PerformReport performReport = performService.getInfoPerformReport(id);
-
-		return performReport;
-
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getInfoMyPerformAct")
+	@POST
+	public String getInfoMyPerformAct(@FormParam("theObjId") String theObjId,
+									  @FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(theObjId+MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
+		PerformReport performReport = performService.getInfoPerformReport(theObjId);
+		return JsonResultUtils.getObjectResultByStringAsDefault(performReport, JsonResultUtils.Code.SUCCESS);
 	}
 
 	/**
 	 * ===我的履职报告
 	 * 
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param loginName
+	 * @param pageNum
+	 * @param level_code
 	 * @return
 	 */
-	@RequestMapping(value = { "myWorkReportPage" })
-	@ResponseBody
-	public PagesUtil<WorkReport> myWorkReportPage(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-
-		String loginName = request.getParameter("loginName");
-
-		String curPageStr = request.getParameter("curPage");
-
-		String level_code = request.getParameter("level_code");
-
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/myWorkReportPage")
+	@POST
+	public String myWorkReportPage(@FormParam("loginName") String loginName,
+								   @FormParam("pageNum") String pageNum,
+								   @FormParam("level_code") String level_code,
+								   @FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(loginName+pageNum+level_code+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = (int) StringUtils.toInteger(curPageStr);
+				curPage = (int) StringUtils.toInteger(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -235,228 +227,192 @@ public class PerformServiceWeb {
 
 		PagesUtil<WorkReport> pages = performService.myWorkReportPage(
 				loginName, curPage, level_code);
-		return pages;
+		return JsonResultUtils.getObjectResultByStringAsDefault(pages, JsonResultUtils.Code.SUCCESS);
 	}
 
 	/**
 	 * === 我的履职报告详细
 	 * 
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param theObjId
 	 * @return
 	 */
-	@RequestMapping(value = { "getInfoMyWorkReport" })
-	@ResponseBody
-	public WorkReport getInfoMyWorkReport(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-
-		String id = request.getParameter("theObjId");
-
-		WorkReport theObj = performService.getInfoMyWorkReport(id);
-
-		return theObj;
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getInfoMyWorkReport")
+	@POST
+	public String getInfoMyWorkReport(@FormParam("theObjId") String theObjId,
+									  @FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(theObjId+MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
+		WorkReport theObj = performService.getInfoMyWorkReport(theObjId);
+		return JsonResultUtils.getObjectResultByStringAsDefault(theObj, JsonResultUtils.Code.SUCCESS);
 
 	}
 	
 	/**
 	 * === 我的履职统计
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param loginName
+	 * @param level_code
 	 * @return
 	 */
-	@RequestMapping(value = { "myReportStatisticList" })
-	@ResponseBody
-	public List<MyReportEntry> myReportStatisticList(
-			HttpServletRequest request, HttpServletResponse response,
-			Model model) {
-
-		String loginName = request.getParameter("loginName");
-
-		//String curPageStr = request.getParameter("curPage");
-
-		String level_code = request.getParameter("level_code");
-
-		int curPage = 1;
-		/*if (curPageStr != null) {
-			try {
-				curPage = (int) StringUtils.toInteger(curPageStr);
-
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-		}*/
-
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/myReportStatisticList")
+	@POST
+	public String myReportStatisticList(@FormParam("loginName") String loginName,
+										@FormParam("level_code") String level_code,
+										@FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(loginName+level_code+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		List<MyReportEntry> pages = performService.myReportStatisticList(
 				loginName,  level_code);
-		return pages;
+		return JsonResultUtils.getObjectResultByStringAsDefault(pages, JsonResultUtils.Code.SUCCESS);
 	}
 
 	/**
 	 * === 获取登记类型列表
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param loginName
+	 * @param level_code
 	 * @return
 	 */
-	@RequestMapping(value = { "actTypeList" })
-	@ResponseBody
-	public List<ActType> actTypeList(
-			HttpServletRequest request, HttpServletResponse response,
-			Model model) {
-
-		String loginName = request.getParameter("loginName");
-
-		//String curPageStr = request.getParameter("curPage");
-
-		String level_code = request.getParameter("level_code");
-
-		int curPage = 1;
-		/*if (curPageStr != null) {
-			try {
-				curPage = (int) StringUtils.toInteger(curPageStr);
-
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-		}*/
-
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/actTypeList")
+	@POST
+	public String actTypeList(@FormParam("loginName") String loginName,
+							  @FormParam("level_code") String level_code,
+							  @FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(loginName+level_code+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		List<ActType> lists = performService.actTypeList(
 				loginName,  level_code);
-		return lists;
+		return JsonResultUtils.getObjectResultByStringAsDefault(lists, JsonResultUtils.Code.SUCCESS);
 	}
 
 
 	/**
 	 * 代表工作查询
 	 * 
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param pageNum
+	 * @param level_code
 	 * @return
 	 */
-	@RequestMapping(value = { "jobSearchPage" })
-	@ResponseBody
-	public PagesUtil<JobReport> jobSearchPage(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-
-		// String loginName = request.getParameter("loginName");
-
-		String curPageStr = request.getParameter("curPage");
-
-		String level_code = request.getParameter("level_code");
-
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/jobSearchPage")
+	@POST
+	public String jobSearchPage(@FormParam("pageNum") String pageNum,
+								@FormParam("level_code") String level_code,
+								@FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(pageNum+level_code+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = (int) StringUtils.toInteger(curPageStr);
+				curPage = (int) StringUtils.toInteger(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
 		}
-
 		PagesUtil<JobReport> pages = performService.jobSearchPage(curPage,
 				level_code);
-		return pages;
+		return JsonResultUtils.getObjectResultByStringAsDefault(pages, JsonResultUtils.Code.SUCCESS);
 	}
 
 	/**
 	 * ===代表工作查询详细===
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param theObjId
 	 * @return
 	 */
-	@RequestMapping(value = { "getInfoJobReport" })
-	@ResponseBody
-	public JobReport getInfoJobReport(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-
-		String id = request.getParameter("theObjId");
-
-		JobReport theObj = performService.getInfojobSearchDetail(id);
-
-		return theObj;
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getInfoJobReport")
+	@POST
+	public String getInfoJobReport( @FormParam("theObjId") String theObjId,
+								   @FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(theObjId+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
+		JobReport theObj = performService.getInfojobSearchDetail(theObjId);
+		return JsonResultUtils.getObjectResultByStringAsDefault(theObj, JsonResultUtils.Code.SUCCESS);
 	}
 	
 	/**
 	 * === 代表活动查询
 	 */
-	@RequestMapping(value = { "actSearchPage" })
-	@ResponseBody
-	public PagesUtil<PerformReport> actSearchPage(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-
-		// String loginName = request.getParameter("loginName");
-
-		String curPageStr = request.getParameter("curPage");
-
-		String level_code = request.getParameter("level_code");
-
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/actSearchPage")
+	@POST
+	public String actSearchPage(@FormParam("pageNum") String pageNum,
+								@FormParam("level_code") String level_code,
+								@FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(pageNum+level_code+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = (int) StringUtils.toInteger(curPageStr);
+				curPage = (int) StringUtils.toInteger(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
 		}
-
 		PagesUtil<PerformReport> pages = performService.actSearchPage(curPage,
 				level_code);
-		return pages;
+		return JsonResultUtils.getObjectResultByStringAsDefault(pages, JsonResultUtils.Code.SUCCESS);
 	}
 	
 	
 	/**
 	 * === 履职报告查询
 	 */
-	@RequestMapping(value = { "workSearchPage" })
-	@ResponseBody
-	public PagesUtil<WorkReport> workSearchPage(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-
-		// String loginName = request.getParameter("loginName");
-
-		String curPageStr = request.getParameter("curPage");
-
-		String level_code = request.getParameter("level_code");
-
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/workSearchPage")
+	@POST
+	public String workSearchPage(@FormParam("pageNum") String pageNum,
+								 @FormParam("level_code") String level_code,
+								 @FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(pageNum+level_code+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = (int) StringUtils.toInteger(curPageStr);
+				curPage = (int) StringUtils.toInteger(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
 		}
-
 		PagesUtil<WorkReport> pages = performService.workSearchPage(curPage,
 				level_code);
-		return pages;
+		return JsonResultUtils.getObjectResultByStringAsDefault(pages, JsonResultUtils.Code.SUCCESS);
 	}
 	
 	/**
 	 * === 履职报告详细
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param theObjId
 	 * @return
 	 */
-	@RequestMapping(value = { "getInfoworkSearchDetail" })
-	@ResponseBody
-	public WorkReport getInfoworkSearchDetail(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-
-		String id = request.getParameter("theObjId");
-
-		WorkReport theObj = performService.getInfoworkSearchDetail(id);
-
-		return theObj;
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getInfoworkSearchDetail")
+	@POST
+	public String getInfoworkSearchDetail(@FormParam("theObjId") String theObjId,
+										  @FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(theObjId+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
+		WorkReport theObj = performService.getInfoworkSearchDetail(theObjId);
+		return JsonResultUtils.getObjectResultByStringAsDefault(theObj, JsonResultUtils.Code.SUCCESS);
 	}
 	
 }

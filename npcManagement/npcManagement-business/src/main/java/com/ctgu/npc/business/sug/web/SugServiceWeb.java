@@ -1,13 +1,12 @@
 package com.ctgu.npc.business.sug.web;
 
-
-import com.ctgu.npc.business.common.utils.Global;
 import com.ctgu.npc.business.common.utils.GsonUtils;
 import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.common.utils.StringUtils;
 import com.ctgu.npc.business.sug.entity.*;
 import com.ctgu.npc.business.sug.service.SugService;
 import com.ctgu.npc.business.sys.entity.Users;
+import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +29,7 @@ import java.util.List;
 //@Component
 //@Path("/sug")
 public class SugServiceWeb {
+    private static String secretKey = FundamentalConfigProvider.get("npc.key");
 //
 //	@Autowired
 //	private SugService sugService;

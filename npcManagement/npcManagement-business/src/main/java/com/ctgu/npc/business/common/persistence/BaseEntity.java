@@ -3,7 +3,6 @@
  */
 package com.ctgu.npc.business.common.persistence;
 
-import com.ctgu.npc.business.common.utils.Global;
 import com.ctgu.npc.business.common.utils.StringUtils;
 import com.ctgu.npc.business.common.utils.UserUtils;
 import com.ctgu.npc.business.sys.entity.Users;
@@ -131,22 +130,7 @@ public abstract class BaseEntity<T> implements Serializable {
 		this.isNewRecord = isNewRecord;
 	}
 
-	/**
-	 * 全局变量对象
-	 */
-	@JsonIgnore
-	public Global getGlobal() {
-		return Global.getInstance();
-	}
-	
-	/**
-	 * 获取数据库名称
-	 */
-	@JsonIgnore
-	public String getDbName(){
-		return Global.getConfig("jdbc.type");
-	}
-	
+
     @Override
     public boolean equals(Object obj) {
         if (null == obj) {

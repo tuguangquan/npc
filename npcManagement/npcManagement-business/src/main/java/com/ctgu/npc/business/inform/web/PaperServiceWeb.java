@@ -2,23 +2,18 @@ package com.ctgu.npc.business.inform.web;
 
 import com.ctgu.npc.business.basicInfo.service.NpcService;
 import com.ctgu.npc.business.common.utils.DateUtils;
+import com.ctgu.npc.business.common.utils.MD5Util;
 import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.common.utils.StringUtils;
 import com.ctgu.npc.business.inform.entity.*;
 import com.ctgu.npc.business.inform.service.PaperService;
 import com.ctgu.npc.business.sys.service.UserService;
+import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -43,22 +38,25 @@ public class PaperServiceWeb {
 
 	@Autowired
 	private NpcService npcService;
-	
+
+	private static String secretKey = FundamentalConfigProvider.get("npc.key");
 	/**
 	 * 问卷统计
 	 * Description: 
 	 * Company: ctgu  
 	 * @author : youngmien
 	 * @date  2017-8-9 下午4:03:18
-	 * @param id
-	 * @param model
-	 * @param request
+	 * @param theObjId
 	 * @return
 	 */
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/staticPaper")
 	@POST
-	public String staticPaper(@FormParam("theObjId") String theObjId) {
+	public String staticPaper(@FormParam("theObjId") String theObjId,@FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(theObjId+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		Paper paper = paperService.get(theObjId);
 		List<PaperQues> qlist = paperService.findQuestionList(theObjId);
 		List<PaperResult> rlist = paperService.findResultList(theObjId);
@@ -70,26 +68,23 @@ public class PaperServiceWeb {
 		theObj.setRlist(rlist);
 		return JsonResultUtils.getObjectResultByStringAsDefault(theObj, JsonResultUtils.Code.SUCCESS);
 		}
-	
-	
-	@RequestMapping(value = "submitPaper")
-	@ResponseBody
-	public List<PaperQuesAns> submitPaper( HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-		String level = request.getParameter("level_code");
-		String id = request.getParameter("theObjId");
-		String loginName = request.getParameter("loginName");
-		String userId = userService.getUser(loginName).getId();
-		
-		Paper paper = paperService.get(id);
-		//model.addAttribute("paper",paper);
-		List<PaperQues> qlist = paperService.findQuestionList(id);		
-		//PaperQuesAns pqa = paperService.getPaperQuesAns(id);		
-		List<PaperQuesAns> alist = paperService.findAnswerList(id);
-			
-		return alist;
-		
+
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/submitPaper")
+	@POST
+	public String submitPaper( @FormParam("level_code") String level_code,@FormParam("theObjId") String theObjId,
+										   @FormParam("loginName") String loginName,@FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(level_code+theObjId+loginName+MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
+		String id = theObjId;
+		String userId = userService.getUser(loginName).getId();
+		Paper paper = paperService.get(id);
+		List<PaperQues> qlist = paperService.findQuestionList(id);
+		List<PaperQuesAns> alist = paperService.findAnswerList(id);
+		return JsonResultUtils.getObjectResultByStringAsDefault(alist, JsonResultUtils.Code.SUCCESS);
+	}
 
 	/**
 	 * 保存答卷
@@ -97,128 +92,113 @@ public class PaperServiceWeb {
 	 * Company: ctgu  
 	 * @author : youngmien
 	 * @date  2017-8-11 上午11:27:20
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param loginName
+	 * @param json_str
+	 * @param level_code
 	 * @return
 	 */
-	@RequestMapping(value = {"addsaveAnswer"})
-	@ResponseBody
-	public String addsaveAnswer(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-		
-		String loginName = request.getParameter("loginName");
-		
-		String json_str = request.getParameter("json_str");
-		//System.out.println(" ->" + json_str);
-		
-		String level_code = request.getParameter("level_code");
-		
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/addsaveAnswer")
+	@POST
+	public String addsaveAnswer(@FormParam("loginName") String loginName,@FormParam("json_str") String json_str,
+								@FormParam("level_code") String level_code,@FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(loginName+json_str+level_code+MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		String userId = userService.getUser(loginName).getId();
 		Answer answer = new Answer();
 		answer.setUserId(StringUtils.toInteger(userId));
 		answer.setSubTime(DateUtils.getDateTime());
 		answer.setLevel(level_code);
-		
 		if (json_str != null) {
 			Gson gson = new Gson(); 
-			 List<PaperQuesAns> theList = (List<PaperQuesAns>) gson .fromJson(
+			 List<PaperQuesAns> theList = gson .fromJson(
 					 json_str, 
 					 new TypeToken<List<PaperQuesAns>>() {}.getType()
 					 );
-			 
 			if (theList != null && theList.size() > 0 ) {
-				
 				answer.setPaperId(theList.get(0).getPaperId());
-				
 				for (PaperQuesAns paperQuesAns : theList) 
 				{
 					answer.setQuestionId(paperQuesAns.getQuestionId());
 					answer.setAnswer(paperQuesAns.getAnswer());
 					paperService.addsaveAnswer(answer);
 				}
-				
-				return "save success!";
+				return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.SUCCESS.getCode(), "save success!");
 			}else{
-				return "save fail!";
+				return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "save fail!");
 			}
 		} else {
-			return "save fail!";
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "save fail!");
 		}
 	}
-	
-	@RequestMapping(value = {"addsavePaper"})
-	@ResponseBody
-	public String addsave(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-		
-		String loginName = request.getParameter("loginName");
 
-		String json_str = request.getParameter("json_str");
-		//System.out.println(" ->" + json_str);
-		
-		String level_code = request.getParameter("level_code");
 
-		Paper theObj = null;
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/addsavePaper")
+	@POST
+	public String addsave(@FormParam("loginName") String loginName,@FormParam("json_str") String json_str,
+						  @FormParam("level_code") String level_code,@FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(loginName+json_str+level_code+MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
+		Paper theObj;
 		if (json_str != null) {
 			Gson gson = new Gson();
 			java.lang.reflect.Type type = new TypeToken<Paper>() {
 			}.getType();
-			theObj = (Paper) gson.fromJson(json_str, type);
+			theObj = gson.fromJson(json_str, type);
 			if(theObj != null){
-				//System.out.println("->theObj" + theObj.toString() );
 				paperService.addsavePaper(theObj, loginName, level_code);
-				return "save success!";
+				return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.SUCCESS.getCode(), "save success!");
 			}else{
-				return "save fail!";
+				return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "save fail!");
 				}
 		} else {
-			return "save fail!";
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "save fail!");
 		}
 	}
 	
 	/**
 	 * 根据系统级别查询问卷列表
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param level_code
+	 * @param pageNum
 	 * @return
 	 */
-	@RequestMapping(value="getListPaper")
-	@ResponseBody
-	public PagesUtil<Paper> getListPaper(HttpServletRequest request, HttpServletResponse response, Model model){
-		PagesUtil<Paper> pages = new PagesUtil<Paper>();
-		
-		String level_code = request.getParameter("level_code");
-		String pageNum = request.getParameter("curPage");
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getListPaper")
+	@POST
+	public String getListPaper(@FormParam("level_code") String level_code,@FormParam("pageNum") String pageNum,@FormParam("key") String key){
+		String keyWord = MD5Util.md5Encode(level_code+pageNum+MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
+		PagesUtil<Paper> pages;
 		int curPage = 1;
 		if(pageNum != null){
 			curPage = Integer.valueOf(pageNum);
 		}
-		
 		pages = paperService.getListPaper(level_code,curPage);
-		return pages;
-		
+		return JsonResultUtils.getObjectResultByStringAsDefault(pages, JsonResultUtils.Code.SUCCESS);
 	}
 	
 	/**
 	 * 问卷详细信息
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param theObjId
 	 * @return
 	 */
-	@RequestMapping(value = { "getDetailPaper" })
-	@ResponseBody
-	public Paper getDetailPaper(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-
-		String id = request.getParameter("theObjId");
-
-		Paper theObj = paperService.getDetailPaper(id);
-
-		return theObj;
-
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getDetailPaper")
+	@POST
+	public String getDetailPaper(@FormParam("theObjId") String theObjId,@FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(theObjId+MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
+		Paper paper = paperService.getDetailPaper(theObjId);
+		return JsonResultUtils.getObjectResultByStringAsDefault(paper, JsonResultUtils.Code.SUCCESS);
 	}
 	
 }

@@ -1,26 +1,19 @@
 package com.ctgu.npc.business.inqury_meeting.web;
 
+import com.ctgu.npc.business.common.utils.MD5Util;
 import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.inqury_meeting.entity.Inqury;
 import com.ctgu.npc.business.inqury_meeting.entity.Meet;
 import com.ctgu.npc.business.inqury_meeting.service.InquryService;
+import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -35,21 +28,26 @@ public class InquryServiceWeb {
 
 	@Autowired
 	InquryService inquryService;
-	
-	
+
+	private static String secretKey = FundamentalConfigProvider.get("npc.key");
 	/**
 	 * 获取询问列表-我的 包含分页信息
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param level_code
+	 * @param loginName
+	 * @param pageNum
 	 * @return
 	 */
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/getListMyInquryPage")
 	@POST
 	public String getListMyInquryPage(@FormParam("level_code") String level_code,
-												 @FormParam("loginName") String loginName,
-												 @FormParam("pageNum") String pageNum) {
+									  @FormParam("loginName") String loginName,
+									  @FormParam("pageNum") String pageNum,
+									  @FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(level_code + loginName+ pageNum + MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		int curPage = 1;
 		if(pageNum != null){
 			curPage = Integer.valueOf(pageNum);
@@ -62,177 +60,175 @@ public class InquryServiceWeb {
 	
 	/**
 	 * 根据inqury的id查询详细信息
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param inq_id
 	 * @return
 	 */
-	@RequestMapping(value = {"getDetailByIdInqury"})
-	@ResponseBody
-	public Inqury getDetailByIdInqury(HttpServletRequest request, HttpServletResponse response, Model model){
-		
-		String inq_id = request.getParameter("inq_id");
-		
-		Inqury inqury = new Inqury();
-		inqury = inquryService.getDetailByIdInqury(inq_id);
-		
-		return inqury;
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getDetailByIdInqury")
+	@POST
+	public String getDetailByIdInqury(@FormParam("inq_id") String inq_id,
+									  @FormParam("key") String key){
+		String keyWord = MD5Util.md5Encode(inq_id +MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
+		Inqury inqury = inquryService.getDetailByIdInqury(inq_id);
+		return JsonResultUtils.getObjectResultByStringAsDefault(inqury, JsonResultUtils.Code.SUCCESS);
 	}
 
 	/**
 	 * 获取询问列表-我的
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param level_code
+	 * @param loginName
+	 * @param pageNum
 	 * @return
 	 */
-	@RequestMapping(value = {"getListMyInqury"})
-	@ResponseBody
-	public List<Inqury> getListMyInqury(HttpServletRequest request, HttpServletResponse response, Model model) {
-		List<Inqury> lists = new ArrayList<Inqury>();
-		
-		String loginName = request.getParameter("loginName");
-		String pageNum = request.getParameter("curPage");
-		String level_code = request.getParameter("level_code");
-		
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getListMyInqury")
+	@POST
+	public String getListMyInqury(@FormParam("level_code") String level_code,
+								  @FormParam("loginName") String loginName,
+								  @FormParam("pageNum") String pageNum,
+								  @FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(level_code + loginName+ pageNum + MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		int curPage = 1;
 		if(pageNum != null){
 			curPage = Integer.valueOf(pageNum);
 		}
-		
-		lists = inquryService.getListMyInqury(loginName,curPage,level_code);
-		
-		return lists;
-		
+		List<Inqury> lists = inquryService.getListMyInqury(loginName,curPage,level_code);
+		return JsonResultUtils.getObjectResultByStringAsDefault(lists, JsonResultUtils.Code.SUCCESS);
 	}
-	
 	
 	/**
 	 * ===询问 处理列表 ==人大工作人员
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param level_code
+	 * @param loginName
+	 * @param pageNum
 	 * @return
 	 */
-	@RequestMapping(value = {"getListInquryHandlePage"})
-	@ResponseBody
-	public PagesUtil<Inqury> getListInquryHandlePage(HttpServletRequest request, HttpServletResponse response, Model model) {
-		PagesUtil<Inqury> lists = new PagesUtil<Inqury>();
-		
-		String loginName = request.getParameter("loginName");
-		String pageNum = request.getParameter("curPage");
-		String level_code = request.getParameter("level_code");
-		
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getListInquryHandlePage")
+	@POST
+	public String getListInquryHandlePage(@FormParam("level_code") String level_code,
+										  @FormParam("loginName") String loginName,
+										  @FormParam("pageNum") String pageNum,
+										  @FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(level_code + loginName+ pageNum + MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		int curPage = 1;
 		if(pageNum != null){
 			curPage = Integer.valueOf(pageNum);
 		}
-		
-		lists = inquryService.getListInquryHandlePage(loginName,curPage,level_code);
-		
-		return lists;
+		PagesUtil<Inqury> lists = inquryService.getListInquryHandlePage(loginName,curPage,level_code);
+		return JsonResultUtils.getObjectResultByStringAsDefault(lists, JsonResultUtils.Code.SUCCESS);
 		
 	}
 	
 	/**
 	 *=== 答复询问====
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param level_code
+	 * @param loginName
+	 * @param pageNum
 	 * @return
 	 */
-	@RequestMapping(value = {"getListInquryReplyPage"})
-	@ResponseBody
-	public PagesUtil<Inqury> getListInquryReplyPage(HttpServletRequest request, HttpServletResponse response, Model model) {
-		PagesUtil<Inqury> lists = new PagesUtil<Inqury>();
-		
-		String loginName = request.getParameter("loginName");
-		String pageNum = request.getParameter("curPage");
-		String level_code = request.getParameter("level_code");
-		
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getListInquryReplyPage")
+	@POST
+	public String getListInquryReplyPage(@FormParam("level_code") String level_code,
+										 @FormParam("loginName") String loginName,
+										 @FormParam("pageNum") String pageNum,
+										 @FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(level_code + loginName+ pageNum + MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		int curPage = 1;
 		if(pageNum != null){
 			curPage = Integer.valueOf(pageNum);
 		}
-		
-		lists = inquryService.getListInquryReplyPage(loginName,curPage,level_code);
-		
-		return lists;
-		
+		PagesUtil<Inqury> lists = inquryService.getListInquryReplyPage(loginName,curPage,level_code);
+		return JsonResultUtils.getObjectResultByStringAsDefault(lists, JsonResultUtils.Code.SUCCESS);
 	}
 	
 	
 	/**
 	 * === 我的约见列表
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param level_code
+	 * @param loginName
+	 * @param pageNum
 	 * @return
 	 */
-	@RequestMapping(value = {"getListMyMeetPage"})
-	@ResponseBody
-	public PagesUtil<Meet> getListMyMeetPage(HttpServletRequest request, HttpServletResponse response, Model model) {
-		PagesUtil<Meet> lists = new PagesUtil<Meet>();
-		
-		String loginName = request.getParameter("loginName");
-		String pageNum = request.getParameter("curPage");
-		String level_code = request.getParameter("level_code");
-		
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getListMyMeetPage")
+	@POST
+	public String getListMyMeetPage(@FormParam("level_code") String level_code,
+									@FormParam("loginName") String loginName,
+									@FormParam("pageNum") String pageNum,
+									@FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(level_code + loginName+ pageNum + MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		int curPage = 1;
 		if(pageNum != null){
 			curPage = Integer.valueOf(pageNum);
 		}
-		
-		lists = inquryService.getListMyMeetPage(loginName,curPage,level_code);
-		
-		return lists;
+
+		PagesUtil<Meet> lists  = inquryService.getListMyMeetPage(loginName,curPage,level_code);
+
+		return JsonResultUtils.getObjectResultByStringAsDefault(lists, JsonResultUtils.Code.SUCCESS);
 		
 	}
 	
 	/**
 	 * === 约见详细信息
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param theObjId
 	 * @return
 	 */
-	@RequestMapping(value = {"getDetailByIdMeet"})
-	@ResponseBody
-	public Meet getDetailByIdMeet(HttpServletRequest request, HttpServletResponse response, Model model){
-		
-		String theObjId = request.getParameter("theObjId");
-		
-		Meet theObj = new Meet();
-		theObj = inquryService.getDetailByIdMeet(theObjId);
-		
-		return theObj;
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getDetailByIdMeet")
+	@POST
+	public String getDetailByIdMeet(@FormParam("theObjId") String theObjId,
+									@FormParam("key") String key){
+		String keyWord = MD5Util.md5Encode(theObjId + MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
+		Meet theObj  = inquryService.getDetailByIdMeet(theObjId);
+
+		return JsonResultUtils.getObjectResultByStringAsDefault(theObj, JsonResultUtils.Code.SUCCESS);
 	}
 	
 	
 	/**
 	 * ===约见处理列表
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param level_code
+	 * @param loginName
+	 * @param pageNum
 	 * @return
 	 */
-	@RequestMapping(value = {"getListMeetHandlePage"})
-	@ResponseBody
-	public PagesUtil<Meet> getListMeetHandlePage(HttpServletRequest request, HttpServletResponse response, Model model) {
-		PagesUtil<Meet> lists = new PagesUtil<Meet>();
-		
-		String loginName = request.getParameter("loginName");
-		String pageNum = request.getParameter("curPage");
-		String level_code = request.getParameter("level_code");
-		
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getListMeetHandlePage")
+	@POST
+	public String getListMeetHandlePage(@FormParam("level_code") String level_code,
+										@FormParam("loginName") String loginName,
+										@FormParam("pageNum") String pageNum,
+										@FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(level_code + loginName+ pageNum + MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		int curPage = 1;
 		if(pageNum != null){
 			curPage = Integer.valueOf(pageNum);
 		}
-		
-		lists = inquryService.getListMeetHandlePage(loginName,curPage,level_code);
-		
-		return lists;
+		PagesUtil<Meet> lists = inquryService.getListMeetHandlePage(loginName,curPage,level_code);
+		return JsonResultUtils.getObjectResultByStringAsDefault(lists, JsonResultUtils.Code.SUCCESS);
 		
 	}
 	

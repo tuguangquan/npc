@@ -2,23 +2,18 @@ package com.ctgu.npc.business.inform.web;
 
 import com.ctgu.npc.business.basicInfo.service.NpcService;
 import com.ctgu.npc.business.common.utils.DateUtils;
+import com.ctgu.npc.business.common.utils.MD5Util;
 import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.common.utils.StringUtils;
 import com.ctgu.npc.business.inform.entity.*;
 import com.ctgu.npc.business.inform.service.TestService;
 import com.ctgu.npc.business.sys.service.UserService;
+import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -47,14 +42,14 @@ public class TestServiceWeb {
 
 	@Autowired
 	private NpcService npcService;
-	
-	
+
+	private static String secretKey = FundamentalConfigProvider.get("npc.key");
 	
 	/**
 	 * 根据系统级别查询工作评议列表
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param level_code
+	 * @param pageNum
+	 * @param loginName
 	 * @return
 	 */
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
@@ -62,7 +57,12 @@ public class TestServiceWeb {
 	@POST
 	public String getListDiscussion(@FormParam("level_code") String level_code,
 												   @FormParam("pageNum") String pageNum,
-												   @FormParam("loginName") String loginName){
+												   @FormParam("loginName") String loginName,
+												   @FormParam("key") String key){
+		String keyWord = MD5Util.md5Encode(level_code + pageNum + loginName+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		int curPage = 1;
 		if(pageNum != null){
 			curPage = Integer.valueOf(pageNum);
@@ -73,21 +73,20 @@ public class TestServiceWeb {
 	
 	/**
 	 * 专项工作详细信息
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param theObjId
 	 * @return
 	 */
-	@RequestMapping(value = { "getDetailDiscussion" })
-	@ResponseBody
-	public Discussion getDetailDiscussion(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-
-		String id = request.getParameter("theObjId");
-
-		Discussion theObj = testService.getDetailDiscussion(id);
-
-		return theObj;
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getDetailDiscussion")
+	@POST
+	public String getDetailDiscussion(@FormParam("theObjId") String theObjId,
+										  @FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(theObjId + MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
+		Discussion theObj = testService.getDetailDiscussion(theObjId);
+		return JsonResultUtils.getObjectResultByStringAsDefault(theObj, JsonResultUtils.Code.SUCCESS);
 
 	}
 	
@@ -98,33 +97,30 @@ public class TestServiceWeb {
 	 * Company: ctgu  
 	 * @author : youngmien
 	 * @date  2016-9-21 上午11:40:25
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param level_code
+	 * @param theObjId
+	 * @param loginName
 	 * @return
 	 */
-	@RequestMapping(value = "getDisTestResult")
-	@ResponseBody
-	public DisTestResult getDisTestResult(HttpServletRequest request,
-			HttpServletResponse response, Model model) {
-		
-		String level = request.getParameter("level_code");
-		String id = request.getParameter("theObjId");
-		String loginName = request.getParameter("loginName");
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getDisTestResult")
+	@POST
+	public String getDisTestResult(@FormParam("level_code") String level_code,
+										  @FormParam("theObjId") String theObjId,
+										  @FormParam("loginName") String loginName,
+										  @FormParam("key") String key) {
+
+		String keyWord = MD5Util.md5Encode(level_code + theObjId + loginName+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		String userId = userService.getUser(loginName).getId();
-		
-		Choice choice = testService.getChoice(level,id,userId);
-		
-		Discussion dis = testService.getDetailDiscussion(id);//测试表
-		
-		List<DisTest> dlist = testService.findListDisTest(id);//本测试的测评单位
-		
-		DisTestChoice dtc = testService.getDisTestChoice(id,userId);
-		
+		Choice choice = testService.getChoice(level_code,theObjId,userId);
+		Discussion dis = testService.getDetailDiscussion(theObjId);//测试表
+		List<DisTest> dlist = testService.findListDisTest(theObjId);//本测试的测评单位
+		DisTestChoice dtc = testService.getDisTestChoice(theObjId,userId);
 		List<DisTestChoice> clist = testService.findListDisTestChoice(dtc);
-		
 		DisTestResult theObj = new DisTestResult();
-		
 		if(dis.getStatus().equals("2")){//已经测评过了
 			if(testService.isSubmit(choice)){//未提交
 				if(clist != null && clist.size() > 0){
@@ -138,7 +134,7 @@ public class TestServiceWeb {
 		}
 		else//还未测评 
 		{
-			if(testService.isAnswerUser(id,level,userId)){//已经答过了
+			if(testService.isAnswerUser(theObjId,level_code,userId)){//已经答过了
 				if(clist != null && clist.size() > 0){
 					//theObj.setClist(clist);
 				}
@@ -147,11 +143,10 @@ public class TestServiceWeb {
 					//theObj.setDlist(dlist);
 				}
 			}
-			
 		}
-		
-		return theObj;
-		
+		return JsonResultUtils.getObjectResultByStringAsDefault(theObj, JsonResultUtils.Code.SUCCESS);
+
+
 	}
 	
 	/**
@@ -160,26 +155,30 @@ public class TestServiceWeb {
 	 * Company: ctgu  
 	 * @author : youngmien
 	 * @date  2016-9-21 下午4:10:23
-	 * @param model
-	 * @param request
-	 * @param response
+	 * @param level_code
+	 * @param theObjId
+	 * @param loginName
 	 * @return
 	 */
-	@RequestMapping(value = "npcreplyDetail")
-	@ResponseBody
-	public List<DisTestChoice> npcreplyDetail( Model model,HttpServletRequest request ,HttpServletResponse response) {
-		
-		String level = request.getParameter("level_code");
-		String id = request.getParameter("theObjId");
-		String loginName = request.getParameter("loginName");
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/npcreplyDetail")
+	@POST
+	public String npcreplyDetail(@FormParam("level_code") String level_code,
+											  @FormParam("theObjId") String theObjId,
+											  @FormParam("loginName") String loginName,
+											  @FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(level_code + theObjId + loginName+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		//String userId = userService.getUser(loginName).getId();
-		String npcId =  npcService.getBasicInfo(loginName, level).getId();
+		String npcId =  npcService.getBasicInfo(loginName, level_code).getId();
 		
-		Discussion dis = testService.getDetailDiscussion(id);
-		List<DisTestChoice> dtclist = testService.findListDisTestChoiceById(id,npcId);
-		
-		return dtclist;
-		
+		Discussion dis = testService.getDetailDiscussion(theObjId);
+		List<DisTestChoice> dtclist = testService.findListDisTestChoiceById(theObjId,npcId);
+		return JsonResultUtils.getObjectResultByStringAsDefault(dtclist, JsonResultUtils.Code.SUCCESS);
+
+
 	}
 	
 	/**
@@ -188,25 +187,22 @@ public class TestServiceWeb {
 	 * Company: ctgu  
 	 * @author : youngmien
 	 * @date  2016-9-24 上午10:04:05
-	 * @param model
-	 * @param request
-	 * @param response
+	 * @param theObjId
 	 * @return
 	 */
-	@RequestMapping(value = "npcTesDetail")
-	@ResponseBody
-	public List<DisTest> npcTesDetail( Model model,HttpServletRequest request ,HttpServletResponse response) {
-		
-		String level = request.getParameter("level_code");
-		String id = request.getParameter("theObjId");
-		String loginName = request.getParameter("loginName");
-		//String userId = userService.getUser(loginName).getId();
-		
-		Discussion dis = testService.getDetailDiscussion(id);
-		List<DisTest> dtclist = testService.findListDisTest(id);//本测试的测评单位
-		
-		return dtclist;
-		
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/npcTesDetail")
+	@POST
+	public String npcTesDetail(@FormParam("theObjId") String theObjId,
+									  @FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode( theObjId + MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
+		List<DisTest> dtclist = testService.findListDisTest(theObjId);//本测试的测评单位
+		return JsonResultUtils.getObjectResultByStringAsDefault(dtclist, JsonResultUtils.Code.SUCCESS);
+
+
 	}
 	
 	/**
@@ -215,27 +211,30 @@ public class TestServiceWeb {
 	 * Company: ctgu  
 	 * @author : youngmien
 	 * @date  2016-9-23 上午10:32:52
-	 * @param model
-	 * @param request
-	 * @param response
+	 * @param theObjId
+	 * @param loginName
 	 * @return
 	 */
-	@RequestMapping(value = "staticDis")
-	@ResponseBody
-	public DisTestResult staticDis( Model model,HttpServletRequest request ,HttpServletResponse response) {
-		String level = request.getParameter("level_code");
-		String id = request.getParameter("theObjId");
-		String loginName = request.getParameter("loginName");
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/staticDis")
+	@POST
+	public String staticDis( @FormParam("theObjId") String theObjId,
+									@FormParam("loginName") String loginName,
+									@FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(theObjId  + loginName+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		String userId = userService.getUser(loginName).getId();
 		
-		Discussion dis = testService.getDetailDiscussion(id);
+		Discussion dis = testService.getDetailDiscussion(theObjId);
 
-		List<DisTest> dlist = testService.findListDisTest(id);
+		List<DisTest> dlist = testService.findListDisTest(theObjId);
 		
-		List<DisResult> rlist = testService.findListDisResult(id);
+		List<DisResult> rlist = testService.findListDisResult(theObjId);
 		
 		//List<DisChoice> clist = testService.findRemarkList(id);
-		Integer joinTotal = testService.getJoinTotal(id);
+		Integer joinTotal = testService.getJoinTotal(theObjId);
 		
 		DisTestResult theObj = new DisTestResult();
 
@@ -271,10 +270,11 @@ public class TestServiceWeb {
 		}
 		
 		theObj.setList(list);
-		
-		return theObj;
-		
-		}
+
+		return JsonResultUtils.getObjectResultByStringAsDefault(theObj, JsonResultUtils.Code.SUCCESS);
+
+
+	}
 	
 	/**
 	 * 提交测评
@@ -282,19 +282,25 @@ public class TestServiceWeb {
 	 * Company: ctgu  
 	 * @author : youngmien
 	 * @date  2016-9-23 上午10:33:14
-	 * @param choice
-	 * @param model
-	 * @param request
-	 * @param redirectAttributes
+	 * @param level_code
+	 * @param theObjId
+	 * @param loginName
+	 * @param json_str
 	 * @return
 	 */
-	@RequestMapping(value = {"submitDis"})
-	public String submitDis( Model model,HttpServletRequest request ,HttpServletResponse response) {
-		String level = request.getParameter("level_code");
-		String disid = request.getParameter("theObjId");
-		String loginName = request.getParameter("loginName");
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/submitDis")
+	@POST
+	public String submitDis(@FormParam("level_code") String level_code,
+			                @FormParam("theObjId") String theObjId,
+							@FormParam("loginName") String loginName,
+							@FormParam("json_str") String json_str,
+							@FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(level_code + theObjId + loginName+ json_str+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		String userId = userService.getUser(loginName).getId();
-		String json_str = request.getParameter("json_str");
 		if (json_str != null) {
 			/*Gson gson = new Gson();
 			java.lang.reflect.Type type = new TypeToken<Suggestion>() {
@@ -319,8 +325,8 @@ public class TestServiceWeb {
 		for(Choice choice:theList){
 			choice.setNpcId(StringUtils.toInteger(userId));
 			choice.setSubTime(DateUtils.getDateTime());
-			choice.setLevel(level);
-			choice.setDisId(StringUtils.toInteger(disid));
+			choice.setLevel(level_code);
+			choice.setDisId(StringUtils.toInteger(theObjId));
 			testService.saveSubmitChoice(choice);
 		}
 		/*for(int i = 0 ; i<q.length;i++){

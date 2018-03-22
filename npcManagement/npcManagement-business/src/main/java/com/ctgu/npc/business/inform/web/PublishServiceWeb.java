@@ -1,24 +1,19 @@
 package com.ctgu.npc.business.inform.web;
 
+import com.ctgu.npc.business.common.utils.MD5Util;
 import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.inform.entity.Publish;
 import com.ctgu.npc.business.inform.service.PublishService;
+import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -27,18 +22,21 @@ public class PublishServiceWeb {
 	
 	@Resource
 	PublishService pubService;
-	
+
+	private static String secretKey = FundamentalConfigProvider.get("npc.key");
 	/**
 	 * 根据publishId查询publish详细信息
-	 * @param request
-	 * @param response
-	 * @param model
+	 * @param pub_id
 	 * @return
 	 */
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/getPublishDetailNpc")
 	@POST
-	public String getPublishDetailNpc(@FormParam("pub_id") String pub_id){
+	public String getPublishDetailNpc(@FormParam("pub_id") String pub_id,@FormParam("key") String key){
+		String keyWord = MD5Util.md5Encode(pub_id + MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		Publish	pub = pubService.getPublishDetailNpc(pub_id);
 		return JsonResultUtils.getObjectResultByStringAsDefault(pub, JsonResultUtils.Code.SUCCESS);
 	}
@@ -49,22 +47,21 @@ public class PublishServiceWeb {
 	 * @param level_code
 	 * @return
 	 */
-	@RequestMapping(value="getPublishListNpc")
-	@ResponseBody
-	public List<Publish> getPublishListNpc(HttpServletRequest request, HttpServletResponse response, Model model){
-		List<Publish> pubList = new ArrayList<Publish>();
-		
-		String level_code = request.getParameter("level_code");
-		String pageNum = request.getParameter("curPage");
-		String pub_col = request.getParameter("pub_col");
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getPublishListNpc")
+	@POST
+	public String getPublishListNpc(@FormParam("level_code") String level_code,@FormParam("pageNum") String pageNum,
+									@FormParam("pub_col") String pub_col,@FormParam("key") String key){
+		String keyWord = MD5Util.md5Encode(level_code+pageNum+pub_col+MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		int curPage = 1;
 		if(pageNum != null){
 			curPage = Integer.valueOf(pageNum);
 		}
-		
-		pubList = pubService.getPublishListNpc(curPage,level_code,pub_col);
-		
-		return pubList;
+		List<Publish> pubList = pubService.getPublishListNpc(curPage,level_code,pub_col);
+		return JsonResultUtils.getObjectResultByStringAsDefault(pubList, JsonResultUtils.Code.SUCCESS);
 		
 	}
 
@@ -74,22 +71,21 @@ public class PublishServiceWeb {
 	 * @param level_code
 	 * @return
 	 */
-	@RequestMapping(value="getPublishListNpcPage")
-	@ResponseBody
-	public PagesUtil<Publish> getPublishListNpcPage(HttpServletRequest request, HttpServletResponse response, Model model){
-		PagesUtil<Publish> pubList = new PagesUtil<Publish>();
-		
-		String level_code = request.getParameter("level_code");
-		String pageNum = request.getParameter("curPage");
-		String pub_col = request.getParameter("pub_col");
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/getPublishListNpcPage")
+	@POST
+	public String getPublishListNpcPage(@FormParam("level_code") String level_code,@FormParam("pageNum") String pageNum,
+										@FormParam("pub_col") String pub_col,@FormParam("key") String key){
+		String keyWord = MD5Util.md5Encode(level_code+pageNum+pub_col+MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
 		int curPage = 1;
 		if(pageNum != null){
 			curPage = Integer.valueOf(pageNum);
 		}
-		
-		pubList = pubService.getPublishListNpcPage(curPage,level_code,pub_col);
-		
-		return pubList;
+		PagesUtil<Publish> pubList = pubService.getPublishListNpcPage(curPage,level_code,pub_col);
+		return JsonResultUtils.getObjectResultByStringAsDefault(pubList, JsonResultUtils.Code.SUCCESS);
 		
 	}
 

@@ -1,18 +1,15 @@
 package com.ctgu.npc.business.sys.web;
 
+import com.ctgu.npc.business.common.utils.MD5Util;
 import com.ctgu.npc.business.sys.service.UserService;
 import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.common.utils.StringUtils;
 import com.ctgu.npc.business.sys.entity.Users;
 import com.ctgu.npc.business.sys.service.SysService;
+import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
+import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -29,6 +26,7 @@ import java.util.Map;
 @Component
 @Path("/sys")
 public class SysServiceWeb {
+    private static String secretKey = FundamentalConfigProvider.get("npc.key");
     @Autowired
     private UserService userService;
 
@@ -39,15 +37,20 @@ public class SysServiceWeb {
      * 修改个人用户密码
      * @param oldPassword
      * @param newPassword
-     * @param model
+     * @param loginName
      * @return
      */
     @Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
     @Path("/updatePwd")
     @POST
-    public String updatePwd(@FormParam("oldPassword") String oldPassword,
-                            @FormParam("loginName") String loginName,
-                            @FormParam("newPassword") String newPassword) {
+    public String updatePwd( @FormParam("loginName") String loginName,
+                             @FormParam("oldPassword") String oldPassword,
+                             @FormParam("newPassword") String newPassword,
+                             @FormParam("key") String key) {
+        String keyWord = MD5Util.md5Encode(loginName+oldPassword+newPassword + MD5Util.getDateStr() + secretKey);
+        if (!keyWord.equals(key)){
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+        }
         String result = null;
         Users theUser = null;
         theUser = userService.getUser(loginName);
@@ -71,57 +74,47 @@ public class SysServiceWeb {
 
     /**
      * 根据用户名密码进行登录判断
-     * @param request
-     * @param response
-     * @param model
+     * @param uname
+     * @param pswd
      * @return
      */
-    @RequestMapping(value="login")
-    @ResponseBody
-    public Users login(HttpServletRequest request,
-                       HttpServletResponse response, Model model){
-
-        Users usrs = null;
-        String uname = request.getParameter("username");
-        String pswd = request.getParameter("password");
-
-        //System.out.println("->" +uname +",->" +pswd);
-
-		/*try {*/
+    @Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    @Path("/login")
+    @POST
+    public String login(@FormParam("uname") String uname,
+                        @FormParam("pswd") String pswd,
+                        @FormParam("key") String key){
+        String keyWord = MD5Util.md5Encode(uname+pswd+ MD5Util.getDateStr() + secretKey);
+        if (!keyWord.equals(key)){
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+        }
+        Users usrs;
         if (StringUtils.isMobile(uname))
         {
             usrs = userService.getUserByMobile(uname,pswd);
         }else{
             usrs = userService.getUserByParams(uname,pswd);
         }
-
-		/*} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-
-		}*/
-
-        //out.print(jsonStr);
-        //System.out.println("user roleName->" + usrs.getRoleName() + ",roleId->" + usrs.getRoleId());
-        return usrs;
+        return JsonResultUtils.getObjectResultByStringAsDefault(usrs, JsonResultUtils.Code.SUCCESS);
 
     }
 
 
     /**
      * 根据用户的级别编码查询用户级别名称
-     * @param request
-     * @param response
-     * @param model
+     * @param levels
      * @return
      */
-    @RequestMapping(value="getLevelMaps")
-    @ResponseBody
-    public List<Map<String,Object>> getLevelByList(HttpServletRequest request,
-                                                   HttpServletResponse response, Model model){
+    @Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    @Path("/getLevelMaps")
+    @POST
+    public String getLevelByList(@FormParam("levels") String levels,
+                                 @FormParam("key") String key){
+        String keyWord = MD5Util.md5Encode(levels+ MD5Util.getDateStr() + secretKey);
+        if (!keyWord.equals(key)){
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+        }
         List<Map<String,Object>> levelMaps = new ArrayList<Map<String,Object>>();
-
-        String levels = request.getParameter("levels");
         if(levels != null){
             String[] str = levels.split(",");
             for(int i = 0;i < str.length; i++){
@@ -132,8 +125,7 @@ public class SysServiceWeb {
                 levelMaps.add(map);
             }
         }
-
-        return levelMaps;
+        return JsonResultUtils.getObjectResultByStringAsDefault(levelMaps, JsonResultUtils.Code.SUCCESS);
 
     }
 
@@ -143,66 +135,63 @@ public class SysServiceWeb {
      * Company: ctgu
      * @author : youngmien
      * @date  2017-1-17 上午9:13:02
-     * @param request
-     * @param response
-     * @param model
+     * @param userId
      * @return String 如100,10010
      */
-    @RequestMapping(value="getLevelsByUserId")
-    @ResponseBody
-    public String getLevelsByUserId(HttpServletRequest request,
-                                    HttpServletResponse response, Model model){
-        String levels = null;
-
-        String userId = request.getParameter("user_Id");
-        levels = userService.getLevelsByUserId(userId);
+    @Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    @Path("/getLevelsByUserId")
+    @POST
+    public String getLevelsByUserId(@FormParam("userId") String userId,
+                                    @FormParam("key") String key){
+        String keyWord = MD5Util.md5Encode(userId+ MD5Util.getDateStr() + secretKey);
+        if (!keyWord.equals(key)){
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+        }
+        String levels = userService.getLevelsByUserId(userId);
         System.out.println("levels->" + levels);
-
-        return levels;
-
+        return JsonResultUtils.getObjectResultByStringAsDefault(levels, JsonResultUtils.Code.SUCCESS);
     }
 
 
 
     /**
      * 用户分页
-     * @param request
-     * @param model
+     * @param pageNum
      * @return
      */
-    @RequestMapping(value="page")
-    public String getPagesByNum(HttpServletRequest request, Model model){
-
-        String curPageStr = request.getParameter("numpages");
+    @Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    @Path("/page")
+    @POST
+    public String getPagesByNum(@FormParam("pageNum") String pageNum,
+                                @FormParam("key") String key){
+        String keyWord = MD5Util.md5Encode(pageNum+ MD5Util.getDateStr() + secretKey);
+        if (!keyWord.equals(key)){
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+        }
         int curPageI = 1;
-        if(curPageStr != null){
+        if(pageNum != null){
             try {
-                curPageI = Integer.parseInt(curPageStr);
-
+                curPageI = Integer.parseInt(pageNum);
             } catch (Exception e) {
                 // TODO: handle exception
             }
         }
         //获取总记录数
         int rowCount = userService.getRowCount();
-
         PagesUtil pagesUtil = new PagesUtil();
         pagesUtil.setRowCount(rowCount);
-
         if(pagesUtil.getTotalPages() < curPageI){
             curPageI = pagesUtil.getTotalPages();
         }
         pagesUtil = userService.getPagesByNum(pagesUtil);
-
         System.out.println("list->"+pagesUtil.getLists().size());
-
-        model.addAttribute("pagelist", pagesUtil);
-        //request.setAttribute("pagelist", pagesUtil);
-
-        return "index";
+        return JsonResultUtils.getObjectResultByStringAsDefault(pagesUtil, JsonResultUtils.Code.SUCCESS);
     }
 
-    @RequestMapping(value="index")
+
+    @Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    @Path("/index")
+    @POST
     public String helloworld(){
         return "index";
     }
