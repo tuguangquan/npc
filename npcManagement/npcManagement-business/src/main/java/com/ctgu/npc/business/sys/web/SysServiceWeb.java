@@ -6,6 +6,8 @@ import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.common.utils.StringUtils;
 import com.ctgu.npc.business.sys.entity.Users;
 import com.ctgu.npc.business.sys.service.SysService;
+import com.ctgu.npc.business.wechat.entity.WeiXinChannel;
+import com.ctgu.npc.business.wechat.service.WeChatService;
 import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,8 @@ public class SysServiceWeb {
     @Autowired
     private SysService systemService;
 
+    @Autowired
+    private WeChatService weChatService;
     /**
      * 修改个人用户密码
      * @param oldPassword
@@ -51,9 +55,8 @@ public class SysServiceWeb {
         if (!keyWord.equals(key)){
             return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
         }
-        String result = null;
-        Users theUser = null;
-        theUser = userService.getUser(loginName);
+        String result;
+        Users theUser = userService.getUser(loginName);
         if(theUser != null){
             if (StringUtils.isNotBlank(oldPassword) && StringUtils.isNotBlank(newPassword)){
                 if (SysService.validatePassword(oldPassword, theUser.getPassword())){
@@ -89,14 +92,18 @@ public class SysServiceWeb {
         if (!keyWord.equals(key)){
             return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
         }
-        Users usrs;
+        WeiXinChannel weiXinChannel = weChatService.getWeiXinChannelByUnionId(unionId);
+        if (weiXinChannel==null){
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请先关注我们服务号!");
+        }
+        Users users;
         if (StringUtils.isMobile(uname))
         {
-            usrs = userService.getUserByMobile(uname,pswd);
+            users = userService.getUserByMobile(uname,pswd);
         }else{
-            usrs = userService.getUserByParams(uname,pswd);
+            users = userService.getUserByParams(uname,pswd);
         }
-        return JsonResultUtils.getObjectResultByStringAsDefault(usrs, JsonResultUtils.Code.SUCCESS);
+        return JsonResultUtils.getObjectResultByStringAsDefault(users, JsonResultUtils.Code.SUCCESS);
 
     }
 
