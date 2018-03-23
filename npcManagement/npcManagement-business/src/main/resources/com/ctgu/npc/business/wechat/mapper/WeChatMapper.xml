@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.npc.business.wechat.mapper.WeChatMapper">
+
+	<insert id="addWeChat" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO c_weixin(
+		memberId,
+		opId,
+		unionId,
+		finalLoginDate,
+		addDate,
+		status
+		) VALUES (
+		#{memberId},
+		#{opId},
+		#{unionId},
+		#{finalLoginDate},
+		#{addDate},
+		#{status}
+		)
+	</insert>
+
+	<!-- 更新微信关注 -->
+	<update id="updateWeChat">
+		UPDATE c_weixin SET
+		status = #{status}
+		WHERE opId = #{opId}
+	</update>
+
+
+	<select id="getWeiXinChannelByOpId" resultType="com.ctgu.npc.business.wechat.entity.WeiXinChannel">
+		SELECT	*
+		FROM c_weixin
+		WHERE opId = #{opId}
+	</select>
+
+	<select id="getWeiXinChannelByUnionId" resultType="com.ctgu.npc.business.wechat.entity.WeiXinChannel">
+		SELECT	*
+		FROM c_weixin
+		WHERE unionId = #{unionId}
+	</select>
+
+</mapper>

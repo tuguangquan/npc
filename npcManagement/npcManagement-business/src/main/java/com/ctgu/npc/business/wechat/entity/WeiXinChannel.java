@@ -6,12 +6,13 @@ import java.util.Date;
 
 public class WeiXinChannel implements Serializable {
 	private static final long serialVersionUID = 1234234L;
-	public String memberId;	//成员ID
-	public String opId;	//微信ID
-	public Date finalLoginDate;	//最后登录时间
-	public Date addDate;	//新增时间
-	public String remark;	//备注
-	public String infos;//微信信息JSON
+	private String memberId;	//成员ID
+	private String opId;	//微信ID
+	private String unionId;	//微信ID
+	private Date finalLoginDate;	//最后登录时间
+	private Date addDate;	//新增时间
+	private int status;
+
 
 	public String getMemberId() {
 		return memberId;
@@ -27,6 +28,14 @@ public class WeiXinChannel implements Serializable {
 
 	public void setOpId(String opId) {
 		this.opId = opId;
+	}
+
+	public String getUnionId() {
+		return unionId;
+	}
+
+	public void setUnionId(String unionId) {
+		this.unionId = unionId;
 	}
 
 	public Date getFinalLoginDate() {
@@ -45,19 +54,11 @@ public class WeiXinChannel implements Serializable {
 		this.addDate = addDate;
 	}
 
-	public String getRemark() {
-		return remark;
+	public int getStatus() {
+		return status;
 	}
 
-	public void setRemark(String remark) {
-		this.remark = remark;
-	}
-
-	public String getInfos() {
-		return infos;
-	}
-
-	public void setInfos(String infos) {
-		this.infos = infos;
+	public void setStatus(int status) {
+		this.status = status;
 	}
 }

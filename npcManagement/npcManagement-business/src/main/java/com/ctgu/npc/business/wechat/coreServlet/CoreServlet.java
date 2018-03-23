@@ -2,9 +2,12 @@ package com.ctgu.npc.business.wechat.coreServlet;
 
 
 import com.ctgu.npc.business.wechat.coreServlet.process.TextRespProcess;
+import com.ctgu.npc.business.wechat.entity.WeiXinChannel;
 import com.ctgu.npc.business.wechat.service.WeChatService;
 import com.ctgu.npc.business.wechat.util.MessageUtil;
+import com.ctgu.npc.business.wechat.util.OpenIdUtil;
 import com.ctgu.npc.business.wechat.util.SignUtil;
+import com.ctgu.npc.business.wechat.util.WeChatUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
@@ -17,7 +20,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by Administrator on 2017/11/15 0015.
@@ -67,7 +72,6 @@ public class CoreServlet extends HttpServlet {
         PrintWriter out = response.getWriter();
         out.print(respMessage);
         out.close();
-
     }
     public String processRequest(HttpServletRequest request) {
         String respMessage = null;
@@ -84,12 +88,39 @@ public class CoreServlet extends HttpServlet {
                 String openId = requestMap.get("FromUserName");
                 // 订阅
                 if (eventType.equals(MessageUtil.EVENT_TYPE_SUBSCRIBE)) {
-                    requestMap.put("Content","谢谢您的关注！我们提供的租借服务是最好的！！！");
+                    requestMap.put("Content","谢谢您的关注！");
+                    WeiXinChannel weiXinChannel = weChatService.getWeiXinChannelByOpId(openId);
+                    if (weiXinChannel == null){
+                        weiXinChannel = new WeiXinChannel();
+                        weiXinChannel.setMemberId(UUID.randomUUID().toString().replace("-", ""));
+                        weiXinChannel.setOpId(openId);
+                        weiXinChannel.setUnionId(WeChatUtil.getUnionId(openId));
+                        weiXinChannel.setStatus(1);
+                        weiXinChannel.setFinalLoginDate(new Date());
+                        weiXinChannel.setAddDate(new Date());
+                        weChatService.addWeChat(weiXinChannel);
+                    }else{
+                        weiXinChannel.setStatus(1);
+                        weChatService.updateWeChat(weiXinChannel);
+                    }
                     return new TextRespProcess().getRespMessage(requestMap);
                 }
                 // 取消订阅
                 else if (eventType.equals(MessageUtil.EVENT_TYPE_UNSUBSCRIBE)) {
-                    // TODO 取消订阅后用户再收不到公众号发送的消息，因此不需要回复消息
+                    WeiXinChannel weiXinChannel = weChatService.getWeiXinChannelByOpId(openId);
+                    if (weiXinChannel == null){
+                        weiXinChannel = new WeiXinChannel();
+                        weiXinChannel.setMemberId(UUID.randomUUID().toString().replace("-", ""));
+                        weiXinChannel.setOpId(openId);
+                        weiXinChannel.setUnionId(WeChatUtil.getUnionId(openId));
+                        weiXinChannel.setStatus(0);
+                        weiXinChannel.setFinalLoginDate(new Date());
+                        weiXinChannel.setAddDate(new Date());
+                        weChatService.addWeChat(weiXinChannel);
+                    }else{
+                        weiXinChannel.setStatus(0);
+                        weChatService.updateWeChat(weiXinChannel);
+                    }
                 }
                 // 自定义菜单点击事件
                 else if (eventType.equals(MessageUtil.EVENT_TYPE_CLICK)) {

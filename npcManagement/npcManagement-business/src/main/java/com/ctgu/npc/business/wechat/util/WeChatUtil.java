@@ -1,7 +1,5 @@
 package com.ctgu.npc.business.wechat.util;
 
-import com.ctgu.npc.business.wechat.util.AccessToken;
-import com.ctgu.npc.business.wechat.util.MyX509TrustManager;
 import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;

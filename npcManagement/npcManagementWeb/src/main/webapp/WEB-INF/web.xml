@@ -66,6 +66,14 @@
     <url-pattern>/rs/*</url-pattern>
   </servlet-mapping>
 
+  <servlet>
+    <servlet-name>coreServlet</servlet-name>
+    <servlet-class>com.ctgu.npc.business.wechat.coreServlet.CoreServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>coreServlet</servlet-name>
+    <url-pattern>/coreServlet</url-pattern>
+  </servlet-mapping>
 
   <!-- Servlet Configuration ========================================== -->
   <context-param>

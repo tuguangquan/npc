@@ -83,9 +83,9 @@ public class SysServiceWeb {
     @POST
     public String login(@FormParam("uname") String uname,
                         @FormParam("pswd") String pswd,
-                        @FormParam("openId") String openId,
+                        @FormParam("unionId") String unionId,
                         @FormParam("key") String key){
-        String keyWord = MD5Util.md5Encode(uname+pswd+ MD5Util.getDateStr() + secretKey);
+        String keyWord = MD5Util.md5Encode(uname+pswd+unionId+ MD5Util.getDateStr() + secretKey);
         if (!keyWord.equals(key)){
             return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
         }

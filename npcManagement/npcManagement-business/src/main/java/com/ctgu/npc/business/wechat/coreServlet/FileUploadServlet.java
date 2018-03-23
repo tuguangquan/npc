@@ -4,10 +4,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.whut.seis.business.apis.ApiModule;
-import org.whut.seis.business.util.StringUtil;
-import org.whut.seis.business.webservice.ResponseMessage;
-import org.whut.seis.business.webservice.WGInterface;
+
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -105,7 +102,7 @@ public class FileUploadServlet extends HttpServlet {
             }
             in.close();
             out.close();
-            String api = getLogApi("savePicture");
+           // String api = getLogApi("savePicture");
             String xml =  "<Req><Service>" +
                     "<pictureId>"+orderId+photoNo+"</pictureId>" +
                     "<orderId>"+orderId+"</orderId>" +
@@ -113,9 +110,8 @@ public class FileUploadServlet extends HttpServlet {
                     "</Service>" +
                     "<TransactionCode>110022</TransactionCode>" +
                     "</Req>";
-            System.out.println(api+"\n----------\n"+xml);
-            ResponseMessage resp = WGInterface.doPost(api, xml);
-            JSONObject result = JSONObject.fromObject(resp.getResult());
+           // System.out.println(api+"\n----------\n"+xml);
+
         } catch (FileUploadException e1) {
             System.out.println(e1);
             res.put("Code", "-20000");
@@ -139,13 +135,5 @@ public class FileUploadServlet extends HttpServlet {
         doGet(request, response);
     }
 
-    private static String getLogApi(String api){
-        String APIFullName;
-        if(StringUtil.isNotEmpty(api)){
-            APIFullName = ApiModule.Asset.valueOf(api).getName();
-        }else{
-            APIFullName = "";
-        }
-        return APIFullName;
-    }
+
 }
