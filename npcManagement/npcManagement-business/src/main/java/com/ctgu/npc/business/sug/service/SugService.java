@@ -867,8 +867,7 @@ public class SugService {
 	 * @param response
 	 * @return
 	 */
-	public List<Suggestion> sugListExcellent(int curPage, String level_code,
-			HttpServletRequest request, HttpServletResponse response) {
+	public List<Suggestion> sugListExcellent(int curPage, String level_code) {
 		// TODO Auto-generated method stub
 		List<Suggestion> sugList = new ArrayList<Suggestion>();
 
@@ -912,8 +911,7 @@ public class SugService {
 	 * @param response
 	 * @return
 	 */
-	public List<Suggestion> sugListEmphasis(int curPage, String level_code,
-			HttpServletRequest request, HttpServletResponse response) {
+	public List<Suggestion> sugListEmphasis(int curPage, String level_code) {
 		// TODO Auto-generated method stub
 		List<Suggestion> sugList = new ArrayList<Suggestion>();
 
@@ -960,8 +958,7 @@ public class SugService {
 	 * @return
 	 */
 	public List<Suggestion> sugListOffice(int curPage, String level_code,
-			String team_id, HttpServletRequest request,
-			HttpServletResponse response) {
+			String team_id) {
 		// TODO Auto-generated method stub
 		List<Suggestion> sugList = new ArrayList<Suggestion>();
 
@@ -1021,8 +1018,7 @@ public class SugService {
 	 * @param response
 	 * @return
 	 */
-	public List<Suggestion> sugListAll(int curPage, String level_code,
-			HttpServletRequest request, HttpServletResponse response) {
+	public List<Suggestion> sugListAll(int curPage, String level_code) {
 		// TODO Auto-generated method stub
 		List<Suggestion> sugList = new ArrayList<Suggestion>();
 
@@ -1067,8 +1063,7 @@ public class SugService {
 	 * @param response
 	 * @return
 	 */
-	public List<Suggestion> myHeadSugList(String loginName, int curPage,
-			HttpServletRequest request, HttpServletResponse response) {
+	public List<Suggestion> myHeadSugList(String loginName, int curPage) {
 		List<Suggestion> sugList = new ArrayList<Suggestion>();
 
 		Users auser = new Users(loginName);
@@ -1127,8 +1122,7 @@ public class SugService {
 	 * @return
 	 */
 	public List<Suggestion> mySugListHead(String loginName, int curPage,
-			String level_code, HttpServletRequest request,
-			HttpServletResponse response) {
+			String level_code) {
 		// TODO Auto-generated method stub
 		List<Suggestion> sugList = new ArrayList<Suggestion>();
 
@@ -1173,8 +1167,7 @@ public class SugService {
 	 * @return
 	 */
 	public List<Suggestion> mySugListJoin(String loginName, int curPage,
-			String level_code, HttpServletRequest request,
-			HttpServletResponse response) {
+			String level_code) {
 		// TODO Auto-generated method stub
 		List<Suggestion> sugList = new ArrayList<Suggestion>();
 

@@ -5,13 +5,11 @@ import com.ctgu.npc.business.wechat.coreServlet.process.TextRespProcess;
 import com.ctgu.npc.business.wechat.entity.WeiXinChannel;
 import com.ctgu.npc.business.wechat.service.WeChatService;
 import com.ctgu.npc.business.wechat.util.MessageUtil;
-import com.ctgu.npc.business.wechat.util.OpenIdUtil;
 import com.ctgu.npc.business.wechat.util.SignUtil;
 import com.ctgu.npc.business.wechat.util.WeChatUtil;
 import org.springframework.context.ApplicationContext;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -22,22 +20,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
+
 
 /**
  * Created by Administrator on 2017/11/15 0015.
  */
 public class CoreServlet extends HttpServlet {
-
     private static final long serialVersionUID = 4440739483644821986L;
-    private WeChatService weChatService;
 
-    public CoreServlet() {
-        ServletContext sc = this.getServletContext();
-        WebApplicationContext wac = (WebApplicationContext)sc.getAttribute(
-                WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
-        WeChatService weChatService = (WeChatService)wac.getBean("weChatService");
-    }
+    WeChatService weChatService = (WeChatService) ContextLoader.getCurrentWebApplicationContext().getBean("weChatService");
 
     /**
      * 确认请求来自微信服务器
@@ -64,6 +55,7 @@ public class CoreServlet extends HttpServlet {
      * 处理微信服务器发来的消息
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        System.out.println(123);
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         // 调用核心业务类接收消息、处理消息
@@ -74,6 +66,8 @@ public class CoreServlet extends HttpServlet {
         out.close();
     }
     public String processRequest(HttpServletRequest request) {
+        System.out.println(456);
+        System.out.println("weChatService"+weChatService);
         String respMessage = null;
         try {
             // 默认返回的文本消息内容
@@ -92,7 +86,6 @@ public class CoreServlet extends HttpServlet {
                     WeiXinChannel weiXinChannel = weChatService.getWeiXinChannelByOpId(openId);
                     if (weiXinChannel == null){
                         weiXinChannel = new WeiXinChannel();
-                        weiXinChannel.setMemberId(UUID.randomUUID().toString().replace("-", ""));
                         weiXinChannel.setOpId(openId);
                         weiXinChannel.setUnionId(WeChatUtil.getUnionId(openId));
                         weiXinChannel.setStatus(1);
@@ -110,7 +103,6 @@ public class CoreServlet extends HttpServlet {
                     WeiXinChannel weiXinChannel = weChatService.getWeiXinChannelByOpId(openId);
                     if (weiXinChannel == null){
                         weiXinChannel = new WeiXinChannel();
-                        weiXinChannel.setMemberId(UUID.randomUUID().toString().replace("-", ""));
                         weiXinChannel.setOpId(openId);
                         weiXinChannel.setUnionId(WeChatUtil.getUnionId(openId));
                         weiXinChannel.setStatus(0);

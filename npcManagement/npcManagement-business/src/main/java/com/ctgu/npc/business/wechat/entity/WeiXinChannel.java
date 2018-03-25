@@ -6,21 +6,11 @@ import java.util.Date;
 
 public class WeiXinChannel implements Serializable {
 	private static final long serialVersionUID = 1234234L;
-	private String memberId;	//成员ID
 	private String opId;	//微信ID
 	private String unionId;	//微信ID
 	private Date finalLoginDate;	//最后登录时间
 	private Date addDate;	//新增时间
 	private int status;
-
-
-	public String getMemberId() {
-		return memberId;
-	}
-
-	public void setMemberId(String memberId) {
-		this.memberId = memberId;
-	}
 
 	public String getOpId() {
 		return opId;

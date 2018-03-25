@@ -6,14 +6,12 @@
 
 	<insert id="addWeChat" useGeneratedKeys="true" keyProperty="id">
 		INSERT INTO c_weixin(
-		memberId,
 		opId,
 		unionId,
 		finalLoginDate,
 		addDate,
 		status
 		) VALUES (
-		#{memberId},
 		#{opId},
 		#{unionId},
 		#{finalLoginDate},

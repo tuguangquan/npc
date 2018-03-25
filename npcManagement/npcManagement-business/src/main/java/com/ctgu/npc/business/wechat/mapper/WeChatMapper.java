@@ -1,6 +1,5 @@
 package com.ctgu.npc.business.wechat.mapper;
 
-import com.ctgu.npc.business.inform.entity.Publish;
 import com.ctgu.npc.business.wechat.entity.WeiXinChannel;
 import org.apache.ibatis.annotations.Param;
 

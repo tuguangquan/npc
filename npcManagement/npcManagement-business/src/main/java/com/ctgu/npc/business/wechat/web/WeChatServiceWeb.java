@@ -24,17 +24,17 @@ public class WeChatServiceWeb {
     private static String secretKey = FundamentalConfigProvider.get("npc.key");
 
     @Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
-    @Path("/getOpenID")
+    @Path("/getUnionID")
     @POST
-    public String receivedNotice(@FormParam("code") String code,@FormParam("key") String key) {
+    public String getUnionID(@FormParam("code") String code,@FormParam("key") String key) {
         String keyWord = MD5Util.md5Encode(code + MD5Util.getDateStr() + secretKey);
         if (!keyWord.equals(key)){
             return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
         }
-       String openId = OpenIdUtil.getOpenId(code);
-        if (openId==null || openId.equals("null")){
+       String unionId = OpenIdUtil.getUnionId(code);
+        if (unionId==null || unionId.equals("null")){
             return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "获取openId失败!");
         }
-        return JsonResultUtils.getObjectResultByStringAsDefault(openId, JsonResultUtils.Code.SUCCESS);
+        return JsonResultUtils.getObjectResultByStringAsDefault(unionId, JsonResultUtils.Code.SUCCESS);
     }
 }

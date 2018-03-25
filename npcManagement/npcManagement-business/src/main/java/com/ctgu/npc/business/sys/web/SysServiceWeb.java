@@ -6,7 +6,9 @@ import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.common.utils.StringUtils;
 import com.ctgu.npc.business.sys.entity.Users;
 import com.ctgu.npc.business.sys.service.SysService;
+import com.ctgu.npc.business.wechat.entity.UserWeChat;
 import com.ctgu.npc.business.wechat.entity.WeiXinChannel;
+import com.ctgu.npc.business.wechat.service.UserWeChatService;
 import com.ctgu.npc.business.wechat.service.WeChatService;
 import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
@@ -37,6 +39,9 @@ public class SysServiceWeb {
 
     @Autowired
     private WeChatService weChatService;
+
+    @Autowired
+    private UserWeChatService userWeChatService;
     /**
      * 修改个人用户密码
      * @param oldPassword
@@ -93,7 +98,7 @@ public class SysServiceWeb {
             return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
         }
         WeiXinChannel weiXinChannel = weChatService.getWeiXinChannelByUnionId(unionId);
-        if (weiXinChannel==null){
+        if (weiXinChannel==null){ //说明没有关注或者关注时，sql写入错误，建议重新关注
             return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请先关注我们服务号!");
         }
         Users users;
@@ -102,6 +107,16 @@ public class SysServiceWeb {
             users = userService.getUserByMobile(uname,pswd);
         }else{
             users = userService.getUserByParams(uname,pswd);
+        }
+        //登陆成功将登陆用户信息和微信表关联
+        if (users!=null){
+            UserWeChat userWeChat = userWeChatService.findByUnionId(unionId);
+            if (userWeChat!=null){  //还没有关联
+                userWeChat = new UserWeChat();
+                userWeChat.setUnionId(unionId);
+                userWeChat.setUserId(users.getId());
+                userWeChatService.add(userWeChat);
+            }
         }
         return JsonResultUtils.getObjectResultByStringAsDefault(users, JsonResultUtils.Code.SUCCESS);
 

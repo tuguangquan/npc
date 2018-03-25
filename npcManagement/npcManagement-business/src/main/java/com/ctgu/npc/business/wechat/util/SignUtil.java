@@ -2,13 +2,12 @@ package com.ctgu.npc.business.wechat.util;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 
 /**
  * Created by Administrator on 2017/11/15 0015.
  */
 public class SignUtil {
-    private static String token = "token_";
+    private static String token = "token";
 
     /**
      * 验证签名
@@ -21,7 +20,7 @@ public class SignUtil {
     public static boolean checkSignature(String signature, String timestamp, String nonce) {
         String[] arr = new String[]{token, timestamp, nonce};
         // 将token、timestamp、nonce三个参数进行字典序排序
-        Arrays.sort(arr);
+        sort(arr);
         StringBuilder content = new StringBuilder();
         for (int i = 0; i < arr.length; i++) {
             content.append(arr[i]);
@@ -36,11 +35,25 @@ public class SignUtil {
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
+        System.out.println("tmpStr是："+tmpStr);
         content = null;
         // 将sha1加密后的字符串可与signature对比，标识该请求来源于微信
         return tmpStr != null ? tmpStr.equals(signature.toUpperCase()) : false;
     }
 
+
+    public static void sort(String a[]) {
+        for (int i = 0; i < a.length - 1; i++) {
+            for (int j = i + 1; j < a.length; j++) {
+                if (a[j].compareTo(a[i]) < 0) {
+                    String temp = a[i];
+                    System.out.println("现在的temp是:"+temp);
+                    a[i] = a[j];
+                    a[j] = temp;
+                }
+            }
+        }
+    }
     /**
      * 将字节数组转换为十六进制字符串
      *
