@@ -5,6 +5,7 @@ import com.ctgu.npc.business.sys.service.UserService;
 import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.sys.entity.Office;
 import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
+import com.ctgu.npc.fundamental.logger.PlatformLogger;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,9 @@ import java.util.List;
 @Component
 @Path("/user")
 public class UserServiceWeb {
+
+    PlatformLogger logger = PlatformLogger.getLogger(UserServiceWeb.class);
+
     private static String secretKey = FundamentalConfigProvider.get("npc.key");
     @Autowired
     private UserService userService;
@@ -48,7 +52,6 @@ public class UserServiceWeb {
         if (pageNum != null) {
             try {
                 curPage = Integer.parseInt(pageNum);
-
             } catch (Exception e) {
                 // TODO: handle exception
             }
@@ -79,7 +82,6 @@ public class UserServiceWeb {
         if (pageNum != null) {
             try {
                 curPage = Integer.parseInt(pageNum);
-
             } catch (Exception e) {
                 // TODO: handle exception
             }

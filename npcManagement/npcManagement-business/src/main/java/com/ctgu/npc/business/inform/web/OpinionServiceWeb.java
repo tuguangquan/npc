@@ -8,6 +8,7 @@ import com.ctgu.npc.business.inform.entity.Report;
 import com.ctgu.npc.business.inform.service.OpinionService;
 import com.ctgu.npc.business.sys.service.UserService;
 import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
+import com.ctgu.npc.fundamental.logger.PlatformLogger;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -29,7 +30,9 @@ import java.util.List;
 @Component
 @Path("/opinion")
 public class OpinionServiceWeb {
-	
+
+	PlatformLogger logger = PlatformLogger.getLogger(OpinionServiceWeb.class);
+
 	@Autowired
 	private OpinionService opinionService;
 	

@@ -2,7 +2,6 @@ package com.ctgu.npc.business.wechat.service;
 
 import com.ctgu.npc.business.wechat.entity.WeiXinChannel;
 import com.ctgu.npc.business.wechat.mapper.WeChatMapper;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

@@ -5,7 +5,9 @@ import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.inform.entity.Publish;
 import com.ctgu.npc.business.inform.service.PublishService;
 import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
+import com.ctgu.npc.fundamental.logger.PlatformLogger;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -19,9 +21,11 @@ import java.util.List;
 @Component
 @Path("/publish")
 public class PublishServiceWeb {
-	
-	@Resource
-	PublishService pubService;
+
+	PlatformLogger logger = PlatformLogger.getLogger(PublishServiceWeb.class);
+
+	@Autowired
+	private PublishService pubService;
 
 	private static String secretKey = FundamentalConfigProvider.get("npc.key");
 	/**

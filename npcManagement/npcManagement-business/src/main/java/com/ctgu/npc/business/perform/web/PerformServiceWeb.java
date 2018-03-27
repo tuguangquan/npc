@@ -7,6 +7,7 @@ import com.ctgu.npc.business.common.utils.StringUtils;
 import com.ctgu.npc.business.perform.entity.*;
 import com.ctgu.npc.business.perform.service.PerformService;
 import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
+import com.ctgu.npc.fundamental.logger.PlatformLogger;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -29,7 +30,9 @@ import java.util.List;
 @Component
 @Path("/perform")
 public class PerformServiceWeb {
-	
+
+	PlatformLogger logger = PlatformLogger.getLogger(PerformServiceWeb.class);
+
 	private final String TAG = "PerformController";
 	private static String secretKey = FundamentalConfigProvider.get("npc.key");
 	@Autowired

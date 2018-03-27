@@ -6,6 +6,7 @@ import com.ctgu.npc.business.basicInfo.service.NpcService;
 import com.ctgu.npc.business.common.utils.MD5Util;
 import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
+import com.ctgu.npc.fundamental.logger.PlatformLogger;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -19,6 +20,8 @@ import java.util.List;
 @Component
 @Path("/basic")
 public class NpcServiceWeb {
+
+    PlatformLogger logger = PlatformLogger.getLogger(NpcServiceWeb.class);
 
     @Autowired
     private NpcService npcService;
@@ -65,6 +68,7 @@ public class NpcServiceWeb {
     @Path("/getBasicInfo")
     @POST
     public String getBasicInfo(@FormParam("loginName") String loginName, @FormParam("level_code") String level_code, @FormParam("key") String key) {
+        logger.info("loginName:"+loginName);
         String keyWord = MD5Util.md5Encode(loginName + level_code + MD5Util.getDateStr() + secretKey);
         if (!keyWord.equals(key)) {
             return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");

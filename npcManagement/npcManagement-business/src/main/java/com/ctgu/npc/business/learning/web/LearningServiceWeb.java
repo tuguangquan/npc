@@ -6,6 +6,7 @@ import com.ctgu.npc.business.common.utils.StringUtils;
 import com.ctgu.npc.business.learning.entity.*;
 import com.ctgu.npc.business.learning.service.LearningService;
 import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
+import com.ctgu.npc.fundamental.logger.PlatformLogger;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,8 +24,9 @@ import javax.ws.rs.core.MediaType;
 @Component
 @Path("/learning")
 public class LearningServiceWeb {
-	
-	
+
+	PlatformLogger logger = PlatformLogger.getLogger(LearningServiceWeb.class);
+
 	@Autowired
 	private LearningService learningService;
 

@@ -9,6 +9,7 @@ import com.ctgu.npc.business.inform.entity.*;
 import com.ctgu.npc.business.inform.service.TestService;
 import com.ctgu.npc.business.sys.service.UserService;
 import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
+import com.ctgu.npc.fundamental.logger.PlatformLogger;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -33,7 +34,9 @@ import java.util.List;
 @Component
 @Path("/test")
 public class TestServiceWeb {
-	
+
+	PlatformLogger logger = PlatformLogger.getLogger(TestServiceWeb.class);
+
 	@Autowired
 	private TestService testService;
 	

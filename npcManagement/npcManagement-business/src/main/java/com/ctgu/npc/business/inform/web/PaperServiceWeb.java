@@ -9,6 +9,7 @@ import com.ctgu.npc.business.inform.entity.*;
 import com.ctgu.npc.business.inform.service.PaperService;
 import com.ctgu.npc.business.sys.service.UserService;
 import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
+import com.ctgu.npc.fundamental.logger.PlatformLogger;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -29,7 +30,9 @@ import java.util.List;
 @Component
 @Path("/paper")
 public class PaperServiceWeb {
-	
+
+	PlatformLogger logger = PlatformLogger.getLogger(PaperServiceWeb.class);
+
 	@Autowired
 	private PaperService paperService;
 	

@@ -8,6 +8,7 @@ import com.ctgu.npc.business.sug.entity.*;
 import com.ctgu.npc.business.sug.service.SugService;
 import com.ctgu.npc.business.sys.entity.Users;
 import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
+import com.ctgu.npc.fundamental.logger.PlatformLogger;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -27,7 +28,10 @@ import java.util.List;
 @Component
 @Path("/sug")
 public class SugServiceWeb {
-    private static String secretKey = FundamentalConfigProvider.get("npc.key");
+
+	PlatformLogger logger = PlatformLogger.getLogger(SugServiceWeb.class);
+
+	private static String secretKey = FundamentalConfigProvider.get("npc.key");
 
 	@Autowired
 	private SugService sugService;

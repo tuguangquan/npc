@@ -6,6 +6,7 @@ import com.ctgu.npc.business.inqury_meeting.entity.Inqury;
 import com.ctgu.npc.business.inqury_meeting.entity.Meet;
 import com.ctgu.npc.business.inqury_meeting.service.InquryService;
 import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
+import com.ctgu.npc.fundamental.logger.PlatformLogger;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -25,6 +26,8 @@ import java.util.List;
 @Component
 @Path("/inquery")
 public class InquryServiceWeb {
+
+	PlatformLogger logger = PlatformLogger.getLogger(InquryServiceWeb.class);
 
 	@Autowired
 	InquryService inquryService;

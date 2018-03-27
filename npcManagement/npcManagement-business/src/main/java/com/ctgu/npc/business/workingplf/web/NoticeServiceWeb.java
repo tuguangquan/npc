@@ -5,6 +5,7 @@ import com.ctgu.npc.business.common.utils.MD5Util;
 import com.ctgu.npc.business.workingplf.entity.ReceivedMessage;
 import com.ctgu.npc.business.workingplf.service.NoticeService;
 import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
+import com.ctgu.npc.fundamental.logger.PlatformLogger;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -26,6 +27,9 @@ import java.util.List;
 @Component
 @Path("/notice")
 public class NoticeServiceWeb {
+
+	PlatformLogger logger = PlatformLogger.getLogger(NoticeServiceWeb.class);
+
 	private static String secretKey = FundamentalConfigProvider.get("npc.key");
 	@Autowired
 	private NoticeService noticeService;

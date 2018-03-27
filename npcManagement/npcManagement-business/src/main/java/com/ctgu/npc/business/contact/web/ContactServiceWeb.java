@@ -8,6 +8,7 @@ import com.ctgu.npc.business.contact.entity.*;
 import com.ctgu.npc.business.contact.service.ContactService;
 import com.ctgu.npc.business.contact.service.SqmyService;
 import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
+import com.ctgu.npc.fundamental.logger.PlatformLogger;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -28,6 +29,8 @@ import java.util.List;
 @Component
 @Path("/contact")
 public class ContactServiceWeb {
+
+    PlatformLogger logger = PlatformLogger.getLogger(ContactServiceWeb.class);
 
     @Autowired
     private ContactService contactService;

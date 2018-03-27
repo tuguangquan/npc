@@ -11,6 +11,7 @@ import com.ctgu.npc.business.wechat.entity.WeiXinChannel;
 import com.ctgu.npc.business.wechat.service.UserWeChatService;
 import com.ctgu.npc.business.wechat.service.WeChatService;
 import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
+import com.ctgu.npc.fundamental.logger.PlatformLogger;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,10 +20,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by user on 2018/3/19.
@@ -30,6 +28,9 @@ import java.util.Map;
 @Component
 @Path("/sys")
 public class SysServiceWeb {
+
+    PlatformLogger logger = PlatformLogger.getLogger(SysServiceWeb.class);
+
     private static String secretKey = FundamentalConfigProvider.get("npc.key");
     @Autowired
     private UserService userService;
@@ -60,26 +61,51 @@ public class SysServiceWeb {
         if (!keyWord.equals(key)){
             return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
         }
-        String result;
         Users theUser = userService.getUser(loginName);
         if(theUser != null){
             if (StringUtils.isNotBlank(oldPassword) && StringUtils.isNotBlank(newPassword)){
                 if (SysService.validatePassword(oldPassword, theUser.getPassword())){
                     systemService.updatePasswordById(theUser.getId(),  newPassword);
-                    result = "1";
+                    return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.SUCCESS.getCode(), "update password success!");
                 }else{
-                    result = "0";
+                    return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "update password failed!");
                 }
             }else{
-                result = "-1";
+                return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "密码不能为空!");
             }
         }else{
-            result = "-1";
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "未找到该用户!");
         }
-        return result;
     }
 
-
+    /**
+     * 查询用户是否登陆
+     * @param unionId
+     * @return
+     */
+    @Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    @Path("/checkLogin")
+    @POST
+    public String checkLogin( @FormParam("unionId") String unionId,
+                        @FormParam("key") String key){
+        Map<String,Object> map = new HashMap<String, Object>();
+        String keyWord = MD5Util.md5Encode(unionId+ MD5Util.getDateStr() + secretKey);
+        if (!keyWord.equals(key)){
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+        }
+        WeiXinChannel weiXinChannel = weChatService.getWeiXinChannelByUnionId(unionId);
+        if (weiXinChannel==null){ //说明没有关注或者关注时，sql写入错误，建议重新关注
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请先关注我们服务号!");
+        }
+         UserWeChat userWeChat = userWeChatService.findByUnionId(unionId);
+        if (userWeChat!=null){  //还没有关联
+            map.put("login",true);
+            return JsonResultUtils.getObjectResultByStringAsDefault(map, JsonResultUtils.Code.SUCCESS);
+        }else{
+            map.put("login",false);
+            return JsonResultUtils.getObjectResultByStringAsDefault(map, JsonResultUtils.Code.SUCCESS);
+        }
+    }
     /**
      * 根据用户名密码进行登录判断
      * @param uname

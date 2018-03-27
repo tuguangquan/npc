@@ -109,6 +109,38 @@ public class WeChatUtil {
         return "";
     }
 
+    public static String sendCustomToUser(String content){
+        String tmpurl = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=ACCESS_TOKEN";
+        String token =  getAccessToken().getToken();  //微信凭证，access_token
+        String url = tmpurl.replace("ACCESS_TOKEN", token);
+        try {
+            JSONObject result = httpRequest(url, "POST", content);
+             String errmsg = (String) result.get("errmsg");
+            if(!"ok".equals(errmsg)){  //如果为errmsg为ok，则代表发送成功，公众号推送信息给用户了。
+                return "error";
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "success";
+    }
+
+
+    public static String sendTemplateToUser(String content){
+        String tmpurl = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=ACCESS_TOKEN";
+        String token =  getAccessToken().getToken(); //微信凭证，access_token
+        String url = tmpurl.replace("ACCESS_TOKEN", token);
+        try {
+            JSONObject result = httpRequest(url, "POST", content);
+            String errmsg = (String) result.get("errmsg");
+            if(!"ok".equals(errmsg)){  //如果为errmsg为ok，则代表发送成功，公众号推送信息给用户了。
+                return "error";
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return "success";
+    }
 
     public static void main(String[] args) throws Exception {
 
