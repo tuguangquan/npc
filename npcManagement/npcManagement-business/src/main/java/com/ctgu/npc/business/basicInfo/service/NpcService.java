@@ -57,12 +57,18 @@ public class NpcService {
 	 */
 	public Npc getBasicInfo(String loginName, String level_code) {
 		Users auser = new Users(loginName);
-		String usrId = userMapper.getUserByLoginName(auser).getId();
+		auser = userMapper.getUserByLoginName(auser);
+		String usrId;
+		if (auser!=null){
+			 usrId = auser.getId();
+		}else{
+			return null;
+		}
+
 		Npc theObj = null;
 		
 		List<Npc> list = npcMapper.getBasicInfo(usrId);
 		if(list != null){
-			
 			if(list.size() > 1){//有多条记录
 				for(Npc item:list){
 					if( !("终止".equals(item.getStatus())) && level_code.equals(item.getUserLevel())||

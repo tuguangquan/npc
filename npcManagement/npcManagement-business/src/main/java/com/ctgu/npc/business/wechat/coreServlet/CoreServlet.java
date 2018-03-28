@@ -82,7 +82,7 @@ public class CoreServlet extends HttpServlet {
                 String openId = requestMap.get("FromUserName");
                 // 订阅
                 if (eventType.equals(MessageUtil.EVENT_TYPE_SUBSCRIBE)) {
-                    requestMap.put("Content","谢谢您的关注！");
+                    requestMap.put("Content","您好，欢迎关注“宜昌人大”微信公众服务平台，该平台致力于构建人大机关、人大代表、广大人民群众之间的移动互联桥梁，搭建人大代表履职服务平台。");
                     WeiXinChannel weiXinChannel = weChatService.getWeiXinChannelByOpId(openId);
                     if (weiXinChannel == null){
                         weiXinChannel = new WeiXinChannel();

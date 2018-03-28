@@ -47,8 +47,7 @@ public class NpcServiceWeb {
         }
         if (json_str != null) {
             Gson gson = new Gson();
-            java.lang.reflect.Type type = new TypeToken<PersonInfo>() {
-            }.getType();
+            java.lang.reflect.Type type = new TypeToken<PersonInfo>() {}.getType();
             PersonInfo theObj = (PersonInfo) gson.fromJson(json_str, type);
             npcService.updatePersonalInfo(theObj, loginName, level_code);
             return JsonResultUtils.getCodeAndMesByStringAsDefault(JsonResultUtils.Code.SUCCESS);
@@ -168,6 +167,7 @@ public class NpcServiceWeb {
         Npc npc = npcService.getNpcMembDetailById(npc_id, level_code);
         return JsonResultUtils.getObjectResultByStringAsDefault(npc, JsonResultUtils.Code.SUCCESS);
     }
+
 
     @Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
     @Path("/test")

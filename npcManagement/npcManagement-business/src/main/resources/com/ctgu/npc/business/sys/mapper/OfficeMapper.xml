@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace 指向定义的接口IUserDao -->
+<mapper namespace="com.ctgu.npc.business.sys.mapper.OfficeMapper">
+
+
+	<select id="getChildOfficeByTypeAndCode" resultType="com.ctgu.npc.business.sys.dto.OfficeInfo">
+		select * from
+		sys_office where type = ${type}  AND parent_id in (
+       select id from sys_office where code = ${code} )
+	</select>
+
+	<select id="getOfficeByCode" resultType="com.ctgu.npc.business.sys.dto.OfficeInfo">
+		select * from
+		sys_office where code = ${code}
+	</select>
+
+</mapper>
