@@ -7,11 +7,9 @@ import com.ctgu.npc.business.wechat.service.WeChatService;
 import com.ctgu.npc.business.wechat.util.MessageUtil;
 import com.ctgu.npc.business.wechat.util.SignUtil;
 import com.ctgu.npc.business.wechat.util.WeChatUtil;
-import org.springframework.context.ApplicationContext;
+import com.ctgu.npc.fundamental.logger.PlatformLogger;
 import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +24,7 @@ import java.util.Map;
  * Created by Administrator on 2017/11/15 0015.
  */
 public class CoreServlet extends HttpServlet {
+    PlatformLogger logger = PlatformLogger.getLogger(CoreServlet.class);
     private static final long serialVersionUID = 4440739483644821986L;
 
     WeChatService weChatService = (WeChatService) ContextLoader.getCurrentWebApplicationContext().getBean("weChatService");

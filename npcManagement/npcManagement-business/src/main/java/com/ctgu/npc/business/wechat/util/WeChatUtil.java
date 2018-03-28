@@ -1,6 +1,7 @@
 package com.ctgu.npc.business.wechat.util;
 
 import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
+import com.ctgu.npc.fundamental.logger.PlatformLogger;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 
@@ -17,7 +18,7 @@ import java.net.URL;
  */
 
 public class WeChatUtil {
-
+    static PlatformLogger logger = PlatformLogger.getLogger(WeChatUtil.class);
     public final static String access_token_url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
     public final static String  get_unionId_url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN";
     public final static String appId = FundamentalConfigProvider.get("npc.appId");
@@ -104,6 +105,7 @@ public class WeChatUtil {
             if (jsonObject.get("unionid")==null){
                 return "";
             }
+            logger.info("unionId:"+jsonObject.get("unionid").toString());
             return jsonObject.get("unionid").toString();
         }
         return "";
@@ -143,7 +145,8 @@ public class WeChatUtil {
     }
 
     public static void main(String[] args) throws Exception {
-
+      String openid = "onnhj0vaczZouldH1DHR6nUIaHl4";
+        System.out.println(getUnionId(openid));
     }
 
 }
