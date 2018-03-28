@@ -95,7 +95,6 @@ public class SysServiceWeb {
     @POST
     public String checkLogin( @FormParam("unionId") String unionId,
                         @FormParam("key") String key){
-        Map<String,Object> map = new HashMap<String, Object>();
         String keyWord = MD5Util.md5Encode(unionId+ MD5Util.getDateStr() + secretKey);
         if (!keyWord.equals(key)){
             return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
@@ -106,11 +105,9 @@ public class SysServiceWeb {
         }
          UserWeChat userWeChat = userWeChatService.findByUnionId(unionId);
         if (userWeChat!=null){  //还没有关联
-            map.put("login",true);
-            return JsonResultUtils.getObjectResultByStringAsDefault(map, JsonResultUtils.Code.SUCCESS);
+            return JsonResultUtils.getObjectResultByStringAsDefault(true, JsonResultUtils.Code.SUCCESS);
         }else{
-            map.put("login",false);
-            return JsonResultUtils.getObjectResultByStringAsDefault(map, JsonResultUtils.Code.SUCCESS);
+            return JsonResultUtils.getObjectResultByStringAsDefault(false, JsonResultUtils.Code.SUCCESS);
         }
     }
     /**
