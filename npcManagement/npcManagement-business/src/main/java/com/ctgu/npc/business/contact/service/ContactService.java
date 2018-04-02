@@ -102,19 +102,16 @@ public class ContactService {
 	/**
 	 * 留言回复
 	 * 
-	 * @param theObj
+	 * @param phone
 	 * @param loginName
-	 * @param level_code
+	 * @param replyContent
 	 */
-	public String replyLeaveWord(LeaveWord theObj, String loginName,
-			String level_code) {
+	public String replyLeaveWord(String phone,String replyContent, String loginName) {
 
 		Users auser = new Users(loginName);
 		auser = userMapper.getUserByLoginName(auser);
 
 		String senderName = auser.getName();
-		String replyContent = theObj.getContent();
-		String phone = theObj.getPhone();
 		String bool = MsgUtils.send(senderName, replyContent, phone);
 		return bool;
 

@@ -102,16 +102,16 @@ public class ContactServiceWeb {
     @Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
     @Path("/myLeaveWordPage")
     @POST
-    public String myLeaveWordPage(@FormParam("loginName") String loginName, @FormParam("curPageStr") String curPageStr,
+    public String myLeaveWordPage(@FormParam("loginName") String loginName, @FormParam("pageNum") String pageNum,
                                   @FormParam("level_code") String level_code, @FormParam("key") String key) {
-        String keyWord = MD5Util.md5Encode(loginName + curPageStr + level_code + MD5Util.getDateStr() + secretKey);
+        String keyWord = MD5Util.md5Encode(loginName + pageNum + level_code + MD5Util.getDateStr() + secretKey);
         if (!keyWord.equals(key)) {
             return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
         }
         int curPage = 1;
-        if (curPageStr != null) {
+        if (pageNum != null) {
             try {
-                curPage = (int) StringUtils.toInteger(curPageStr);
+                curPage = (int) StringUtils.toInteger(pageNum);
             } catch (Exception e) {
                 // TODO: handle exception
             }
@@ -143,30 +143,29 @@ public class ContactServiceWeb {
      * 回复留言
      *
      * @param loginName
-     * @param json_str
-     * @param level_code
+     * @param replyContent
+     * @param phone
      * @return
      */
     @Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
     @Path("/replyLeaveWord")
     @POST
-    public String replyLeaveWord(@FormParam("loginName") String loginName, @FormParam("json_str") String json_str,
-                                 @FormParam("level_code") String level_code, @FormParam("key") String key) {
-        String keyWord = MD5Util.md5Encode(loginName + json_str + level_code + MD5Util.getDateStr() + secretKey);
+    public String replyLeaveWord(@FormParam("loginName") String loginName, @FormParam("replyContent") String replyContent,
+                                 @FormParam("phone") String phone, @FormParam("key") String key) {
+        String keyWord = MD5Util.md5Encode(loginName + replyContent+phone+ MD5Util.getDateStr() + secretKey);
         if (!keyWord.equals(key)) {
             return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
         }
         String result = "false";
-        LeaveWord theObj;
-        if (json_str != null) {
-            Gson gson = new Gson();
-            java.lang.reflect.Type type = new TypeToken<LeaveWord>() {
-            }.getType();
-            theObj = (LeaveWord) gson.fromJson(json_str, type);
-            result = contactService.replyLeaveWord(theObj, loginName, level_code);
+        if (replyContent != null && phone !=null) {
+            result = contactService.replyLeaveWord(phone,replyContent, loginName);
         }
-        System.out.println("return result->" + result);
-        return JsonResultUtils.getObjectResultByStringAsDefault(result, JsonResultUtils.Code.SUCCESS);
+        logger.info("return result->" + result);
+        if (result.equals("false")){
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "回复短信发送失败!");
+        }else{
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.SUCCESS.getCode(), "回复短信发送成功!");
+        }
     }
 
 }

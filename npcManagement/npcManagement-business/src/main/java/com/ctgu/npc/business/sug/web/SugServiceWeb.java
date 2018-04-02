@@ -502,20 +502,20 @@ public class SugServiceWeb {
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/mySugListHeadPage")
 	@POST
-	public String mySugListHeadPage(@FormParam("curPageStr") String curPageStr,
-												   @FormParam("level_code") String level_code,
-												   @FormParam("type_value") String type_value,
-												   @FormParam("loginName") String loginName,
-												   @FormParam("key") String key) {
-		String keyWord = MD5Util.md5Encode(curPageStr+level_code+type_value+loginName+ MD5Util.getDateStr() + secretKey);
+	public String mySugListHeadPage(@FormParam("pageNum") String pageNum,
+									@FormParam("level_code") String level_code,
+									@FormParam("type_value") String type_value,
+									@FormParam("loginName") String loginName,
+									@FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(pageNum+level_code+type_value+loginName+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
 
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
+				curPage = Integer.parseInt(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
