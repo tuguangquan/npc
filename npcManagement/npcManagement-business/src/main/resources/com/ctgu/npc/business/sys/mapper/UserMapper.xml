@@ -234,8 +234,8 @@
 	</select>
 	
 	<!-- 根据级别编码查询部门信息列表 -->
-	<select id="getOfficeNameByLevelCode" resultType="com.ctgu.npc.business.sys.entity.Office" parameterType="map">
-		SELECT id,name
+	<select id="getOfficeNameByLevelCode" resultType="com.ctgu.npc.business.sys.dto.OfficeInfo" parameterType="map">
+		SELECT id,name,code,parent_id as parentId
 		FROM sys_office so
 		WHERE so.parent_id = ${office_id} AND so.type = ${office_type}
 		

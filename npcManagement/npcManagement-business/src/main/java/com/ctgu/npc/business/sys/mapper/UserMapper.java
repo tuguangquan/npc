@@ -1,5 +1,6 @@
 package com.ctgu.npc.business.sys.mapper;
 
+import com.ctgu.npc.business.sys.dto.OfficeInfo;
 import com.ctgu.npc.business.sys.entity.Office;
 import com.ctgu.npc.business.sys.entity.Users;
 import org.apache.ibatis.annotations.Param;
@@ -70,7 +71,7 @@ public interface UserMapper {
 	 * @param
 	 * @return
 	 */
-	public List<Office> getOfficeNameByLevelCode(Map<String, Object> map);
+	public List<OfficeInfo> getOfficeNameByLevelCode(Map<String, Object> map);
 
 	/**
 	 * 根据系统级别编码查询Office的id

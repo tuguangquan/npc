@@ -241,32 +241,16 @@ public class SysServiceWeb {
         return JsonResultUtils.getObjectResultByStringAsDefault(pagesUtil, JsonResultUtils.Code.SUCCESS);
     }
 
-
-    @Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
-    @Path("/getChildOfficeByTypeAndCode")
-    @POST
-    public String getChildOfficeByTypeAndCode(@FormParam("code") String code,
-                                              @FormParam("type") String type,
-                                              @FormParam("key") String key){
-        String keyWord = MD5Util.md5Encode(code+type+ MD5Util.getDateStr() + secretKey);
-        if (code==null || code.equals("undefined")||type==null ||
-                type.equals("undefined")||!keyWord.equals(key)){
-            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
-        }
-        List<OfficeInfo> offices = officeService.getChildOfficeByTypeAndCode(type,code);
-        return JsonResultUtils.getObjectResultByStringAsDefault(offices, JsonResultUtils.Code.SUCCESS);
-    }
-
     @Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
     @Path("/getOffice")
     @POST
-    public String getOffice(@FormParam("code") String code,
+    public String getOffice(@FormParam("id") String id,
                                               @FormParam("key") String key){
-        String keyWord = MD5Util.md5Encode(code+ MD5Util.getDateStr() + secretKey);
-        if (code==null || code.equals("undefined")||!keyWord.equals(key)){
+        String keyWord = MD5Util.md5Encode(id+ MD5Util.getDateStr() + secretKey);
+        if (id==null || id.equals("undefined")||!keyWord.equals(key)){
             return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
         }
-        OfficeInfo office = officeService.getOfficeByCode(code);
+        OfficeInfo office = officeService.getOfficeById(id);
         return JsonResultUtils.getObjectResultByStringAsDefault(office, JsonResultUtils.Code.SUCCESS);
     }
 

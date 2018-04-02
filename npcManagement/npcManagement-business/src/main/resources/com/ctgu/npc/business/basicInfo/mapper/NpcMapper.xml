@@ -81,16 +81,19 @@
 	</select>
 	
 	<!--根据代表团的id查询代表团的代表信息  -->
-	<select id="getNpcMembsByMissionId" resultType="com.ctgu.npc.business.basicInfo.entity.Npc" parameterType="map">
+	<select id="getNpcMembsByMissionId" resultType="com.ctgu.npc.business.basicInfo.dto.NpcInfo" parameterType="map">
 		SELECT
+		    sp.representLevel,
+            npc.realName,
+            npc.party,
+            npc.birth,
+            npc.nation,
+            npc.nativePlace,
+		    sp.npcDuty,
+		    u.photo as photo,
 			u.id AS userId,
 			u.login_name as loginName,
 			ul.id AS userLevelId,
-			ul.login_flag as loginFlag,
-			ul.del_flag as delFlag,
-			npc.realName,
-			sp.id AS specialId,
-			sp.mission,
 			npc.id,  u.mobile
 		FROM 
 			db_special sp,

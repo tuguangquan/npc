@@ -18,8 +18,8 @@ public class OfficeService {
     public List<OfficeInfo> getChildOfficeByTypeAndCode( String type, String code){
         return officeMapper.getChildOfficeByTypeAndCode(type,code);
     }
-    public OfficeInfo getOfficeByCode(String code){
-        List<OfficeInfo> officeList = officeMapper.getOfficeByCode(code);
+    public OfficeInfo getOfficeById(String id){
+        List<OfficeInfo> officeList = officeMapper.getOfficeById(id);
         if (officeList.size()>0){
             return officeList.get(0);
         }else{

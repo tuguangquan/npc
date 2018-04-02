@@ -1,6 +1,7 @@
 package com.ctgu.npc.business.sys.web;
 
 import com.ctgu.npc.business.common.utils.MD5Util;
+import com.ctgu.npc.business.sys.dto.OfficeInfo;
 import com.ctgu.npc.business.sys.service.UserService;
 import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.sys.entity.Office;
@@ -56,21 +57,21 @@ public class UserServiceWeb {
                 // TODO: handle exception
             }
         }
-        PagesUtil<Office>  pagesUtil= userService.getOfficeNameByLevelCodePages(level_code,office_type,curPage);
+        PagesUtil<OfficeInfo>  pagesUtil= userService.getOfficeNameByLevelCodePages(level_code,office_type,curPage);
         return JsonResultUtils.getObjectResultByStringAsDefault(pagesUtil, JsonResultUtils.Code.SUCCESS);
     }
 
     /**
-     * 根据系统级别编码查询部门信息列表(如代表团)
+     * 根据系统级别部门编码查询信息列表(如代表团)
      * @param pageNum
      * @param level_code
      * @param office_type
      * @return
      */
     @Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
-    @Path("/getOfficeNameByLevelCode")
+    @Path("/getOfficeByLevelCode")
     @POST
-    public String getOfficeNameByLevelCode(@FormParam("pageNum") String pageNum,
+    public String getOfficeByLevelCode(@FormParam("pageNum") String pageNum,
                                            @FormParam("level_code") String level_code,
                                            @FormParam("office_type") String office_type,
                                            @FormParam("key") String key){
@@ -86,7 +87,7 @@ public class UserServiceWeb {
                 // TODO: handle exception
             }
         }
-        List<Office>  lists = userService.getOfficeNameByLevelCode(level_code,office_type,curPage);
+        List<OfficeInfo>  lists = userService.getOfficeNameByLevelCode(level_code,office_type,curPage);
         return JsonResultUtils.getObjectResultByStringAsDefault(lists, JsonResultUtils.Code.SUCCESS);
     }
 

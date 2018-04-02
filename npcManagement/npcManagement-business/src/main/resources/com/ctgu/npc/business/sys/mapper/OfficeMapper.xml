@@ -12,9 +12,9 @@
        select id from sys_office where code = ${code} )
 	</select>
 
-	<select id="getOfficeByCode" resultType="com.ctgu.npc.business.sys.dto.OfficeInfo">
+	<select id="getOfficeById" resultType="com.ctgu.npc.business.sys.dto.OfficeInfo">
 		select * from
-		sys_office where code = ${code}
+		sys_office where id = ${id}
 	</select>
 
 </mapper>

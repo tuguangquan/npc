@@ -1,5 +1,6 @@
 package com.ctgu.npc.business.basicInfo.service;
 
+import com.ctgu.npc.business.basicInfo.dto.NpcInfo;
 import com.ctgu.npc.business.basicInfo.entity.Npc;
 import com.ctgu.npc.business.basicInfo.entity.PersonInfo;
 import com.ctgu.npc.business.basicInfo.mapper.NpcMapper;
@@ -115,7 +116,7 @@ public class NpcService {
 	 * @param level_code
 	 * @return
 	 */
-	public List<Npc> getNpcMembsByMissionId(String mission_id, String level_code) {
+	public List<NpcInfo> getNpcMembsByMissionId(String mission_id, String level_code) {
 		// TODO Auto-generated method stub
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("mission_id", mission_id);

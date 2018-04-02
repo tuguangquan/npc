@@ -3,6 +3,7 @@ package com.ctgu.npc.business.sys.service;
 import com.ctgu.npc.business.basicInfo.mapper.NpcMapper;
 import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.common.utils.StringUtils;
+import com.ctgu.npc.business.sys.dto.OfficeInfo;
 import com.ctgu.npc.business.sys.entity.Office;
 import com.ctgu.npc.business.sys.entity.Users;
 import com.ctgu.npc.business.sys.mapper.UserMapper;
@@ -237,7 +238,7 @@ public class UserService {
 	 * @param curPage 
 	 * @return
 	 */
-	public PagesUtil<Office> getOfficeNameByLevelCodePages(String level_code,
+	public PagesUtil<OfficeInfo> getOfficeNameByLevelCodePages(String level_code,
 			String office_type, int curPage) {
 		// TODO Auto-generated method stub
 		
@@ -252,7 +253,7 @@ public class UserService {
 
 		//System.out.println("myHeadSugList->row = " + rowCount);
 		
-		PagesUtil<Office> pagesUtil = new PagesUtil<Office>();
+		PagesUtil<OfficeInfo> pagesUtil = new PagesUtil<OfficeInfo>();
 		pagesUtil.setRowCount(rowCount);
 
 		if (pagesUtil.getTotalPages() < curPage) {
@@ -268,7 +269,7 @@ public class UserService {
 		map.put("office_id", office_id);
 		map.put("office_type", office_type);
 		
-		List<Office> lists = userMapper.getOfficeNameByLevelCode(map);
+		List<OfficeInfo> lists = userMapper.getOfficeNameByLevelCode(map);
 		pagesUtil.setLists(lists);
 		return pagesUtil;
 	}
@@ -279,7 +280,7 @@ public class UserService {
 	 * @param curPage 
 	 * @return
 	 */
-	public List<Office> getOfficeNameByLevelCode(String level_code,String office_type, int curPage) {
+	public List<OfficeInfo> getOfficeNameByLevelCode(String level_code,String office_type, int curPage) {
 		// TODO Auto-generated method stub
 		
 		String office_id = userMapper.getOfficeIdByCode(level_code);

@@ -1,5 +1,6 @@
 package com.ctgu.npc.business.basicInfo.mapper;
 
+import com.ctgu.npc.business.basicInfo.dto.NpcInfo;
 import com.ctgu.npc.business.basicInfo.entity.Npc;
 import com.ctgu.npc.business.basicInfo.entity.Period;
 import com.ctgu.npc.fundamental.orm.mapper.AbstractMapper;
@@ -31,7 +32,7 @@ public interface NpcMapper extends AbstractMapper<Npc> {
 	 * @param map
 	 * @return
 	 */
-	public	List<Npc> getNpcMembsByMissionId(Map<String, Object> map);
+	public	List<NpcInfo> getNpcMembsByMissionId(Map<String, Object> map);
 
 	/**
 	 * 根据系统级别与代表id查询代表详细信息

@@ -775,7 +775,7 @@ public class Npc extends BaseEntity<Npc> {
 
     @Override
     public void preInsert() {
-        
+
     }
 
     @Override

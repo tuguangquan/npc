@@ -7,6 +7,7 @@ public class OfficeInfo {
     private String id;
     private String name; //名称
     private String code; 	// 机构编码
+    private String parentId;
     private String type; 	// 机构类型（1：公司；2：部门；3：小组）
 
     public String getId() {
@@ -39,5 +40,13 @@ public class OfficeInfo {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 }

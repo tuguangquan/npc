@@ -1,5 +1,6 @@
 package com.ctgu.npc.business.basicInfo.web;
 
+import com.ctgu.npc.business.basicInfo.dto.NpcInfo;
 import com.ctgu.npc.business.basicInfo.entity.Npc;
 import com.ctgu.npc.business.basicInfo.entity.PersonInfo;
 import com.ctgu.npc.business.basicInfo.service.NpcService;
@@ -114,7 +115,7 @@ public class NpcServiceWeb {
         if (!keyWord.equals(key)) {
             return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
         }
-        List<Npc> lists = npcService.getNpcMembsByMissionId(mission_id, level_code);
+        List<NpcInfo> lists = npcService.getNpcMembsByMissionId(mission_id, level_code);
         return JsonResultUtils.getObjectResultByStringAsDefault(lists, JsonResultUtils.Code.SUCCESS);
     }
 

@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface OfficeMapper {
     public List<OfficeInfo> getChildOfficeByTypeAndCode(@Param("type") String type,@Param("code") String code);
-    public List<OfficeInfo> getOfficeByCode(@Param("code") String code);
+    public List<OfficeInfo> getOfficeById(@Param("id") String id);
 }
