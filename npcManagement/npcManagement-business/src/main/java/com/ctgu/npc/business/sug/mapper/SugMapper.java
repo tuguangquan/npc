@@ -1,6 +1,7 @@
 package com.ctgu.npc.business.sug.mapper;
 
 
+import com.ctgu.npc.business.sug.dto.SuggestionDto;
 import com.ctgu.npc.business.sug.entity.*;
 import com.ctgu.npc.business.sys.entity.Users;
 import org.apache.ibatis.annotations.Param;
@@ -37,7 +38,7 @@ public interface SugMapper {
 	 * @param sug
 	 * @return
 	 */
-	public List<Suggestion> myHeadSugList(Suggestion sug);
+	public List<Suggestion> myHeadSugList(SuggestionDto sug);
 
 	/**
 	 * 根据firstWriterID查找我领衔的suggestion的List

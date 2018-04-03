@@ -4,6 +4,7 @@ import com.ctgu.npc.business.common.utils.GsonUtils;
 import com.ctgu.npc.business.common.utils.MD5Util;
 import com.ctgu.npc.business.common.utils.PagesUtil;
 import com.ctgu.npc.business.common.utils.StringUtils;
+import com.ctgu.npc.business.sug.dto.SuggestionDto;
 import com.ctgu.npc.business.sug.entity.*;
 import com.ctgu.npc.business.sug.service.SugService;
 import com.ctgu.npc.business.sys.entity.Users;
@@ -146,7 +147,7 @@ public class SugServiceWeb {
 
 	/**
 	 * ===办理=待签收===交办直接办理
-	 * @param curPageStr
+	 * @param pageNum
 	 * @param level_code
 	 * @param type_value
 	 * @return
@@ -154,26 +155,24 @@ public class SugServiceWeb {
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/sugAssignDealList")
 	@POST
-	public String sugAssignDealList(@FormParam("curPageStr") String curPageStr,
-												   @FormParam("level_code") String level_code,
-												   @FormParam("type_value") String type_value,
-												   @FormParam("status") String status,
-												   @FormParam("loginName") String loginName,
-												   @FormParam("key") String key){
-		String keyWord = MD5Util.md5Encode(curPageStr+level_code+type_value+status+loginName+ MD5Util.getDateStr() + secretKey);
+	public String sugAssignDealList(@FormParam("pageNum") String pageNum,
+									@FormParam("level_code") String level_code,
+									@FormParam("type_value") String type_value,
+									@FormParam("status") String status,
+									@FormParam("loginName") String loginName,
+									@FormParam("key") String key){
+		String keyWord = MD5Util.md5Encode(pageNum+level_code+type_value+status+loginName+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
-
+				curPage = Integer.parseInt(pageNum);
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
 		}
-
 		PagesUtil<AssignForm> pagesUtil = sugService.sugAssignDealList(
 				curPage, level_code,status,type_value,loginName);
 		return JsonResultUtils.getObjectResultByStringAsDefault(pagesUtil, JsonResultUtils.Code.SUCCESS);
@@ -187,7 +186,7 @@ public class SugServiceWeb {
 
 	/**
 	 * ===交办任务列表===
-	 * @param curPageStr
+	 * @param pageNum
 	 * @param level_code
 	 * @param type_value
 	 * @return
@@ -195,21 +194,21 @@ public class SugServiceWeb {
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/sugAssignList")
 	@POST
-	public String sugAssignList(@FormParam("curPageStr") String curPageStr,
+	public String sugAssignList(@FormParam("pageNum") String pageNum,
 											   @FormParam("level_code") String level_code,
 											   @FormParam("type_value") String type_value,
 											   @FormParam("status") String status,
 											   @FormParam("loginName") String loginName,
 											   @FormParam("key") String key){
-		String keyWord = MD5Util.md5Encode(curPageStr+level_code+type_value+status+loginName+ MD5Util.getDateStr() + secretKey);
+		String keyWord = MD5Util.md5Encode(pageNum+level_code+type_value+status+loginName+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
 
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
+				curPage = Integer.parseInt(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -227,7 +226,7 @@ public class SugServiceWeb {
 
 	/**
 	 * ===转交列表===议案建议
-	 * @param curPageStr
+	 * @param pageNum
 	 * @param level_code
 	 * @param type_value
 	 * @param status
@@ -236,19 +235,19 @@ public class SugServiceWeb {
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/sugTransferList")
 	@POST
-	public String sugTransferList(@FormParam("curPageStr") String curPageStr,
+	public String sugTransferList(@FormParam("pageNum") String pageNum,
 												   @FormParam("level_code") String level_code,
 												   @FormParam("type_value") String type_value,
 												   @FormParam("status") String status,
 												   @FormParam("key") String key){
-		String keyWord = MD5Util.md5Encode(curPageStr+level_code+type_value+status+status+ MD5Util.getDateStr() + secretKey);
+		String keyWord = MD5Util.md5Encode(pageNum+level_code+type_value+status+status+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
+				curPage = Integer.parseInt(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -266,24 +265,24 @@ public class SugServiceWeb {
 
 	/**
 	 * 立案列表
-	 * @param curPageStr
+	 * @param pageNum
 	 * @param level_code
 	 * @return
 	 */
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/sugPutonList")
 	@POST
-	public String sugPutonList(@FormParam("curPageStr") String curPageStr,
+	public String sugPutonList(@FormParam("pageNum") String pageNum,
 											  @FormParam("level_code") String level_code,
 											  @FormParam("key") String key){
-		String keyWord = MD5Util.md5Encode(curPageStr+level_code+ MD5Util.getDateStr() + secretKey);
+		String keyWord = MD5Util.md5Encode(pageNum+level_code+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
+				curPage = Integer.parseInt(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -302,7 +301,7 @@ public class SugServiceWeb {
 
 	/**
 	 * === 审核列表
-	 * @param curPageStr
+	 * @param pageNum
 	 * @param level_code
 	 * @param type_value
 	 * @return
@@ -310,18 +309,18 @@ public class SugServiceWeb {
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/checkList")
 	@POST
-	public String sugCheckList(@FormParam("curPageStr") String curPageStr,
+	public String sugCheckList(@FormParam("pageNum") String pageNum,
 											  @FormParam("level_code") String level_code,
 											  @FormParam("type_value") String type_value,
 											  @FormParam("key") String key){
-		String keyWord = MD5Util.md5Encode(curPageStr+level_code+type_value+ MD5Util.getDateStr() + secretKey);
+		String keyWord = MD5Util.md5Encode(pageNum+level_code+type_value+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
+				curPage = Integer.parseInt(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -342,7 +341,7 @@ public class SugServiceWeb {
 	 * ===优秀的
 	 * 查看本级议案建议列表包含分页信息
 	 *
-	 * @param curPageStr
+	 * @param pageNum
 	 * @param level_code
 	 * @param type_value
 	 * @return
@@ -350,18 +349,18 @@ public class SugServiceWeb {
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/sugListExcellentPage")
 	@POST
-	public String sugListExcellentPage(@FormParam("curPageStr") String curPageStr,
+	public String sugListExcellentPage(@FormParam("pageNum") String pageNum,
 													  @FormParam("level_code") String level_code,
 													  @FormParam("type_value") String type_value,
 													  @FormParam("key") String key) {
-		String keyWord = MD5Util.md5Encode(curPageStr+level_code+type_value+ MD5Util.getDateStr() + secretKey);
+		String keyWord = MD5Util.md5Encode(pageNum+level_code+type_value+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
+				curPage = Integer.parseInt(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -378,7 +377,7 @@ public class SugServiceWeb {
 	 * ===重点的
 	 * 查看本级议案建议列表包含分页信息
 	 *
-	 * @param curPageStr
+	 * @param pageNum
 	 * @param level_code
 	 * @param type_value
 	 * @return
@@ -386,19 +385,19 @@ public class SugServiceWeb {
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/sugListEmphasisPage")
 	@POST
-	public String sugListEmphasisPage(@FormParam("curPageStr") String curPageStr,
+	public String sugListEmphasisPage(@FormParam("pageNum") String pageNum,
 													 @FormParam("level_code") String level_code,
 													 @FormParam("type_value") String type_value,
 													 @FormParam("key") String key) {
-		String keyWord = MD5Util.md5Encode(curPageStr+level_code+type_value+ MD5Util.getDateStr() + secretKey);
+		String keyWord = MD5Util.md5Encode(pageNum+level_code+type_value+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
 
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
+				curPage = Integer.parseInt(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -415,7 +414,7 @@ public class SugServiceWeb {
 	 * ===代表团的
 	 * 根据代表团id查询本代表团所有的suggestion包含分页信息
 	 *
-	 * @param curPageStr
+	 * @param pageNum
 	 * @param level_code
 	 * @param type_value
 	 *  @param team_id
@@ -424,19 +423,19 @@ public class SugServiceWeb {
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/sugListOfficePage")
 	@POST
-	public String sugListOfficePage(@FormParam("curPageStr") String curPageStr,
-												   @FormParam("level_code") String level_code,
-												   @FormParam("type_value") String type_value,
-												   @FormParam("team_id") String team_id,
-												   @FormParam("key") String key) {
-		String keyWord = MD5Util.md5Encode(curPageStr+level_code+type_value+team_id+ MD5Util.getDateStr() + secretKey);
+	public String sugListOfficePage(@FormParam("pageNum") String pageNum,
+									@FormParam("level_code") String level_code,
+									@FormParam("type_value") String type_value,
+									@FormParam("team_id") String team_id,
+									@FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(pageNum+level_code+type_value+team_id+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
+				curPage = Integer.parseInt(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -457,7 +456,7 @@ public class SugServiceWeb {
 	 * ===代表们的
 	 * 查看本级代表们议案建议列表 包含分页信息
 	 *
-	 * @param curPageStr
+	 * @param pageNum
 	 * @param level_code
 	 * @param type_value
 	 * @return
@@ -465,18 +464,18 @@ public class SugServiceWeb {
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/sugListAllPage")
 	@POST
-	public String sugListAllPage(@FormParam("curPageStr") String curPageStr,
+	public String sugListAllPage(@FormParam("pageNum") String pageNum,
 												@FormParam("level_code") String level_code,
 												@FormParam("type_value") String type_value,
 												@FormParam("key") String key) {
-		String keyWord = MD5Util.md5Encode(curPageStr+level_code+type_value+ MD5Util.getDateStr() + secretKey);
+		String keyWord = MD5Util.md5Encode(pageNum+level_code+type_value+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
+				curPage = Integer.parseInt(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -493,7 +492,7 @@ public class SugServiceWeb {
 	 * ===我领衔的
 	 *  根据登录名和系统等级分页查询suggestion 的List包含分页信息
 	 *
-	 * @param curPageStr
+	 * @param pageNum
 	 * @param level_code
 	 * @param type_value
 	 *  @param loginName
@@ -532,7 +531,7 @@ public class SugServiceWeb {
 	 * ===我联名的
 	 * 根据登录名和系统等级分页查询我联名的suggestion 的List包含分页信息
 	 *
-	 * @param curPageStr
+	 * @param pageNum
 	 * @param level_code
 	 * @param type_value
 	 *  @param loginName
@@ -541,19 +540,19 @@ public class SugServiceWeb {
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/mySugListJoinPage")
 	@POST
-	public String mySugListJoinPage(@FormParam("curPageStr") String curPageStr,
-												   @FormParam("level_code") String level_code,
-												   @FormParam("type_value") String type_value,
-												   @FormParam("loginName") String loginName,
-												   @FormParam("key") String key) {
-		String keyWord = MD5Util.md5Encode(curPageStr+level_code+type_value+loginName+ MD5Util.getDateStr() + secretKey);
+	public String mySugListJoinPage(@FormParam("pageNum") String pageNum,
+									@FormParam("level_code") String level_code,
+									@FormParam("type_value") String type_value,
+									@FormParam("loginName") String loginName,
+									@FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(pageNum+level_code+type_value+loginName+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
+				curPage = Integer.parseInt(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -606,14 +605,12 @@ public class SugServiceWeb {
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/billsDetail")
 	@POST
-	public String billsDetail(@FormParam("sug_type") String sug_type,
-								   @FormParam("sugID") String sugID,
-								   @FormParam("key") String key) {
-		String keyWord = MD5Util.md5Encode(sug_type+sugID+ MD5Util.getDateStr() + secretKey);
+	public String billsDetail(@FormParam("sugId") String sugId,@FormParam("key") String key) {
+		String keyWord = MD5Util.md5Encode(sugId+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
-		BillsEntity theObj = sugService.billsDetail(sugID);
+		BillsEntity theObj = sugService.billsDetail(sugId);
 		return JsonResultUtils.getObjectResultByStringAsDefault(theObj, JsonResultUtils.Code.SUCCESS);
 	}
 
@@ -626,17 +623,15 @@ public class SugServiceWeb {
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/sugInfoHead")
 	@POST
-	public String sugInfoHead(@FormParam("sug_type") String sug_type,
-								  @FormParam("sugId") String sugId,
+	public String sugInfoHead(@FormParam("sugId") String sugId,
 								  @FormParam("key") String key) {
-		String keyWord = MD5Util.md5Encode(sug_type+sugId+ MD5Util.getDateStr() + secretKey);
+		String type = "1";
+		String keyWord = MD5Util.md5Encode(sugId+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
-		Suggestion sug = sugService.getSuggestionByIdType(sugId, sug_type);
-
+		Suggestion sug = sugService.getSuggestionByIdType(sugId, type);
 		if (sug != null) {
-
 			// 获取联名人
 			if (StringUtils.isNotEmpty(sug.getSecondWriterIDS())) {
 				List<Users> list = sugService.getSecondWriter(sug
@@ -645,12 +640,6 @@ public class SugServiceWeb {
 				for (Users u : list) {
 					str += u.getName() + ",";
 				}
-
-				/*
-				 * System.out.println("2nd writer->" + str.substring(0,
-				 * str.length() - 1));
-				 */
-
 				sug.setSecondWriter(str.substring(0, str.length() - 1));
 			}
 
@@ -748,9 +737,9 @@ public class SugServiceWeb {
 	@Path("/myHeadSugList")
 	@POST
 	public String myHeadSugList(@FormParam("loginName") String loginName,
-							  @FormParam("curPageStr") String curPageStr,
+							  @FormParam("pageNum") String pageNum,
 							  @FormParam("key") String key) {
-		String keyWord = MD5Util.md5Encode(loginName+curPageStr+ MD5Util.getDateStr() + secretKey);
+		String keyWord = MD5Util.md5Encode(loginName+pageNum+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
@@ -759,9 +748,9 @@ public class SugServiceWeb {
 		PrintWriter out = null;
 
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
+				curPage = Integer.parseInt(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -786,9 +775,9 @@ public class SugServiceWeb {
 	@Path("/headsuginfo")
 	@POST
 	public String headSugInfo(@FormParam("sugId") String sugId,
-							@FormParam("curPageStr") String curPageStr,
+							@FormParam("pageNum") String pageNum,
 							@FormParam("key") String key) {
-		String keyWord = MD5Util.md5Encode(sugId+curPageStr+ MD5Util.getDateStr() + secretKey);
+		String keyWord = MD5Util.md5Encode(sugId+pageNum+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
@@ -850,25 +839,25 @@ public class SugServiceWeb {
 	/**
 	 * 查看本级优秀议案建议列表
 	 *
-	 * @param curPageStr
+	 * @param pageNum
 	 * @param level_code
 	 * @return
 	 */
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/sugListExcellent")
 	@POST
-	public String sugListExcellent(@FormParam("curPageStr") String curPageStr,
+	public String sugListExcellent(@FormParam("pageNum") String pageNum,
 											 @FormParam("level_code") String level_code,
 											 @FormParam("key") String key) {
 
-		String keyWord = MD5Util.md5Encode(curPageStr+level_code+ MD5Util.getDateStr() + secretKey);
+		String keyWord = MD5Util.md5Encode(pageNum+level_code+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
+				curPage = Integer.parseInt(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -894,17 +883,17 @@ public class SugServiceWeb {
 			Model model) {
 		// String loginName = request.getParameter("loginName");
 
-		String curPageStr = request.getParameter("curPage");
-		// System.out.println("curPage->" + curPageStr);
+		String pageNum = request.getParameter("curPage");
+		// System.out.println("curPage->" + pageNum);
 
 		String level_code = request.getParameter("level_code");
 
 		String type_value = request.getParameter("type_value");
 
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
+				curPage = Integer.parseInt(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -924,24 +913,24 @@ public class SugServiceWeb {
 	/**
 	 * 重点的 查看本级议案建议
 	 *
-	 * @param curPageStr
+	 * @param pageNum
 	 * @param level_code
 	 * @return
 	 */
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/sugListEmphasis")
 	@POST
-	public String sugListEmphasis(@FormParam("curPageStr") String curPageStr,
+	public String sugListEmphasis(@FormParam("pageNum") String pageNum,
 											@FormParam("level_code") String level_code,
 											@FormParam("key") String key) {
-		String keyWord = MD5Util.md5Encode(curPageStr+level_code+ MD5Util.getDateStr() + secretKey);
+		String keyWord = MD5Util.md5Encode(pageNum+level_code+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
+				curPage = Integer.parseInt(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -956,25 +945,25 @@ public class SugServiceWeb {
 	 * 根据代表团id查询本代表团所有的suggestion
 	 *
 	 * @param team_id
-	 * @param curPageStr
+	 * @param pageNum
 	 * @param level_code
 	 * @return
 	 */
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/sugListOffice")
 	@POST
-	public String sugListOffice(@FormParam("curPageStr") String curPageStr,
+	public String sugListOffice(@FormParam("pageNum") String pageNum,
 										  @FormParam("level_code") String level_code,
 										  @FormParam("team_id") String team_id,
 										  @FormParam("key") String key) {
-		String keyWord = MD5Util.md5Encode(curPageStr+level_code+team_id+ MD5Util.getDateStr() + secretKey);
+		String keyWord = MD5Util.md5Encode(pageNum+level_code+team_id+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
+				curPage = Integer.parseInt(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -990,24 +979,24 @@ public class SugServiceWeb {
 	/**
 	 * 所有代表 查看本级代表们议案建议
 	 *
-	 * @param curPageStr
+	 * @param pageNum
 	 * @param level_code
 	 * @return
 	 */
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/sugListAll")
 	@POST
-	public String sugListAll(@FormParam("curPageStr") String curPageStr,
+	public String sugListAll(@FormParam("pageNum") String pageNum,
 									   @FormParam("level_code") String level_code,
 									   @FormParam("key") String key) {
-		String keyWord = MD5Util.md5Encode(curPageStr+level_code+ MD5Util.getDateStr() + secretKey);
+		String keyWord = MD5Util.md5Encode(pageNum+level_code+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
+				curPage = Integer.parseInt(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -1023,7 +1012,7 @@ public class SugServiceWeb {
 	 * 根据登录名和系统等级分页查询我领衔的suggestion 的List
 	 *
 	 * @param loginName
-	 * @param curPageStr
+	 * @param pageNum
 	 * @param level_code
 	 * @return
 	 */
@@ -1031,17 +1020,17 @@ public class SugServiceWeb {
 	@Path("/mySugListHead")
 	@POST
 	public String mySugListHead(@FormParam("loginName") String loginName,
-										  @FormParam("curPageStr") String curPageStr,
+										  @FormParam("pageNum") String pageNum,
 										  @FormParam("level_code") String level_code,
 										  @FormParam("key") String key) {
-		String keyWord = MD5Util.md5Encode(loginName+curPageStr+level_code+ MD5Util.getDateStr() + secretKey);
+		String keyWord = MD5Util.md5Encode(loginName+pageNum+level_code+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
+				curPage = Integer.parseInt(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception
@@ -1059,7 +1048,7 @@ public class SugServiceWeb {
 	 * 根据登录名和系统等级分页查询我联名的suggestion 的List
 	 *
 	 * @param loginName
-	 * @param curPageStr
+	 * @param pageNum
 	 * @param level_code
 	 * @return
 	 */
@@ -1067,17 +1056,17 @@ public class SugServiceWeb {
 	@Path("/mySugListJoin")
 	@POST
 	public String mySugListJoin(@FormParam("loginName") String loginName,
-										  @FormParam("curPageStr") String curPageStr,
+										  @FormParam("pageNum") String pageNum,
 										  @FormParam("level_code") String level_code,
 										  @FormParam("key") String key) {
-		String keyWord = MD5Util.md5Encode(loginName+curPageStr+level_code+ MD5Util.getDateStr() + secretKey);
+		String keyWord = MD5Util.md5Encode(loginName+pageNum+level_code+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
 		int curPage = 1;
-		if (curPageStr != null) {
+		if (pageNum != null) {
 			try {
-				curPage = Integer.parseInt(curPageStr);
+				curPage = Integer.parseInt(pageNum);
 
 			} catch (Exception e) {
 				// TODO: handle exception

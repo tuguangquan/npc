@@ -4,18 +4,15 @@ import com.ctgu.npc.business.basicInfo.mapper.NpcMapper;
 import com.ctgu.npc.business.common.utils.DateUtils;
 import com.ctgu.npc.business.common.utils.MsgUtils;
 import com.ctgu.npc.business.common.utils.PagesUtil;
+import com.ctgu.npc.business.sug.dto.SuggestionDto;
 import com.ctgu.npc.business.sug.entity.*;
 import com.ctgu.npc.business.sug.mapper.SugMapper;
 import com.ctgu.npc.business.sys.entity.Users;
 import com.ctgu.npc.business.sys.mapper.UserMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -658,9 +655,6 @@ public class SugService {
 	 */
 	public PagesUtil<Suggestion> sugListEmphasisPage(int curPage,
 			String level_code, String type_value) {
-		// TODO Auto-generated method stub
-		List<Suggestion> sugList = new ArrayList<Suggestion>();
-
 		/* 以下是按分页进行查找 */
 		// 获取总记录数
 		int rowCount = this.getRowsEmphasisMap(level_code, type_value);
@@ -682,11 +676,7 @@ public class SugService {
 		map.put("size", size);
 		map.put("level_code", level_code);
 		map.put("type_value", type_value);
-
-		// System.out.println("myHeadSugList->offset = " + offset + ",->size= "
-		// + size);
-
-		sugList = sugMapper.getListByLevelMapEmphasis(map);
+		List<Suggestion>  sugList = sugMapper.getListByLevelMapEmphasis(map);
 
 		pagesUtil.setLists(sugList);
 
@@ -732,7 +722,6 @@ public class SugService {
 		// 获取总记录数
 		int rowCount = this.getRowsAllMap(level_code, type_value);
 
-		// System.out.println("myHeadSugList->row = " + rowCount);
 
 		PagesUtil<Suggestion> pagesUtil = new PagesUtil<Suggestion>();
 		pagesUtil.setRowCount(rowCount);
@@ -750,8 +739,6 @@ public class SugService {
 		map.put("level_code", level_code);
 		map.put("type_value", type_value);
 
-		// System.out.println("myHeadSugList->offset = " + offset + ",->size= "
-		// + size);
 
 		sugList = sugMapper.getListAllMapType(map);
 
@@ -782,7 +769,7 @@ public class SugService {
 	 * @param pagesUtil
 	 * @return
 	 */
-	public PagesUtil getPagesByNum(PagesUtil pagesUtil) {
+	public PagesUtil<Suggestion> getPagesByNum(PagesUtil<Suggestion> pagesUtil) {
 		// TODO Auto-generated method stub
 
 		int curPage = pagesUtil.getCurPage();
@@ -877,7 +864,7 @@ public class SugService {
 
 		// System.out.println("getRowCountByLevelExcellent->row = " + rowCount);
 
-		PagesUtil pagesUtil = new PagesUtil();
+		PagesUtil<Suggestion> pagesUtil = new PagesUtil<Suggestion>();
 		pagesUtil.setRowCount(rowCount);
 
 		if (pagesUtil.getTotalPages() < curPage) {
@@ -891,10 +878,6 @@ public class SugService {
 		map.put("offset", offset);
 		map.put("size", size);
 		map.put("level_code", level_code);
-
-		// System.out.println("myHeadSugList->offset = " + offset + ",->size= "
-		// + size);
-
 		sugList = sugMapper.getListByLevelMapExcellent(map);
 
 		pagesUtil.setLists(sugList);
@@ -918,10 +901,7 @@ public class SugService {
 		/* 以下是按分页进行查找 */
 		// 获取总记录数
 		int rowCount = this.getRowCountByLevelEmphasis(level_code);
-
-		// System.out.println("myHeadSugList->row = " + rowCount);
-
-		PagesUtil pagesUtil = new PagesUtil();
+		PagesUtil<Suggestion> pagesUtil = new PagesUtil<Suggestion>();
 		pagesUtil.setRowCount(rowCount);
 
 		if (pagesUtil.getTotalPages() < curPage) {
@@ -936,8 +916,6 @@ public class SugService {
 		map.put("size", size);
 		map.put("level_code", level_code);
 
-		// System.out.println("myHeadSugList->offset = " + offset + ",->size= "
-		// + size);
 
 		sugList = sugMapper.getListByLevelMapEmphasis(map);
 
@@ -966,9 +944,7 @@ public class SugService {
 		// 获取总记录数
 		int rowCount = this.getRowsByOfficeId(level_code, team_id);
 
-		// System.out.println("myHeadSugList->row = " + rowCount);
-
-		PagesUtil pagesUtil = new PagesUtil();
+		PagesUtil<Suggestion> pagesUtil = new PagesUtil<Suggestion>();
 		pagesUtil.setRowCount(rowCount);
 
 		if (pagesUtil.getTotalPages() < curPage) {
@@ -983,9 +959,6 @@ public class SugService {
 		map.put("size", size);
 		map.put("level_code", level_code);
 		map.put("team_id", team_id);
-
-		// System.out.println("myHeadSugList->offset = " + offset + ",->size= "
-		// + size);
 
 		sugList = sugMapper.getListByOfficeId(map);
 
@@ -1026,9 +999,7 @@ public class SugService {
 		// 获取总记录数
 		int rowCount = this.getRowCountByLevelAll(level_code);
 
-		// System.out.println("myHeadSugList->row = " + rowCount);
-
-		PagesUtil pagesUtil = new PagesUtil();
+		PagesUtil<Suggestion> pagesUtil = new PagesUtil<Suggestion>();
 		pagesUtil.setRowCount(rowCount);
 
 		if (pagesUtil.getTotalPages() < curPage) {
@@ -1042,9 +1013,6 @@ public class SugService {
 		map.put("offset", offset);
 		map.put("size", size);
 		map.put("level_code", level_code);
-
-		// System.out.println("myHeadSugList->offset = " + offset + ",->size= "
-		// + size);
 
 		sugList = sugMapper.getListByLevelMapAll(map);
 
@@ -1064,18 +1032,13 @@ public class SugService {
 	 * @return
 	 */
 	public List<Suggestion> myHeadSugList(String loginName, int curPage) {
-		List<Suggestion> sugList = new ArrayList<Suggestion>();
-
 		Users auser = new Users(loginName);
 		String firstWriterID = userMapper.getUserByLoginName(auser).getId();
 
 		/* 以下是按分页进行查找 */
 		// 获取总记录数
 		int rowCount = this.getRowCount(loginName);
-
-		// System.out.println("myHeadSugList->row = " + rowCount);
-
-		PagesUtil pagesUtil = new PagesUtil();
+		PagesUtil<Suggestion> pagesUtil = new PagesUtil<Suggestion>();
 		pagesUtil.setRowCount(rowCount);
 
 		if (pagesUtil.getTotalPages() < curPage) {
@@ -1089,25 +1052,8 @@ public class SugService {
 		map.put("offset", offset);
 		map.put("size", size);
 		map.put("firstWriterID", firstWriterID);
-
-		// System.out.println("myHeadSugList->offset = " + offset + ",->size= "
-		// + size);
-
-		sugList = sugMapper.getListByIdMap(map);
-
+		List<Suggestion> sugList = sugMapper.getListByIdMap(map);
 		pagesUtil.setLists(sugList);
-
-		/*
-		 * sug.setFirstWriterID(firstWriterID); String str = sug.getSecondary();
-		 * if(!StringUtils.isEmpty(str)){ if(str.contains("届"))
-		 * sug.setSecondary(StringUtils.left(str, 2)); if(str.contains("次")){
-		 * if(str.contains("届")){ sug.setSequence(StringUtils.right(str, 2));
-		 * }else{ sug.setSecondary(""); sug.setSequence(StringUtils.right(str,
-		 * 2)); }
-		 * 
-		 * } }
-		 */
-
 		return sugList;
 	}
 
@@ -1133,7 +1079,7 @@ public class SugService {
 		/* 以下是按分页进行查找 */
 		// 获取总记录数
 		int rowCount = this.getRowTotal(loginName, level_code);
-		PagesUtil pagesUtil = new PagesUtil();
+		PagesUtil<Suggestion> pagesUtil = new PagesUtil<Suggestion>();
 		pagesUtil.setRowCount(rowCount);
 
 		if (pagesUtil.getTotalPages() < curPage) {
@@ -1178,7 +1124,7 @@ public class SugService {
 		/* 以下是按分页进行查找 */
 		// 获取总记录数
 		int rowCount = this.getRowTotal2nd(loginName, level_code);
-		PagesUtil pagesUtil = new PagesUtil();
+		PagesUtil<Suggestion> pagesUtil = new PagesUtil<Suggestion>();
 		pagesUtil.setRowCount(rowCount);
 
 		if (pagesUtil.getTotalPages() < curPage) {
@@ -1447,7 +1393,6 @@ public class SugService {
 			//sug.setCheckUserID(Integer.parseInt(UserUtils.getUser().getId()));
 			sug.setStatus("0");//状态设为退回
 			sugMapper.updateSugCode(sug.getId()+"", null);
-
 
 			sugMapper.saveCheckForm(sug);
 			//删除转交历史

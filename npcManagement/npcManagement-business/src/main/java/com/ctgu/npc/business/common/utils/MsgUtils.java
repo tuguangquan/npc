@@ -3,6 +3,7 @@
  */
 package com.ctgu.npc.business.common.utils;
 
+import com.ctgu.npc.business.sug.mapper.SugMapper;
 import com.ctgu.npc.business.sys.entity.Users;
 import com.ctgu.npc.business.sys.mapper.UserMapper;
 import org.slf4j.Logger;
@@ -35,7 +36,7 @@ public class MsgUtils {
 	private final static String source = "人大履职服务平台";
 	
 	private static UserMapper userDao = SpringContextHolder.getBean(UserMapper.class);
-	//private static SugDao sugDao = SpringContextHolder.getBean(ISugDao.class);
+	private static SugMapper sugDao = SpringContextHolder.getBean(SugMapper.class);
 	
 	
 	
@@ -47,9 +48,6 @@ public class MsgUtils {
 	 * @return
 	 */
 	public static String  send(String creator,String message,String destination){
-		
-		//System.out.println("->" + creator + "," + message +"," + destination);
-		
 		Hashtable  returnInfo = new Hashtable();
 		String obj = "false";
 		try{	
@@ -80,10 +78,9 @@ public class MsgUtils {
 			httpConn.setRequestMethod("POST");
 			httpConn.setDoOutput(true);
 			httpConn.setDoInput(true);
-						
+
 			OutputStream out = httpConn.getOutputStream();
 			out.write(xmlData.toByteArray());
-			
 			InputStream input = httpConn.getInputStream();
 			DocumentBuilderFactory dbf=DocumentBuilderFactory.newInstance();
 			DocumentBuilder db=dbf.newDocumentBuilder();			
@@ -105,8 +102,6 @@ public class MsgUtils {
 		}catch (Exception e) {
 			System.out.println("exception ->" + obj);
 		}
-		
-		//System.out.println("result->" + obj);
 		return obj;
 	}
 	
@@ -196,8 +191,8 @@ public class MsgUtils {
 		
 		@Override
 		public void run() {
-//			sugDao.insertNote(senderID, message, DateUtils.getDateTime(), receiverID, UserUtils.getSysLevel());
-//			String res = MsgUtils.send(creator, message, destination);
+			sugDao.insertNote(senderID, message, DateUtils.getDateTime(), receiverID, UserUtils.getSysLevel());
+			String res = MsgUtils.send(creator, message, destination);
 		}
 		 
 	}

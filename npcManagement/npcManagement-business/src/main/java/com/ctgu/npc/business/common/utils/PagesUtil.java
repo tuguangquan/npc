@@ -11,7 +11,7 @@ public class PagesUtil<T> {
 
 	private int rowCount;// 总记录数
 
-	private int sizePage = 50000;// 页面大小
+	private int sizePage = 10;// 页面大小
 
 	private List<T> lists = new ArrayList<T>();
 	
