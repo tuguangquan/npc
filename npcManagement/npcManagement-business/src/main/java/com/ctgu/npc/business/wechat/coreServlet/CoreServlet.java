@@ -27,7 +27,7 @@ public class CoreServlet extends HttpServlet {
     PlatformLogger logger = PlatformLogger.getLogger(CoreServlet.class);
     private static final long serialVersionUID = 4440739483644821986L;
 
-    WeChatService weChatService = (WeChatService) ContextLoader.getCurrentWebApplicationContext().getBean("weChatService");
+   // WeChatService weChatService = (WeChatService) ContextLoader.getCurrentWebApplicationContext().getBean("weChatService");
 
     /**
      * 确认请求来自微信服务器
@@ -54,7 +54,6 @@ public class CoreServlet extends HttpServlet {
      * 处理微信服务器发来的消息
      */
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        System.out.println(123);
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         // 调用核心业务类接收消息、处理消息
@@ -65,8 +64,6 @@ public class CoreServlet extends HttpServlet {
         out.close();
     }
     public String processRequest(HttpServletRequest request) {
-        System.out.println(456);
-        System.out.println("weChatService"+weChatService);
         String respMessage = null;
         try {
             // 默认返回的文本消息内容
@@ -82,36 +79,36 @@ public class CoreServlet extends HttpServlet {
                 // 订阅
                 if (eventType.equals(MessageUtil.EVENT_TYPE_SUBSCRIBE)) {
                     requestMap.put("Content","您好，欢迎关注“宜昌人大”微信公众服务平台，该平台致力于构建人大机关、人大代表、广大人民群众之间的移动互联桥梁，搭建人大代表履职服务平台。");
-                    WeiXinChannel weiXinChannel = weChatService.getWeiXinChannelByOpId(openId);
-                    if (weiXinChannel == null){
-                        weiXinChannel = new WeiXinChannel();
-                        weiXinChannel.setOpId(openId);
-                        weiXinChannel.setUnionId(WeChatUtil.getUnionId(openId));
-                        weiXinChannel.setStatus(1);
-                        weiXinChannel.setFinalLoginDate(new Date());
-                        weiXinChannel.setAddDate(new Date());
-                        weChatService.addWeChat(weiXinChannel);
-                    }else{
-                        weiXinChannel.setStatus(1);
-                        weChatService.updateWeChat(weiXinChannel);
-                    }
+//                    WeiXinChannel weiXinChannel = weChatService.getWeiXinChannelByOpId(openId);
+//                    if (weiXinChannel == null){
+//                        weiXinChannel = new WeiXinChannel();
+//                        weiXinChannel.setOpId(openId);
+//                        weiXinChannel.setUnionId(WeChatUtil.getUnionId(openId));
+//                        weiXinChannel.setStatus(1);
+//                        weiXinChannel.setFinalLoginDate(new Date());
+//                        weiXinChannel.setAddDate(new Date());
+//                        weChatService.addWeChat(weiXinChannel);
+//                    }else{
+//                        weiXinChannel.setStatus(1);
+//                        weChatService.updateWeChat(weiXinChannel);
+//                    }
                     return new TextRespProcess().getRespMessage(requestMap);
                 }
                 // 取消订阅
                 else if (eventType.equals(MessageUtil.EVENT_TYPE_UNSUBSCRIBE)) {
-                    WeiXinChannel weiXinChannel = weChatService.getWeiXinChannelByOpId(openId);
-                    if (weiXinChannel == null){
-                        weiXinChannel = new WeiXinChannel();
-                        weiXinChannel.setOpId(openId);
-                        weiXinChannel.setUnionId(WeChatUtil.getUnionId(openId));
-                        weiXinChannel.setStatus(0);
-                        weiXinChannel.setFinalLoginDate(new Date());
-                        weiXinChannel.setAddDate(new Date());
-                        weChatService.addWeChat(weiXinChannel);
-                    }else{
-                        weiXinChannel.setStatus(0);
-                        weChatService.updateWeChat(weiXinChannel);
-                    }
+//                    WeiXinChannel weiXinChannel = weChatService.getWeiXinChannelByOpId(openId);
+//                    if (weiXinChannel == null){
+//                        weiXinChannel = new WeiXinChannel();
+//                        weiXinChannel.setOpId(openId);
+//                        weiXinChannel.setUnionId(WeChatUtil.getUnionId(openId));
+//                        weiXinChannel.setStatus(0);
+//                        weiXinChannel.setFinalLoginDate(new Date());
+//                        weiXinChannel.setAddDate(new Date());
+//                        weChatService.addWeChat(weiXinChannel);
+//                    }else{
+//                        weiXinChannel.setStatus(0);
+//                        weChatService.updateWeChat(weiXinChannel);
+//                    }
                 }
                 // 自定义菜单点击事件
                 else if (eventType.equals(MessageUtil.EVENT_TYPE_CLICK)) {

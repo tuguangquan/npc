@@ -75,7 +75,7 @@ public class WeChatUtil {
         return jsonObject;
     }
 
-    public static AccessToken getAccessToken() {
+    public static AccessToken getAccessToken(String appId,String appSecret) {
         AccessToken accessToken = null;
         String requestUrl = access_token_url.replace("APPID", appId).replace("APPSECRET", appSecret);
         JSONObject jsonObject = httpRequest(requestUrl, "GET", null);
@@ -87,17 +87,24 @@ public class WeChatUtil {
                 accessToken.setExpiresIn(jsonObject.getInt("expires_in"));
             } catch (JSONException e) {
                 accessToken = null;
-                // 获取token失败
-                //System.out.println("获取token失败 errcode:{} errmsg:{}", jsonObject.getInt("errcode"), jsonObject.getString("errmsg"));
             }
         }
         return accessToken;
     }
 
+    public static String getOpenId(String ticket,String appId,String appSecret){
+        String openId = "";
+        String url = "https://api.weixin.qq.com/shakearound/user/getshakeinfo?access_token=ACCESS_TOKEN";
+        String accessToken = getAccessToken(appId,appSecret).getToken();
+        url = url.replace("ACCESS_TOKEN", accessToken).replace("OPENID", openId);
+        return openId;
+    }
+
+
     //
-    public static String getUnionId(String openId) {
+    public static String getUnionId(String openId,String appId,String appSecret) {
         // 拼装创建菜单的url
-        String accessToken = getAccessToken().getToken();
+        String accessToken = getAccessToken(appId,appSecret).getToken();
         String url = get_unionId_url.replace("ACCESS_TOKEN", accessToken).replace("OPENID", openId);
         // 调用接口创建菜单
         JSONObject jsonObject = httpRequest(url, "GET", null);
@@ -111,9 +118,9 @@ public class WeChatUtil {
         return "";
     }
 
-    public static String sendCustomToUser(String content){
+    public static String sendCustomToUser(String content,String appId,String appSecret){
         String tmpurl = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=ACCESS_TOKEN";
-        String token =  getAccessToken().getToken();  //微信凭证，access_token
+        String token =  getAccessToken(appId,appSecret).getToken();  //微信凭证，access_token
         String url = tmpurl.replace("ACCESS_TOKEN", token);
         try {
             JSONObject result = httpRequest(url, "POST", content);
@@ -128,9 +135,9 @@ public class WeChatUtil {
     }
 
 
-    public static String sendTemplateToUser(String content){
+    public static String sendTemplateToUser(String content,String appId,String appSecret){
         String tmpurl = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=ACCESS_TOKEN";
-        String token =  getAccessToken().getToken(); //微信凭证，access_token
+        String token =  getAccessToken(appId,appSecret).getToken(); //微信凭证，access_token
         String url = tmpurl.replace("ACCESS_TOKEN", token);
         try {
             JSONObject result = httpRequest(url, "POST", content);
@@ -146,7 +153,7 @@ public class WeChatUtil {
 
     public static void main(String[] args) throws Exception {
       String openid = "onnhj0vaczZouldH1DHR6nUIaHl4";
-        System.out.println(getUnionId(openid));
+        System.out.println(openid);
     }
 
 }

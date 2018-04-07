@@ -85,40 +85,41 @@ public class NoticeServiceWeb {
 	 * Company: ctgu  
 	 * @author : youngmien
 	 * @date  2017-7-5 上午8:23:02
-	 * @param loginName
-	 * @param level_code
-	 * @param json_str
+	 * @param theObjId
+	 * @param reason
+	 * @param isAttend
 	 * @return
 	 */
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/feedback")
 	@POST
-    public String feedback(@FormParam("loginName") String loginName,@FormParam("level_code") String level_code,
-						   @FormParam("json_str") String json_str,@FormParam("key") String key){
-		String keyWord = MD5Util.md5Encode(loginName+ level_code+json_str+ MD5Util.getDateStr() + secretKey);
+    public String feedback(@FormParam("theObjId") String theObjId,@FormParam("reason") String reason,
+						   @FormParam("isAttend") String isAttend,@FormParam("key") String key){
+		String keyWord = MD5Util.md5Encode(theObjId+reason+isAttend+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
-		//System.out.println(" ->" + json_str);
-		ReceivedMessage theObj = null;
-		  boolean bool = false;
-		if (json_str != null) {
-			Gson gson = new Gson();
-			java.lang.reflect.Type type = new TypeToken<ReceivedMessage>() {}.getType();
-			theObj = (ReceivedMessage) gson.fromJson(json_str, type);
-			if(theObj != null){
-				//System.out.println("theObj->" + theObj.getIsAttend() );
-				 //更新阅读时间和阅读标志
-		        String readTime = BisUtils.getCurrentTime("yyyy-MM-dd HH:mm:ss");
-		        theObj.setReadTime(readTime);
-		      bool = noticeService.updateMsgRecById(theObj);
-			} 
+		if (theObjId==null || theObjId.equals("")){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
+		ReceivedMessage theObj = new ReceivedMessage();
+		theObj.setId(theObjId);
+		boolean bool;
+		if (reason != null) {
+			theObj.setReason(reason);
+		}
+		if (isAttend!=null){
+			theObj.setIsAttend(isAttend);
+		}
+		//更新阅读时间和阅读标志
+		String readTime = BisUtils.getCurrentTime("yyyy-MM-dd HH:mm:ss");
+		theObj.setReadTime(readTime);
+		bool = noticeService.updateMsgRecById(theObj);
 	    if (bool){
-        	return "true";
-        }else{
-        	return "false";
-        }
+        	return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.SUCCESS.getCode(), "操作成功!");
+		}else{
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "操作失败，稍后重试!");
+		}
 	}
 
 }

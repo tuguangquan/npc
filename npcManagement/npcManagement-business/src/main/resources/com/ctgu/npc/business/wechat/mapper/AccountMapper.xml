@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ctgu.npc.business.wechat.mapper.AccountMapper">
+
+	<select id="findByAppId" resultType="com.ctgu.npc.business.wechat.entity.Account">
+		SELECT	*
+		FROM c_accounts
+		WHERE appId = #{appId}
+	</select>
+
+</mapper>

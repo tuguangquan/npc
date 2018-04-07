@@ -1,12 +1,15 @@
 package com.ctgu.npc.business.wechat.web;
 
 import com.ctgu.npc.business.common.utils.MD5Util;
+import com.ctgu.npc.business.wechat.entity.Account;
+import com.ctgu.npc.business.wechat.service.AccountService;
 import com.ctgu.npc.business.wechat.util.OpenIdUtil;
 import com.ctgu.npc.business.wechat.util.WeChatUtil;
 import com.ctgu.npc.business.workingplf.entity.ReceivedMessage;
 import com.ctgu.npc.fundamental.config.FundamentalConfigProvider;
 import com.ctgu.npc.fundamental.logger.PlatformLogger;
 import com.ctgu.npc.fundamental.util.json.JsonResultUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.ws.rs.FormParam;
@@ -28,15 +31,18 @@ public class WeChatServiceWeb {
 
     private static String secretKey = FundamentalConfigProvider.get("npc.key");
 
+    @Autowired
+    private AccountService accountService;
+
     @Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
     @Path("/getUnionID")
     @POST
     public String getUnionID(@FormParam("code") String code,@FormParam("key") String key) {
-        String keyWord = MD5Util.md5Encode(code + MD5Util.getDateStr() + secretKey);
+        String keyWord = MD5Util.md5Encode(code+ MD5Util.getDateStr() + secretKey);
         if (!keyWord.equals(key)){
             return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
         }
-       String unionId = OpenIdUtil.getUnionId(code);
+        String unionId = OpenIdUtil.getUnionId(code);
         if (unionId==null || unionId.equals("null")){
             return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "获取openId失败!");
         }
@@ -47,10 +53,17 @@ public class WeChatServiceWeb {
     @Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
     @Path("/sendMsg")
     @POST
-    public String sendMsg(@FormParam("content") String content,@FormParam("msgType") String msgType,@FormParam("key") String key) {
-        String keyWord = MD5Util.md5Encode(content+msgType+ MD5Util.getDateStr() + secretKey);
+    public String sendMsg(@FormParam("content") String content,@FormParam("appId") String appId,@FormParam("msgType") String msgType,@FormParam("key") String key) {
+        String keyWord = MD5Util.md5Encode(content+appId+msgType+ MD5Util.getDateStr() + secretKey);
         if (!keyWord.equals(key)){
             return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+        }
+        if (appId==null || appId.equals("") || appId.equals("undefined")){
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "参数appId有误!");
+        }
+        Account account = accountService.findByAppId(appId);
+        if (account == null){
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "appId对应的服务号不存在，是不是appId填写错了!");
         }
         if(content==null||content.equals("")||msgType==null||msgType.equals("")){
             return JsonResultUtils.getCodeAndMesByString(400, "参数不能为空!");
@@ -64,9 +77,9 @@ public class WeChatServiceWeb {
         System.out.println(content);
         String result = "";
         if (msgType.equals("3.1.1")){
-            result = WeChatUtil.sendCustomToUser(content);
+            result = WeChatUtil.sendCustomToUser(content,account.getAppId(),account.getAppSecert());
         }else if(msgType.equals("3.3")){
-            result = WeChatUtil.sendTemplateToUser(content);
+            result = WeChatUtil.sendTemplateToUser(content,account.getAppId(),account.getAppSecert());
         }
         if (result.equals("error")){
             return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "发送失败!");

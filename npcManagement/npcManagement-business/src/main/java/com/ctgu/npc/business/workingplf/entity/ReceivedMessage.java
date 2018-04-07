@@ -1,18 +1,15 @@
 package com.ctgu.npc.business.workingplf.entity;
 
-
-import com.ctgu.npc.business.common.persistence.BaseEntity;
-
 import java.io.Serializable;
 
-public class ReceivedMessage extends BaseEntity<ReceivedMessage> implements Serializable{
+public class ReceivedMessage implements Serializable{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	//private String id;
+	private String id;
 	private String title;
     private String content;
     private String name;
@@ -27,12 +24,12 @@ public class ReceivedMessage extends BaseEntity<ReceivedMessage> implements Seri
     private String createTime;
     
     
-/*	public String getId() {
+	public String getId() {
 		return id;
 	}
 	public void setId(String id) {
 		this.id = id;
-	}*/
+	}
 	public String getTitle() {
 		return title;
 	}
@@ -99,12 +96,6 @@ public class ReceivedMessage extends BaseEntity<ReceivedMessage> implements Seri
 	public void setAnnex(String annex) {
 		this.annex = annex;
 	}
-	@Override
-	public void preInsert() {
-		// TODO Auto-generated method stub
-		
-	}
-	@Override
 	public void preUpdate() {
 		// TODO Auto-generated method stub
 		
