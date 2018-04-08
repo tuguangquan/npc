@@ -1,7 +1,6 @@
 package com.ctgu.npc.business.sys.service;
 
 import com.ctgu.npc.business.sys.dto.OfficeInfo;
-import com.ctgu.npc.business.sys.entity.Office;
 import com.ctgu.npc.business.sys.mapper.OfficeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 

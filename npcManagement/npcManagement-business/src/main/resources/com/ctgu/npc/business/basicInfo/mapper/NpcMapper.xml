@@ -382,6 +382,7 @@
 			and ul.del_flag='0' 
 			and u.id=#{id}
 			and sp.level=#{specialLevel}
+		    and sp.status like '%在任%'
 	</select>
 	
 	<!--查询代表信息链表===根据userId及系统级别查询代表信息 -->

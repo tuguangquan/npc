@@ -418,42 +418,46 @@ public interface SugMapper {
 	public CommunicationForm getCommunicationForm(@Param("id") String id);
 
 
-	
+	public int deleteSug(@Param("id") String id);
+
+	public Suggestion selectSugById(@Param("id") String id);
 
 
 
 
-	
-
-
-	
-
-
-	
-
-
-	
 
 
 
 
-	
-
-	
-
-	
-
-	
-	
-	
 
 
 
-	
 
 
-		
 
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

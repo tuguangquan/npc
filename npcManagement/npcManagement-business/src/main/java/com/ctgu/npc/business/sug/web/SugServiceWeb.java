@@ -1,5 +1,6 @@
 package com.ctgu.npc.business.sug.web;
 
+import com.ctgu.npc.business.common.contant.Contant;
 import com.ctgu.npc.business.common.utils.GsonUtils;
 import com.ctgu.npc.business.common.utils.MD5Util;
 import com.ctgu.npc.business.common.utils.PagesUtil;
@@ -100,7 +101,7 @@ public class SugServiceWeb {
 			Gson gson = new Gson();
 			java.lang.reflect.Type type = new TypeToken<Suggestion>() {
 			}.getType();
-			Suggestion sug = (Suggestion) gson.fromJson(json_str, type);
+			Suggestion sug = gson.fromJson(json_str, type);
 			sugService.saveCheckSug(sug, loginName, level_code);
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.SUCCESS.getCode(), "success!");
 		} else {
@@ -134,7 +135,7 @@ public class SugServiceWeb {
 			Gson gson = new Gson();
 			java.lang.reflect.Type type = new TypeToken<Suggestion>() {
 			}.getType();
-			Suggestion sug = (Suggestion) gson.fromJson(json_str, type);
+			Suggestion sug = gson.fromJson(json_str, type);
 			sugService.saveEvaluteSug(sug, loginName, level_code);
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.SUCCESS.getCode(), "success!");
 		} else {
@@ -143,7 +144,31 @@ public class SugServiceWeb {
 
 
 	}
-
+	/**
+	 * 建议议案删除
+	 * @param id
+	 * @return
+	 */
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/deleteSug")
+	@POST
+	public String deleteSug(@FormParam("id") String id,
+							@FormParam("key") String key){
+		String keyWord = MD5Util.md5Encode(id+ MD5Util.getDateStr() + secretKey);
+		if (!keyWord.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
+		Suggestion suggestion = sugService.selectSugById(id);
+		if (suggestion == null){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "不存在该数据记录!");
+		}
+		if (suggestion.getStatus().equals(Contant.sug_status_2) || suggestion.getStatus().equals(Contant.sug_status_1)){
+			sugService.deleteSug(id);
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.SUCCESS.getCode(), "delete success!");
+		}else{
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.SUCCESS.getCode(), "delete filed!");
+		}
+	}
 
 	/**
 	 * ===办理=待签收===交办直接办理
@@ -584,17 +609,16 @@ public class SugServiceWeb {
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
-		Suggestion sug = new Suggestion();
+		Suggestion sug;
 		if (json_str != null) {
 			Gson gson = new Gson();
 			java.lang.reflect.Type type = new TypeToken<Suggestion>() {
 			}.getType();
-			sug = (Suggestion) gson.fromJson(json_str, type);
-
+			sug = gson.fromJson(json_str, type);
 			sugService.mySugHeadAdd(sug, loginName, level_code);
-			return "save success!";
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.SUCCESS.getCode(), "save success!");
 		} else {
-			return "save fail!";
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "save fail!!");
 		}
 	}
 

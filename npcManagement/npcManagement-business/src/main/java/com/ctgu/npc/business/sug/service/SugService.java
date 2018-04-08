@@ -807,7 +807,6 @@ public class SugService {
 	@Transactional(readOnly = false)
 	public void mySugHeadAdd(Suggestion sug, String loginName, String level_code) {
 		// TODO Auto-generated method stub
-
 		// 根据登录名获取该用户id
 		Users auser = new Users(loginName);
 		auser = userMapper.getUserByLoginName(auser);
@@ -1405,5 +1404,12 @@ public class SugService {
 		// TODO Auto-generated method stub
 		return sugMapper.getCommunicationForm(id);
 	}
+	public int deleteSug(String id){
+		return sugMapper.deleteSug(id);
+	}
 
+
+	public Suggestion selectSugById(String id){
+		return sugMapper.selectSugById(id);
+	}
 }

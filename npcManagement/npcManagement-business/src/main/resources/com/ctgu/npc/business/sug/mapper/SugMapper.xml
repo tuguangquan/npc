@@ -60,6 +60,8 @@
 		delete from sug_transferList where suggestionID = #{sugID} and status = 1
 	</delete>
 
+
+
 	<!-- 插入日记 -->
 	<insert id="insertNote">
 			INSERT INTO db_note(
@@ -1011,5 +1013,14 @@
 		sug.id DESC
 		limit ${offset},${size}
 	</select>
+
+	<!-- 删除转交历史记录 -->
+	<select id="selectSugById" resultType="com.ctgu.npc.business.sug.entity.Suggestion">
+		SELECT * from sug_suggestion WHERE id = #{id}
+	</select>
+	<!-- 删除转交历史记录 -->
+	<delete id="deleteSug">
+		delete from sug_suggestion WHERE id = #{id}
+	</delete>
 
 </mapper>
