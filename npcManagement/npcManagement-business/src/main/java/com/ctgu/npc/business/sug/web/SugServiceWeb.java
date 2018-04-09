@@ -152,18 +152,18 @@ public class SugServiceWeb {
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/deleteSug")
 	@POST
-	public String deleteSug(@FormParam("id") String id,
+	public String deleteSug(@FormParam("sugId") String sugId,
 							@FormParam("key") String key){
-		String keyWord = MD5Util.md5Encode(id+ MD5Util.getDateStr() + secretKey);
+		String keyWord = MD5Util.md5Encode(sugId+ MD5Util.getDateStr() + secretKey);
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
-		Suggestion suggestion = sugService.selectSugById(id);
+		Suggestion suggestion = sugService.selectSugById(sugId);
 		if (suggestion == null){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "不存在该数据记录!");
 		}
 		if (suggestion.getStatus().equals(Contant.sug_status_2) || suggestion.getStatus().equals(Contant.sug_status_1)){
-			sugService.deleteSug(id);
+			sugService.deleteSug(sugId);
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.SUCCESS.getCode(), "delete success!");
 		}else{
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.SUCCESS.getCode(), "delete filed!");
