@@ -1014,13 +1014,34 @@
 		limit ${offset},${size}
 	</select>
 
-	<!-- 删除转交历史记录 -->
+	<!-- 根据id查询 -->
 	<select id="selectSugById" resultType="com.ctgu.npc.business.sug.entity.Suggestion">
 		SELECT * from sug_suggestion WHERE id = #{id}
 	</select>
-	<!-- 删除转交历史记录 -->
+
+	<!-- 根据id删除 -->
 	<delete id="deleteSug">
 		delete from sug_suggestion WHERE id = #{id}
 	</delete>
+
+	<!-- 修改议案/建议 -->
+	<update id="updateSug">
+		UPDATE sug_suggestion SET
+		<if test="title != null and title != '' ">
+			title = #{title},
+		</if>
+		<if test="secondWriterIDS != null and secondWriterIDS != '' ">
+			secondWriterIDS = #{secondWriterIDS},
+		</if>
+		<if test="content != null and content != '' ">
+			content = #{content},
+		</if>
+		<if test="keyWord != null and keyWord != '' ">
+			keyWord = #{keyWord},
+		</if>
+		status = -2
+		WHERE
+		id = #{sugId}
+	</update>
 
 </mapper>

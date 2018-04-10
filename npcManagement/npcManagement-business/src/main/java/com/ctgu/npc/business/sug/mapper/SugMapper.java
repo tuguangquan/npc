@@ -422,6 +422,8 @@ public interface SugMapper {
 
 	public Suggestion selectSugById(@Param("id") String id);
 
+	public void updateSug(Map<String, Object> map);
+
 
 
 

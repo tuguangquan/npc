@@ -25,7 +25,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.io.PrintWriter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Path("/sug")
@@ -146,7 +148,7 @@ public class SugServiceWeb {
 	}
 	/**
 	 * 建议议案删除
-	 * @param id
+	 * @param sugId
 	 * @return
 	 */
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
@@ -466,11 +468,6 @@ public class SugServiceWeb {
 				// TODO: handle exception
 			}
 		}
-
-		/*
-		 * List<Suggestion> sugList = sugService.sugListOffice(curPage,
-		 * level_code,team_id, request, response);
-		 */
 		PagesUtil<Suggestion> pagesUtil = sugService.sugListOfficePage(curPage,
 				level_code, team_id, type_value);
 		return JsonResultUtils.getObjectResultByStringAsDefault(pagesUtil, JsonResultUtils.Code.SUCCESS);
@@ -793,7 +790,7 @@ public class SugServiceWeb {
 	}
 
 	/*
-	 * 根据id查找Suggestion(我的领衔), method = RequestMethod.GET
+	 * 根据id查找Suggestion(我的领衔),
 	 */
 	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
 	@Path("/headsuginfo")
@@ -1101,6 +1098,43 @@ public class SugServiceWeb {
 				level_code);
 
 		return JsonResultUtils.getObjectResultByStringAsDefault(sugList, JsonResultUtils.Code.SUCCESS);
+
+	}
+
+
+	@Produces( MediaType.APPLICATION_JSON + ";charset=UTF-8")
+	@Path("/updateSug")
+	@POST
+	public String updateSug(@FormParam("sugId") String sugId,
+								@FormParam("title") String title,
+								@FormParam("secondWriterIDS") String secondWriterIDS,
+								@FormParam("content") String content,
+								@FormParam("keyWord") String keyWord,
+								@FormParam("key") String key) {
+		String keyW = MD5Util.md5Encode(sugId+title+secondWriterIDS+content+keyWord+ MD5Util.getDateStr() + secretKey);
+		if (!keyW.equals(key)){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+		}
+		if (sugId==null || sugId.equals("")){
+			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数sugId不能为空!");
+		}
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("sugId",sugId);
+
+		if (title!=null && !title.equals("")){
+			map.put("title",title);
+		}
+		if (secondWriterIDS!=null && !secondWriterIDS.equals("")){
+			map.put("secondWriterIDS",secondWriterIDS);
+		}
+		if (content!=null && !content.equals("")){
+			map.put("content",content);
+		}
+		if (keyWord!=null && !keyWord.equals("")){
+			map.put("keyWord",keyWord);
+		}
+		sugService.updateSug(map);
+		return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.SUCCESS.getCode(), "update success!");
 
 	}
 

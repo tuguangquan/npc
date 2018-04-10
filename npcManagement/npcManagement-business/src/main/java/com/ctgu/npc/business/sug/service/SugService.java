@@ -1412,4 +1412,9 @@ public class SugService {
 	public Suggestion selectSugById(String id){
 		return sugMapper.selectSugById(id);
 	}
+
+	public void updateSug(Map<String, Object> map){
+		sugMapper.updateSug(map);
+	}
+
 }
