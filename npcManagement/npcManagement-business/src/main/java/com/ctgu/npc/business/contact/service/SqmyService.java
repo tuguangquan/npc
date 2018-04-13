@@ -38,30 +38,17 @@ public class SqmyService {
 	@Autowired
 	private SqmyMapper sqmyMapper;
 
-	@Autowired
-	private AnswerMapper answerMapper;
-
-	@Autowired
-	private LeaveMsgMapper leaveMsgMapper;
-
-	@Autowired
-	private OfficeMapper officeMapper;
-
 	public List<Sqmy> getMySqmyList(String loginName, String level_code) {
-		// TODO Auto-generated method stub
-		List<Sqmy> aList = new ArrayList<Sqmy>();
-		
+		List<Sqmy> aList;
 		Users auser = new Users(loginName);
 		auser = userMapper.getUserByLoginName(auser);
 		String userID = auser.getId();
-
 		Sqmy theObj = new Sqmy();
 		if (StringUtils.isEmpty(theObj.getYear())) {
 			theObj.setYear(npcMapper.findPeriod(level_code).getYear());
 		}
 		theObj.setFirstWriterID(userID);
 		theObj.setLevel(level_code);
-		
 		aList = sqmyMapper.mySqmyList(theObj);
 		return aList;
 	}

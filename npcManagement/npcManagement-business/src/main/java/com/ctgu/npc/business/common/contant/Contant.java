@@ -16,4 +16,13 @@ public  class Contant {
     public static final String sug_status5 = "5";//5待评价
     public static final String sug_status6 = "6";//结案
 
+    //    建议，议案 流程状态
+    public static final String sqmy_status0 = "0";//0待交办
+    public static final String sqmy_status1 = "1";//1已交办，即承办未签收
+    public static final String sqmy_status2 = "2";//办理中，即承办已签收
+    public static final String sqmy_status3 = "3";//3已答复
+    public static final String sqmy_status4 = "4";//4已反馈
+    public static final String sqmy_status5 = "5";//5已退回
+
+
 }

@@ -51,7 +51,7 @@ public class ContactServiceWeb {
      * @date 2017-7-26 上午10:15:47
      */
     @Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
-    @Path("/savePersonalInfo")
+    @Path("/mySqmyList")
     @POST
     public String mySqmyList(@FormParam("loginName") String loginName, @FormParam("level_code") String level_code, @FormParam("key") String key) {
         String keyWord = MD5Util.md5Encode(loginName + level_code + MD5Util.getDateStr() + secretKey);
@@ -90,6 +90,8 @@ public class ContactServiceWeb {
         theObj.setaList(alist);
         return JsonResultUtils.getObjectResultByStringAsDefault(theObj, JsonResultUtils.Code.SUCCESS);
     }
+
+
 
     /**
      * ===我的留言分页列表
