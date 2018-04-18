@@ -532,7 +532,6 @@ public class SugServiceWeb {
 		if (!keyWord.equals(key)){
 			return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
 		}
-
 		int curPage = 1;
 		if (pageNum != null) {
 			try {
@@ -542,8 +541,8 @@ public class SugServiceWeb {
 				// TODO: handle exception
 			}
 		}
-		PagesUtil<Suggestion> pagesUtil = sugService.mySugListHeadPage(
-				loginName, curPage, level_code, type_value);
+		PagesUtil<SuggestionDto> pagesUtil = sugService.mySugListHeadPage(
+				loginName, curPage, level_code,type_value);
 
 		return JsonResultUtils.getObjectResultByStringAsDefault(pagesUtil, JsonResultUtils.Code.SUCCESS);
 
@@ -1058,7 +1057,7 @@ public class SugServiceWeb {
 			}
 		}
 
-		List<Suggestion> sugList = sugService.mySugListHead(loginName, curPage,
+		List<SuggestionDto> sugList = sugService.mySugListHead(loginName, curPage,
 				level_code);
 
 		return JsonResultUtils.getObjectResultByStringAsDefault(sugList, JsonResultUtils.Code.SUCCESS);

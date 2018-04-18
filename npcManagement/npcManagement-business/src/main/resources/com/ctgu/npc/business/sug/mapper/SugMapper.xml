@@ -205,8 +205,11 @@
 		LEFT JOIN sys_user u on u.id = sug.firstWriterID
 		WHERE
 		sug.firstWriterID=${firstWriterID} and
-		sug.level=${level_code} and
-		sug.type = ${type_value}
+		sug.level=${level_code}
+		<if test="type_value != null and type_value != '' ">
+		and sug.type = ${type_value}
+		</if>
+
 	</select>
 
 
@@ -541,8 +544,10 @@
 		LEFT JOIN
 		sys_user u on u.id =
 		sug.firstWriterID
-		WHERE sug.level=${level_code} and
-		sug.type=${type_value}
+		WHERE sug.level=${level_code}
+		<if test="type_value != null and type_value != '' ">
+			and sug.type = ${type_value}
+		</if>
 	</select>
 
 
@@ -552,8 +557,10 @@
 		SELECT count(*)
 		FROM sug_suggestion sug
 		WHERE
-		sug.level=${level_code} AND sug.teamID = ${team_id} AND
-		sug.type=${type_value}
+		sug.level=${level_code} AND sug.teamID = ${team_id}
+		<if test="type_value != null and type_value != '' ">
+			and sug.type = ${type_value}
+		</if>
 	</select>
 
 	<!-- === 我领衔的List ======根据firstWriterId 和系统级别level_code 分页查找我领衔的suggestionList -->
@@ -564,7 +571,9 @@
 		sug.title,
 		sug.status,
 		o.name as mission,
-		u.name as firstWriter
+		u.name as firstWriter,
+		sug.type as type,
+		sug.classify as classify
 		FROM sug_suggestion sug
 		LEFT JOIN sys_office o on
 		o.id = sug.teamID
@@ -572,8 +581,10 @@
 		sug.firstWriterID
 		WHERE
 		sug.firstWriterID=${firstWriterID} and
-		sug.level=${level_code} and
-		sug.type=${type_value}
+		sug.level=${level_code}
+		<if test="type_value != null ">
+			and sug.type=${type_value}
+		</if>
 		ORDER BY sug.id DESC
 		limit ${offset},${size}
 	</select>
@@ -587,7 +598,9 @@
 		sug.status,
 		sug.secondWriterIDS,
 		o.name as mission,
-		u.name as firstWriter
+		u.name as firstWriter,
+		sug.type as type,
+		sug.classify as classify
 		FROM sug_suggestion sug
 		LEFT
 		JOIN sys_office o on o.id = sug.teamID
@@ -595,8 +608,9 @@
 		sug.firstWriterID
 		WHERE sug.secondWriterIDS like
 		CONCAT('%#',${secondWriterIDS},'#%') and sug.level=${level_code}
-		and
-		sug.type=${type_value}
+		<if test="type_value != null ">
+			and sug.type=${type_value}
+		</if>
 		ORDER BY sug.id DESC
 		limit ${offset},${size}
 	</select>
@@ -653,8 +667,10 @@
 		LEFT JOIN sys_user u on
 		u.id =
 		sug.firstWriterID
-		WHERE 1=1 and sug.level = ${level_code} and
-		sug.type=${type_value}
+		WHERE 1=1 and sug.level = ${level_code}
+		<if test="type_value != null ">
+			and sug.type=${type_value}
+		</if>
 		ORDER BY sug.id DESC
 		limit ${offset},${size}
 	</select>
@@ -673,7 +689,11 @@
 		sug.firstWriterID
 		WHERE 1=1 and sug.level
 		= ${level_code} AND
-		sug.teamID = ${team_id} and sug.type=${type_value}
+		sug.teamID = ${team_id}
+		<if test="type_value != null ">
+			and sug.type=${type_value}
+		</if>
+
 		ORDER BY sug.id DESC
 		limit ${offset},${size}
 	</select>

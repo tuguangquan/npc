@@ -360,8 +360,9 @@ public class SugService {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("level_code", level_code);
 		map.put("team_id", team_id);
-		map.put("type_value", type_value);
-
+		if (!type_value.equals("0")){
+			map.put("type_value", type_value);
+		}
 		return sugMapper.getRowsByOfficeIdType(map);
 	}
 
@@ -401,11 +402,9 @@ public class SugService {
 		map.put("size", size);
 		map.put("level_code", level_code);
 		map.put("team_id", team_id);
-		map.put("type_value", type_value);
-
-		// System.out.println("myHeadSugList->offset = " + offset + ",->size= "
-		// + size);
-
+		if (!type_value.equals("0")){
+			map.put("type_value", type_value);
+		}
 		sugList = sugMapper.getListByOfficeId(map);
 
 		pagesUtil.setLists(sugList);
@@ -488,8 +487,9 @@ public class SugService {
 		map.put("size", size);
 		map.put("secondWriterIDS", secondWriterIDS);
 		map.put("level_code", level_code);
-		map.put("type_value", type_value);
-
+		if (!type_value.equals("0")){
+			map.put("type_value", type_value);
+		}
 		sugList = sugMapper.getListPageByMap2ndType(map);
 
 		pagesUtil.setLists(sugList);
@@ -502,11 +502,9 @@ public class SugService {
 	 * 
 	 * @param loginName
 	 * @param level_code
-	 * @param type_value
 	 * @return
 	 */
-	private int getRowTotalMap(String loginName, String level_code,
-			String type_value) {
+	private int getRowTotalMap(String loginName, String level_code, String type_value) {
 		// TODO Auto-generated method stub
 
 		Users auser = new Users(loginName);
@@ -515,8 +513,9 @@ public class SugService {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("firstWriterID", firstWriterID);
 		map.put("level_code", level_code);
-		map.put("type_value", type_value);
-
+		if (!type_value.equals("0")){
+			map.put("type_value", type_value);
+		}
 		return sugMapper.getRowTotalMap(map);
 	}
 
@@ -526,13 +525,12 @@ public class SugService {
 	 * @param loginName
 	 * @param curPage
 	 * @param level_code
-	 * @param type_value
 	 * @return
 	 */
-	public PagesUtil<Suggestion> mySugListHeadPage(String loginName,
-			int curPage, String level_code, String type_value) {
+	public PagesUtil<SuggestionDto> mySugListHeadPage(String loginName,
+			int curPage, String level_code,String type_value) {
 		// TODO Auto-generated method stub
-		List<Suggestion> sugList = new ArrayList<Suggestion>();
+		List<SuggestionDto> sugList;
 
 		Users auser = new Users(loginName);
 		auser = userMapper.getUserByLoginName(auser);
@@ -540,8 +538,8 @@ public class SugService {
 
 		/* 以下是按分页进行查找 */
 		// 获取总记录数
-		int rowCount = this.getRowTotalMap(loginName, level_code, type_value);
-		PagesUtil<Suggestion> pagesUtil = new PagesUtil<Suggestion>();
+		int rowCount = this.getRowTotalMap(loginName, level_code,type_value);
+		PagesUtil<SuggestionDto> pagesUtil = new PagesUtil<SuggestionDto>();
 		pagesUtil.setRowCount(rowCount);
 
 		if (pagesUtil.getTotalPages() < curPage) {
@@ -556,8 +554,9 @@ public class SugService {
 		map.put("size", size);
 		map.put("firstWriterID", firstWriterID);
 		map.put("level_code", level_code);
-		map.put("type_value", type_value);
-
+		if (!type_value.equals("0")){
+			map.put("type_value", type_value);
+		}
 		sugList = sugMapper.getListPageByMap(map);
 
 		pagesUtil.setLists(sugList);
@@ -701,7 +700,9 @@ public class SugService {
 
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("level_code", level_code);
-		map.put("type_value", type_value);
+		if (!type_value.equals("0")){
+			map.put("type_value", type_value);
+		}
 		return sugMapper.getRowsAllMap(map);
 	}
 
@@ -737,9 +738,9 @@ public class SugService {
 		map.put("offset", offset);
 		map.put("size", size);
 		map.put("level_code", level_code);
-		map.put("type_value", type_value);
-
-
+		if (!type_value.equals("0")){
+			map.put("type_value", type_value);
+		}
 		sugList = sugMapper.getListAllMapType(map);
 
 		pagesUtil.setLists(sugList);
@@ -849,8 +850,6 @@ public class SugService {
 	 * 
 	 * @param curPage
 	 * @param level_code
-	 * @param request
-	 * @param response
 	 * @return
 	 */
 	public List<Suggestion> sugListExcellent(int curPage, String level_code) {
@@ -889,8 +888,6 @@ public class SugService {
 	 * 
 	 * @param curPage
 	 * @param level_code
-	 * @param request
-	 * @param response
 	 * @return
 	 */
 	public List<Suggestion> sugListEmphasis(int curPage, String level_code) {
@@ -930,8 +927,6 @@ public class SugService {
 	 * @param curPage
 	 * @param level_code
 	 * @param team_id
-	 * @param request
-	 * @param response
 	 * @return
 	 */
 	public List<Suggestion> sugListOffice(int curPage, String level_code,
@@ -986,8 +981,6 @@ public class SugService {
 	 * 
 	 * @param curPage
 	 * @param level_code
-	 * @param request
-	 * @param response
 	 * @return
 	 */
 	public List<Suggestion> sugListAll(int curPage, String level_code) {
@@ -1026,8 +1019,6 @@ public class SugService {
 	 * 
 	 * @param loginName
 	 * @param curPage
-	 * @param request
-	 * @param response
 	 * @return
 	 */
 	public List<Suggestion> myHeadSugList(String loginName, int curPage) {
@@ -1062,14 +1053,12 @@ public class SugService {
 	 * @param loginName
 	 * @param curPage
 	 * @param level_code
-	 * @param request
-	 * @param response
 	 * @return
 	 */
-	public List<Suggestion> mySugListHead(String loginName, int curPage,
+	public List<SuggestionDto> mySugListHead(String loginName, int curPage,
 			String level_code) {
 		// TODO Auto-generated method stub
-		List<Suggestion> sugList = new ArrayList<Suggestion>();
+		List<SuggestionDto> sugList;
 
 		Users auser = new Users(loginName);
 		auser = userMapper.getUserByLoginName(auser);
@@ -1078,7 +1067,7 @@ public class SugService {
 		/* 以下是按分页进行查找 */
 		// 获取总记录数
 		int rowCount = this.getRowTotal(loginName, level_code);
-		PagesUtil<Suggestion> pagesUtil = new PagesUtil<Suggestion>();
+		PagesUtil<SuggestionDto> pagesUtil = new PagesUtil<SuggestionDto>();
 		pagesUtil.setRowCount(rowCount);
 
 		if (pagesUtil.getTotalPages() < curPage) {
@@ -1107,8 +1096,6 @@ public class SugService {
 	 * @param loginName
 	 * @param curPage
 	 * @param level_code
-	 * @param request
-	 * @param response
 	 * @return
 	 */
 	public List<Suggestion> mySugListJoin(String loginName, int curPage,

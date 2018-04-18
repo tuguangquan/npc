@@ -97,7 +97,7 @@ public interface SugMapper {
 	 * @param map
 	 * @return
 	 */
-	public List<Suggestion> getListPageByMap(Map<String, Object> map);
+	public List<SuggestionDto> getListPageByMap(Map<String, Object> map);
 	
 	/**
 	 * 根据领衔人id分页查询suggestion的List
