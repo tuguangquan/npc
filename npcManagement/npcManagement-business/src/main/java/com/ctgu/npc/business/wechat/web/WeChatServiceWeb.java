@@ -44,7 +44,7 @@ public class WeChatServiceWeb {
         }
         String unionId = OpenIdUtil.getUnionId(code);
         if (unionId==null || unionId.equals("null")){
-            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "获取openId失败!");
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "获取UnionID失败!");
         }
         return JsonResultUtils.getObjectResultByStringAsDefault(unionId, JsonResultUtils.Code.SUCCESS);
     }
