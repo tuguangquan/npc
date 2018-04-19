@@ -16,7 +16,7 @@ import java.util.Map;
 public class OpenIdUtil {
 
     public static void main(String[] args) {
-        getOpenId("081b7Ezq0O8WAp1zUtyq0Tluzq0b7Ezc");
+       // System.out.println(session_key("0132nbFN1EbA921qEBEN1XFnFN12nbF1"));
     }
 
     public static String getOpenId(String code) {
@@ -38,7 +38,8 @@ public class OpenIdUtil {
     }
 
 
-    public static String getUnionId(String code) {
+
+    public static String getSession_key(String code) {
         String appid= FundamentalConfigProvider.get("npc.xcxAppid");
         String appsecret= FundamentalConfigProvider.get("npc.xcxAppsecret");
         //授权（必填）
@@ -53,7 +54,7 @@ public class OpenIdUtil {
         JSONObject json = JSONObject.fromObject(data);
         //用户的唯一标识（openid）
         //System.out.println(Openid);
-        return String.valueOf(json.get("unionid"));
+        return String.valueOf(json.get("session_key"));
     }
 
     public static String get(String url,String param){

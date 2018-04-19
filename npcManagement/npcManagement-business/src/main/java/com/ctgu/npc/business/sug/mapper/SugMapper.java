@@ -65,9 +65,6 @@ public interface SugMapper {
 
 	/**领衔人
 	 * 根据系统级别及领衔人id查询所有的记录总数
-	 * @param firstWriterID
-	 * @param level_code
-	 * @param type_value 
 	 * @return 记录总数
 	 */
 	public int getRowTotalMap(Map<String, Object> map);
@@ -76,7 +73,6 @@ public interface SugMapper {
 	
 	/**联名人
 	 * 根据系统级别及联名人id查询所有的记录总数
-	 * @param writerID2nd 联名人
 	 * @param level_code
 	 * @return
 	 */
@@ -84,9 +80,6 @@ public interface SugMapper {
 	
 	/**
 	 * 根据登录名及系统级别联名人id查询所有的记录总数(我联名)
-	 * @param type_value
-	 * @param secondWriterIDS
-	 * @param level_code
 	 * @return
 	 */
 	public int getRowTotal2ndMap(Map<String, Object> map);
@@ -162,7 +155,6 @@ public interface SugMapper {
 
 	/**
 	 * 根据系统级别查询总记录数-优秀
-	 * @param level_code,type_value
 	 * @return
 	 */
 	public int getRowsExcellentMap(Map<String, Object> map);
@@ -177,7 +169,7 @@ public interface SugMapper {
 	public int getRowCountByLevelEmphasis(@Param("level_code") String level_code);
 	/**
 	 * 根据级别查询总记录数-重点
-	 * @param level_code,type_value
+
 	 * @return
 	 */
 	public int getRowsEmphasisMap(Map<String, Object> map);
@@ -191,7 +183,6 @@ public interface SugMapper {
 
 	/**
 	 * 根据系统级别查询本级别所有代表议案总记录数-代表们
-	 * @param level_code,type_value
 	 * @return
 	 */
 	public int getRowsAllMap(Map<String, Object> map);
@@ -226,7 +217,6 @@ public interface SugMapper {
 
 	/**
 	 * 建议议案的转交信息
-	 * @param id
 	 * @return
 	 */
 	public List<TransferForm> getListTransfer(@Param("sugID") String sugID);

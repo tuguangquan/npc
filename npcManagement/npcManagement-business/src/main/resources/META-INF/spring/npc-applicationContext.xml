@@ -21,5 +21,5 @@
     <bean id="weChatService" class="com.ctgu.npc.business.wechat.service.WeChatService" depends-on="mappers"></bean>
     <bean id="userWeChatService" class="com.ctgu.npc.business.wechat.service.UserWeChatService" depends-on="mappers"></bean>
     <bean id="accountService" class="com.ctgu.npc.business.wechat.service.AccountService" depends-on="mappers"></bean>
-
+    <bean id="newsService" class="com.ctgu.npc.business.news.service.NewsService" depends-on="mappers"></bean>
 </beans>

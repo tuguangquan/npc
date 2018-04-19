@@ -48,7 +48,7 @@
         <property name="basePackage"  value="com.ctgu.npc.business.basicInfo,com.ctgu.npc.business.contact,
         com.ctgu.npc.business.inform,com.ctgu.npc.business.inqury_meeting,
         com.ctgu.npc.business.learning,com.ctgu.npc.business.perform,
-        com.ctgu.npc.business.sug,com.ctgu.npc.business.sys,com.ctgu.npc.business.workingplf,com.ctgu.npc.business.wechat" />
+        com.ctgu.npc.business.news,com.ctgu.npc.business.sug,com.ctgu.npc.business.sys,com.ctgu.npc.business.workingplf,com.ctgu.npc.business.wechat" />
     </bean>
 
 </beans>
