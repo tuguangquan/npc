@@ -94,6 +94,32 @@ public class SysServiceWeb {
     }
 
     /**
+     * 根据电话查找用户
+     *
+     * @param tel
+     * @return
+     */
+    @Produces(MediaType.APPLICATION_JSON + ";charset=UTF-8")
+    @Path("/searchByTel")
+    @POST
+    public String searchByTel(@FormParam("tel") String tel,
+                            @FormParam("key") String key) {
+        String keyWord = MD5Util.md5Encode(tel+ MD5Util.getDateStr() + secretKey);
+        if (!keyWord.equals(key)) {
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "请求参数有误!");
+        }
+        if (tel== null ||tel.equals("")){
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "该手机号不能为空!");
+        }
+        Users theUser = userService.getUserByTel(tel);
+        if (theUser != null) {
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.SUCCESS.getCode(), "该手机号存在对应用户!");
+        } else {
+            return JsonResultUtils.getCodeAndMesByString(JsonResultUtils.Code.ERROR.getCode(), "未找到该用户!");
+        }
+    }
+
+    /**
      * 查询用户是否登陆
      *
      * @param unionId

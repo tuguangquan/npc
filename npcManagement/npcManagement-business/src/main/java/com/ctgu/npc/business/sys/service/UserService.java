@@ -34,6 +34,7 @@ public class UserService {
 		Users theUser = null;
 		if (StringUtils.isMobile(loginName)){
 			Users auser = new Users();
+			auser.setMobile(loginName);
 			theUser  = userMapper.getUserByMobile(auser);
 		}else{
 			Users auser = new Users(loginName);
@@ -42,7 +43,16 @@ public class UserService {
 		
 		return theUser;
 	}
-
+	/**
+	 * === 根据电话查找用户
+	 * @param tel
+	 * @return
+	 */
+	public Users getUserByTel(String tel) {
+		Users auser = new Users();
+		auser.setMobile(tel);
+		return userMapper.getUserByMobile(auser);
+	}
 	
 	/**
 	 * 根据用户名密码登录
